@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="这里是 @Hux黄玄 的个人博客，与你一起发现更大的世界 | 要做一个有 swag 的程序员">
+    <meta name="keywords" content="黄玄, Hux黄玄, Hux, 鬼栈, huxpro, @huxpro, 黄玄的博客, Hux Blog, 博客, 个人网站, 互联网, Web, JavaScript, React, React Native, 前端, 设计">
+    <meta name="theme-color" content="#000000">
+
+    <!-- Open Graph -->
+    <meta property="og:title"
+        content="See you, Alibaba  - 黄玄的博客 | Hux Blog">
+    
+    <meta property="og:type" content="article">
+    <meta property="og:description" content="
+  世界那么大，我想去看看
+
+">
+    
+    <meta property="article:published_time" content=" 2015-05-11T00:00:00Z">
+    
+    
+    <meta property="article:author" content="Hux">
+    
+    
+    <meta property="article:tag" content="Meta">
+    
+    <meta property="article:tag" content="阿里">
+    
+    
+    <meta property="og:image" content="http://localhost:4000https://github.com/Huxpro.png">
+    <meta property="og:url" content="http://localhost:4000/2015/05/11/see-u-ali/">
+    <meta property="og:site_name" content="黄玄的博客 | Hux Blog">
+
+    <title>See you, Alibaba  - 黄玄的博客 | Hux Blog</title>
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/pwa/manifest.json">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="http://localhost:4000/2015/05/11/see-u-ali/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href=" /css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href=" /css/hux-blog.min.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet"
+        type="text/css">
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+
+    <!-- Google AdSense -->
+    <script data-ad-client="ca-pub-6487568398225121" async
+        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">Hux Blog</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div id="huxblog_navbar">
+                <div class="navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="/">Home</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/archive/">Archive</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li class="search-icon">
+                            <a href="javascript:void(0)">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <script>
+        // Drop Bootstarp low-performance Navbar
+        // Use customize navbar with high-quality material design animation
+        // in high-perf jank-free CSS3 implementation
+        var $body = document.body;
+        var $toggle = document.querySelector('.navbar-toggle');
+        var $navbar = document.querySelector('#huxblog_navbar');
+        var $collapse = document.querySelector('.navbar-collapse');
+
+        var __HuxNav__ = {
+            close: function () {
+                $navbar.className = " ";
+                // wait until animation end.
+                setTimeout(function () {
+                    // prevent frequently toggle
+                    if ($navbar.className.indexOf('in') < 0) {
+                        $collapse.style.height = "0px"
+                    }
+                }, 400)
+            },
+            open: function () {
+                $collapse.style.height = "auto"
+                $navbar.className += " in";
+            }
+        }
+
+        // Bind Event
+        $toggle.addEventListener('click', function (e) {
+            if ($navbar.className.indexOf('in') > 0) {
+                __HuxNav__.close()
+            } else {
+                __HuxNav__.open()
+            }
+        })
+
+        /**
+         * Since Fastclick is used to delegate 'touchstart' globally
+         * to hack 300ms delay in iOS by performing a fake 'click',
+         * Using 'e.stopPropagation' to stop 'touchstart' event from 
+         * $toggle/$collapse will break global delegation.
+         * 
+         * Instead, we use a 'e.target' filter to prevent handler
+         * added to document close HuxNav.  
+         *
+         * Also, we use 'click' instead of 'touchstart' as compromise
+         */
+        document.addEventListener('click', function (e) {
+            if (e.target == $toggle) return;
+            if (e.target.className == 'icon-bar') return;
+            __HuxNav__.close();
+        })
+    </script>
+    <!-- Search -->
+<div class="search-page">
+  <div class="search-icon-close-container">
+    <span class="search-icon-close">
+      <i class="fa fa-chevron-down"></i>
+    </span>
+  </div>
+  <div class="search-main container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <form></form>
+        <input type="text" id="search-input" placeholder="$ grep...">
+        </form>
+        <div id="search-results" class="mini-post-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/post-bg-see-u-ali.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/post-bg-see-u-ali.jpg');
+        background: ;
+    }
+
+    
+</style>
+
+
+
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/archive/?tag=Meta" title="Meta">Meta</a>
+                        
+                        <a class="tag" href="/archive/?tag=%E9%98%BF%E9%87%8C" title="阿里">阿里</a>
+                        
+                    </div>
+                    <h1>See you, Alibaba </h1>
+                    
+                    <h2 class="subheading">再见，阿里。</h2>
+                    <span class="meta">Posted by Hux on May 11, 2015</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <!-- Multi-Lingual -->
+                
+
+				<blockquote>
+  <p>世界那么大，我想去看看</p>
+</blockquote>
+
+<p>Hi all<br />
+这里是鬼栈的离职信。</p>
+
+<p><img src="/img/in-post/post-c-u-ali-team.png" alt="img" /></p>
+
+<h2 id="review">Review</h2>
+
+<p>去年 5 月，大二的我拿到阿里的交互实习生 Offer，成为阿里的实习员工，刚好过去一个年头。</p>
+
+<p>8 月，感谢 <a href="http://weibo.com/jayli">@拔赤</a> 的提携，同意了我转岗到航旅前端团队的申请，分在了老大亲自带队的 <strong>航旅事业群-无线业务部-无线技术-前端团队-前端三组</strong>，从此开始了一名<strong>前端程序猿</strong>的职业生涯。</p>
+
+<p>我的第一个 mentor 是大家的”小师妹” @晴舞 姐，不过很可惜的是她居然早于我离职，回北邮任教了。我跟着她在 H5 酒店 的业务线上学习、厮杀，从一个连 git 都用不熟的小小鬼，变成了一个可以独立战斗的小鬼。<br />
+在 Acting H5 酒店/团购 业务线时，也非常感谢 @骏隆 的指导和信任，算是我的大半个 mentor 了。</p>
+
+<p>我的第二个 mentor 是人超 nice 的 @智峰 师傅，前手机腾讯网主管，负责团队 CSS 框架，很有生活哲学的一个人。我们一起拿下了 h5 红包等工作，不过很可惜的是没机会从师傅身上学更多的 CSS 了。</p>
+
+<p>有幸来阿里工作一遭，加入航旅前端团队，经历 <a href="https://www.zhihu.com/question/31316032/answer/75236718">离线包/Hybrid容器共建</a> 这样的牛逼项目，负责过酒店详情、团购详情重构、个人中心红包等工作，为象声汇做过第一版 Logo、海报、颁奖证书，进行过一次团队分享<a href="http://huxpro.coding.me/2015/06/15/alitrip-strategy/">《聊聊产品与旅行》</a>，更有幸认识大家。</p>
+
+<hr />
+
+<p>在航旅的 270 天里，我还经历了不少<strong>大事件</strong>：</p>
+
+<ul>
+  <li>一次 阿里 IPO （千载难逢的大事，可惜我没有股票，战利品是一件纪念 T 恤）</li>
+  <li>一次 新品牌发布 （<em>阿里旅行·去啊</em> 的发布，BU 的大事，战利品还是一件 T 恤）</li>
+  <li>一次 年会 （北京 office 第一次大规模年会，马云老陆 Lucy 悉数到场）</li>
+  <li>一次 双十一 （双十一购物狂欢节，有幸从内部参与一次）</li>
+  <li>一次 Outing （每年才一次的公派娱乐，滑雪＋温泉记忆深刻）</li>
+  <li>一次 Team Building（晴舞姐的 lastday ，难得的团建）</li>
+  <li>一次 中秋节 （战利品是包装特别用心的“马云牌”月饼）</li>
+</ul>
+
+<p>真的运气非常好，不但该经历的都经历了，连 IPO 这么难得的也撞上了。</p>
+
+<p><img src="/img/in-post/post-c-u-ali-memo.jpg" alt="img" /></p>
+
+<h2 id="to-mates">To Mates</h2>
+
+<p>感谢大家这么多天的照顾！</p>
+
+<p>无线组的小伙伴们：</p>
+
+<ul>
+  <li>@拔赤：感谢老大！当年慕名而来，非常感谢“收留”</li>
+  <li>@虎牙：超牛的虎牙！非常佩服，人也超 nice ，一直学习的对象</li>
+  <li>@兰梦：大姐大！每次问问题都超级热心的解答，非常非常感谢</li>
+  <li>@孝瓘：大哥大！技术超牛不说了，对我超级超级好，帮我解答问题送我回家什么的，特别感动。</li>
+  <li>@豹子：双子座美女姐姐哈哈，前两天生日快乐哦，队花 BU 花！</li>
+  <li>@弘树：简直学霸 &amp; 学神！超年轻超钻，感觉以后会是阿里前端顶梁柱人物哟</li>
+  <li>@若狸：猫爷！京腔儿～虽然总是在朋友圈骂 PD 不过其实特别靠谱活儿特别好哈哈哈</li>
+  <li>@圣耀：首页守护神！加班时你总是在，然后一起分吃，的再去苦逼干活 OTZ</li>
+  <li>@智峰：叶师傅！虽然总是不让我叫师兄互相学习云云，不过真的跟我说了很多人生哲理，超受用</li>
+  <li>@擎黄：麦霸！特别聊得来，缘分大概最早来自于坐我旁边，你和舒博搬走时我超舍不得的 T T 你还记得你拿我机箱垫脚吗！</li>
+  <li>@舒博：同上都是 90 后，聊得来！经常一起吃饭，Outing 的时候睡一屋，晚上打鼾完早上还会问我然后道歉特别萌哈哈哈</li>
+  <li>@骏隆：分不清你是哪组！不过一起共事一起玩经常一起吃饭，特别 nice，非常非常感谢，一起做酒店时非常开心！</li>
+  <li>@夕剑：虽然已经离职了看不到不过必须补上，机票的代名词！超 nice 超靠谱，又帅又有趣</li>
+  <li>@晴舞：虽然已经离职了看不到不过必须补上，特别感谢的师姐，最难的开头都是你带我走过去的</li>
+  <li>@已过：虽然已经转岗了看不到不过必须补上，一度觉得很像大反派！印象最深的就是刚进来 git 写错了看我 log 帮我回滚 OTZ，当时觉得特别凶</li>
+  <li>@清锁：实习生小伙伴！你居然先我离职了喂。不过我知道你都签三方啦</li>
+</ul>
+
+<p>其他组的我就捡比较熟悉的说啦：</p>
+
+<ul>
+  <li>@银翘：校友师姐！特别萌，负责象声汇特别尽心尽力</li>
+  <li>@皓勋：充满战斗力的小伙伴！超级青春洋溢，看好你哟～！</li>
+  <li>@懂象：Hey Flasher！Flasher 果然都爱动画爱交互，很聊得来～</li>
+  <li>@龙芒：好像一起打过球？哈哈哈其实没有原因就是觉得特别可爱！</li>
+  <li>@伯元：咦是离职了吗？一起打过好久的球！</li>
+</ul>
+
+<p>当然，还有很多前端、UED 、测试、后端、行政 的小伙伴们，就没法一一照顾到啦。</p>
+
+<p><strong>希望所有人都能工作顺利（少加班）、生活开心（多旅游）、身体健康哈。</strong></p>
+
+<h2 id="future">Future</h2>
+
+<p>距离毕业还有一年多的光景，前路未卜，还是想到处逛逛，多看看再做选择。</p>
+
+<p>在陆续看了几家公司后，我决定前往<strong>微信电影票</strong>开始我的下一段旅程。特别巧的是，带队的饼饼居然也曾是我们团队的“老人”，花名 @痴灵</p>
+
+<p>世界这么大，更要 Keep Contact.</p>
+
+<ul>
+  <li>微博：@Hux黄玄</li>
+  <li>知乎：@黄玄</li>
+  <li>博客：<a href="http://huangxuan.me">http://huangxuan.me</a></li>
+</ul>
+
+<p><strong>Hey，这里是编号 79717</strong></p>
+
+<p><img src="/img/in-post/post-c-u-ali-079717.png" alt="img" /></p>
+
+
+                <hr style="visibility: hidden;">
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2015/04/15/os-metro/" data-toggle="tooltip" data-placement="top" title="hUX 随想录（二）：操作系统的浪漫主义 —— Metro 篇">
+                        Previous<br>
+                        <span>hUX 随想录（二）：操作系统的浪漫主义 —— Metro 篇</span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2015/06/15/alitrip-strategy/" data-toggle="tooltip" data-placement="top" title="聊聊「阿里旅行 · 去啊」">
+                        Next<br>
+                        <span>聊聊「阿里旅行 · 去啊」</span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <hr style="visibility: hidden;">
+
+                
+                <!-- disqus 评论框 start -->
+                <div class="comment">
+                    <div id="disqus_thread" class="disqus-thread"></div>
+                </div>
+                <!-- disqus 评论框 end -->
+                
+
+                
+            </div>  
+
+    <!-- Side Catalog Container -->
+        
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+        
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+
+
+<section>
+    
+        <hr class="hidden-sm hidden-xs">
+    
+    <h5><a href="/archive/">FEATURED TAGS</a></h5>
+    <div class="tags">
+        
+        
+        
+        
+        
+        
+                <a data-sort="0065" 
+                    href="/archive/?tag=%E7%9F%A5%E4%B9%8E"
+                    title="知乎"
+                    rel="14">知乎</a>
+        
+                <a data-sort="0039" 
+                    href="/archive/?tag=%E7%AC%94%E8%AE%B0"
+                    title="笔记"
+                    rel="40">笔记</a>
+        
+                <a data-sort="0043" 
+                    href="/archive/?tag=Coq"
+                    title="Coq"
+                    rel="36">Coq</a>
+        
+                <a data-sort="0043" 
+                    href="/archive/?tag=SF+%28%E8%BD%AF%E4%BB%B6%E5%9F%BA%E7%A1%80%29"
+                    title="SF (软件基础)"
+                    rel="36">SF (软件基础)</a>
+        
+                <a data-sort="0057" 
+                    href="/archive/?tag=Web"
+                    title="Web"
+                    rel="22">Web</a>
+        
+                <a data-sort="0060" 
+                    href="/archive/?tag=PLF+%28%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80%E5%9F%BA%E7%A1%80%29"
+                    title="PLF (编程语言基础)"
+                    rel="19">PLF (编程语言基础)</a>
+        
+                <a data-sort="0063" 
+                    href="/archive/?tag=LF+%28%E9%80%BB%E8%BE%91%E5%9F%BA%E7%A1%80%29"
+                    title="LF (逻辑基础)"
+                    rel="16">LF (逻辑基础)</a>
+        
+                <a data-sort="0071" 
+                    href="/archive/?tag=PWA"
+                    title="PWA"
+                    rel="8">PWA</a>
+        
+                <a data-sort="0073" 
+                    href="/archive/?tag=%E4%BA%A7%E5%93%81"
+                    title="产品"
+                    rel="6">产品</a>
+        
+                <a data-sort="0073" 
+                    href="/archive/?tag=UX%2FUI"
+                    title="UX/UI"
+                    rel="6">UX/UI</a>
+        
+                <a data-sort="0075" 
+                    href="/archive/?tag=JavaScript"
+                    title="JavaScript"
+                    rel="4">JavaScript</a>
+        
+                <a data-sort="0075" 
+                    href="/archive/?tag=Meta"
+                    title="Meta"
+                    rel="4">Meta</a>
+        
+                <a data-sort="0075" 
+                    href="/archive/?tag=Slides"
+                    title="Slides"
+                    rel="4">Slides</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=%E8%AF%91"
+                    title="译"
+                    rel="3">译</a>
+        
+                <a data-sort="0076" 
+                    href="/archive/?tag=%E9%98%BF%E9%87%8C"
+                    title="阿里"
+                    rel="3">阿里</a>
+        
+                <a data-sort="0077" 
+                    href="/archive/?tag=%E5%9F%BA%E7%A1%80"
+                    title="基础"
+                    rel="2">基础</a>
+        
+                <a data-sort="0077" 
+                    href="/archive/?tag=%E5%BE%AE%E4%BF%A1"
+                    title="微信"
+                    rel="2">微信</a>
+        
+                <a data-sort="0077" 
+                    href="/archive/?tag=%E8%AE%A1%E7%AE%97%E7%90%86%E8%AE%BA"
+                    title="计算理论"
+                    rel="2">计算理论</a>
+        
+                <a data-sort="0077" 
+                    href="/archive/?tag=C"
+                    title="C"
+                    rel="2">C</a>
+        
+                <a data-sort="0077" 
+                    href="/archive/?tag=C%2B%2B"
+                    title="C++"
+                    rel="2">C++</a>
+        
+                <a data-sort="0077" 
+                    href="/archive/?tag=CSS"
+                    title="CSS"
+                    rel="2">CSS</a>
+        
+                <a data-sort="0077" 
+                    href="/archive/?tag=En"
+                    title="En"
+                    rel="2">En</a>
+        
+                <a data-sort="0077" 
+                    href="/archive/?tag=Vim"
+                    title="Vim"
+                    rel="2">Vim</a>
+        
+                <a data-sort="0077" 
+                    href="/archive/?tag=hUX+%E9%9A%8F%E6%83%B3%E5%BD%95"
+                    title="hUX 随想录"
+                    rel="2">hUX 随想录</a>
+    </div>
+</section>
+
+
+                <!-- Friends Blog -->
+                
+<hr>
+<h5>FRIENDS</h5>
+<ul class="list-inline">
+  
+  <li><a href="http://mida.re/">乱序（Midare）</a></li>
+  
+  <li><a href="https://ebnbin.dev/">Ebn Zhang</a></li>
+  
+  <li><a href="http://kunq.me">Kun Qian</a></li>
+  
+  <li><a href="https://sherrywoo.me/">Sherry Woo</a></li>
+  
+  <li><a href="http://blog.smdcn.net">SmdCn</a></li>
+  
+  <li><a href="http://tiye.me/">JiyinYiyong</a></li>
+  
+  <li><a href="http://dhong.co">DHong Say</a></li>
+  
+  <li><a href="http://ingf.github.io/">尹峰以为</a></li>
+  
+</ul>
+
+            </div>
+        </div>
+    </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+
+
+
+
+
+
+<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = "hux";
+    var disqus_identifier = "/2015/05/11/see-u-ali";
+    var disqus_url = "http://localhost:4000/2015/05/11/see-u-ali/";
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<!-- disqus 公共JS代码 end -->
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'right',
+          // icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  
+  <li>
+    <a href="https://twitter.com/huxpro">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="https://www.zhihu.com/people/huxpro">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa  fa-stack-1x fa-inverse">知</i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="http://weibo.com/huxpro">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/huxpro">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; Hux Blog 2023
+                    <br>
+                    Powered by <a href="http://huangxuan.me">Hux Blog</a> |
+                    <iframe style="margin-left: 2px; margin-bottom:-5px;" frameborder="0" scrolling="0" width="100px"
+                        height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true">
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Simple Jekyll Search -->
+<script src="/js/simple-jekyll-search.min.js"></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-49627206-1';
+    var _gaDomain = 'huangxuan.me';
+
+    // Originial
+    (function (i, s, o, g, r, a, m) {
+        i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+            (i[r].q = i[r].q || []).push(arguments)
+        }, i[r].l = 1 * new Date(); a = s.createElement(o),
+            m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+<!-- Simple Jekyll Search -->
+<script>
+    // https://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript
+    function htmlDecode(input) {
+        var e = document.createElement('textarea');
+        e.innerHTML = input;
+        // handle case of empty input
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
+
+    SimpleJekyllSearch({
+        searchInput: document.getElementById('search-input'),
+        resultsContainer: document.getElementById('search-results'),
+        json: '/search.json',
+        searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
+        noResultsText: 'No results',
+        limit: 50,
+        fuzzy: false,
+        // a hack to get escaped subtitle unescaped. for some reason, 
+        // post.subtitle w/o escape filter nuke entire search.
+        templateMiddleware: function (prop, value, template) {
+            if (prop === 'subtitle' || prop === 'title') {
+                if (value.indexOf("code")) {
+                    return htmlDecode(value);
+                } else {
+                    return value;
+                }
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        var $searchPage = $('.search-page');
+        var $searchOpen = $('.search-icon');
+        var $searchClose = $('.search-icon-close');
+        var $searchInput = $('#search-input');
+        var $body = $('body');
+
+        $searchOpen.on('click', function (e) {
+            e.preventDefault();
+            $searchPage.toggleClass('search-active');
+            var prevClasses = $body.attr('class') || '';
+            setTimeout(function () {
+                $body.addClass('no-scroll');
+            }, 400)
+
+            if ($searchPage.hasClass('search-active')) {
+                $searchClose.on('click', function (e) {
+                    e.preventDefault();
+                    $searchPage.removeClass('search-active');
+                    $body.attr('class', prevClasses);  // from closure 
+                });
+                $searchInput.focus();
+            }
+        });
+    });
+</script>
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>
