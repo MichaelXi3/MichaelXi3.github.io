@@ -1,4 +1,3 @@
-```
 
 > Note: `tags` section can also be written as `tags: [Life, Meta]`.
 
