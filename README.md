@@ -14,7 +14,7 @@ $ bundle install
 $ bundle exec jekyll serve  # alternatively, npm start
 ```
 
->
+---
 > Note: `tags` section can also be written as `tags: [Life, Meta]`.
 
 After [Rake](https://github.com/ruby/rake) is introduced, we can use the command below to simplify the post creation:
