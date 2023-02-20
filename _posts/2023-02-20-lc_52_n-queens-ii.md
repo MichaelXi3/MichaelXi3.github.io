@@ -1,11 +1,11 @@
 ---
 layout: post
-title: "LC_52: N-Queens II"
+title: "LC_52_N Queens II"
 subtitle: "LeetCode"
-date: 2022-05-18
+date: 2023-02-20
 author: "Michael Xi"
 header-img: "img/leetcode.jpg"
-tags: [Leetcode]
+tags: [LeetCode, BackTracking]
 ---
 
 # Problem
