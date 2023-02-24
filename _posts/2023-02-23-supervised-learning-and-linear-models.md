@@ -4,7 +4,7 @@ title: "Supervised Learning and Linear Models"
 subtitle: "Machine Learning"
 date: 2023-02-23
 author: "Michael Xi"
-header-img: "img/ML_bg_2.jpg"
+header-img: "img/ML_bg_2.jpeg"
 tags: [Supervised Learning, Linear Model]
 ---
 # Introduction
