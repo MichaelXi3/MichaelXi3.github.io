@@ -5,9 +5,258 @@
     <description></description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Mon, 20 Feb 2023 00:24:33 -0500</pubDate>
-    <lastBuildDate>Mon, 20 Feb 2023 00:24:33 -0500</lastBuildDate>
+    <pubDate>Thu, 23 Feb 2023 21:26:34 -0500</pubDate>
+    <lastBuildDate>Thu, 23 Feb 2023 21:26:34 -0500</lastBuildDate>
     <generator>Jekyll v4.3.2</generator>
+    
+      <item>
+        <title>Supervised Learning and Linear Models</title>
+        <description>&lt;h1 id=&quot;introduction&quot;&gt;Introduction&lt;/h1&gt;
+
+&lt;p&gt;For the beginners of machine learning like me, the first concept is always the linear models of supervised learning. In this post, I will go through some basic terms of supervised learning and several useful linear models.&lt;/p&gt;
+
+&lt;p&gt;A quick overview of concepts covered in this post:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Supervised Learning
+    &lt;ul&gt;
+      &lt;li&gt;Train and test datasets&lt;/li&gt;
+      &lt;li&gt;Model &amp;amp; hypothesis &amp;amp; hypothesis space&lt;/li&gt;
+      &lt;li&gt;Training process and prediction&lt;/li&gt;
+      &lt;li&gt;Loss function and objective function&lt;/li&gt;
+      &lt;li&gt;Model Utilities: Classification vs. regression&lt;/li&gt;
+      &lt;li&gt;Model Fitting: Overfitting vs. underfitting&lt;/li&gt;
+      &lt;li&gt;Model Fitting: Variance vs. bias trade-off&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Linear Model_1: Linear threshold units (LTUs) and Perceptron&lt;/li&gt;
+  &lt;li&gt;Linear Model_2: Logistic Regression&lt;/li&gt;
+  &lt;li&gt;Linear Model_3: Linear Discrimination Analysis (LDA)&lt;/li&gt;
+  &lt;li&gt;Model Optimization: Gradient Descent Algorithm&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h1 id=&quot;supervised-learning&quot;&gt;Supervised Learning&lt;/h1&gt;
+
+&lt;h3 id=&quot;what-is-supervised-learning&quot;&gt;&lt;strong&gt;What is supervised learning?&lt;/strong&gt;&lt;/h3&gt;
+
+&lt;p&gt;Based on boring definition, supervised learning is a type of machine learning algorithm where the model learns to make predictions by being trained on a labeled dataset. In simple terms, the model knows the input data and the corresponding correct output, and the goal is to learn the mapping between the two. Other types of machine learning are unsupervised learning and reinforcement learning.&lt;/p&gt;
+
+&lt;p&gt;Here comes the first term: &lt;strong&gt;Train and test datasets&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;The training set is used to fit the parameters of the model, such as the weights in a neural network. Machine can only see the training set during the training. The testing set is used to evaluate the performance of model, specifically, model’s ability on predicting unknown data. Example of visualizing the model’s performance includes confusion matrix, and there’re also many well-designed scores for measuring the performance, e.g. F1 score.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Confusion Matrix Example&lt;/p&gt;
+
+  &lt;p&gt;&lt;img src=&quot;https://s2.loli.net/2023/02/24/lf46UVu9BiwkWEG.png&quot; alt=&quot;Confusion Matrix Example&quot; /&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;By training dataset, we get a &lt;strong&gt;model&lt;/strong&gt; h for mapping input to output. The overall goal of surpvised learning is to find the model h that approximate function f that maps x to y, i.e. &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;f(x) = y&lt;/code&gt;. The closer that h to f, the better the model is. Model is not a mysterious blackbox, instead, it’s just a mathematical representation of a system used to make predictions. The model can range from a simple linear mapping to a highly complex one.&lt;/p&gt;
+
+&lt;p&gt;The &lt;strong&gt;hypothesis&lt;/strong&gt; is used to guide the learning process of the model, it’s a decision or assumption made by ourself. For example, for a price prediction problem, my hypthesis could be defined as linear regression models. So I will say the price prediction equation is &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;h(x) = w0 + w1 * quantity + w2 * quality_score + w3 * location&lt;/code&gt;. This equation describes all the possible hypothesis for this problem, i.e. &lt;strong&gt;hypothesis space&lt;/strong&gt;. Each hypothesis is represented as h that has specified values of weights. However, hypothesis does have limitations. What if the pricing problem cannot be predicted by linear regression? What if we need a more complex model? In this case, we need to modify the hypothesis to expand the hypothesis space.&lt;/p&gt;
+
+&lt;h3 id=&quot;training-process-and-prediction&quot;&gt;Training Process and Prediction&lt;/h3&gt;
+
+&lt;p&gt;&lt;em&gt;What is the process of model training?&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Just like us, learning is a tough process for machine as well. Learning takes thousands and millions rounds of failure and improvements. Here are the general steps of training process:&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Steps of model training:&lt;/p&gt;
+
+  &lt;p&gt;&lt;img src=&quot;https://s2.loli.net/2023/02/24/VqZWlHMspohOYPu.png&quot; alt=&quot;截屏2023-02-13 下午3.40.48.png&quot; /&gt;&lt;/p&gt;
+
+&lt;/blockquote&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;&lt;strong&gt;Data preparation&lt;/strong&gt;: prepare the training and testing dataset discussed above.&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;Model selection/Learning algorithm&lt;/strong&gt;: select appropriate algorithm for specific problem&lt;/p&gt;
+
+    &lt;blockquote&gt;
+      &lt;p&gt;In supervised learning, the most common types of learning algorithms are summarized below: (of course, there’re more algorithms)&lt;/p&gt;
+
+      &lt;p&gt;&lt;img src=&quot;https://s2.loli.net/2023/02/24/PE2Rwkif45dmGon.png&quot; alt=&quot;Untitled&quot; /&gt;&lt;/p&gt;
+
+    &lt;/blockquote&gt;
+  &lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Model Training&lt;/strong&gt;: using training dataset to train the model and obtain the optimal parameters.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Validation via Loss Function (Objective Function)&lt;/strong&gt;: using the testing dataset to evaluate the performance of the model.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Fine-tuning&lt;/strong&gt;: based on the performance of the model on the testing dataset, training will adjust the parameters for higher accuracy.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&quot;loss-function-and-objective-function&quot;&gt;Loss function and Objective function&lt;/h3&gt;
+
+&lt;p&gt;&lt;em&gt;What is loss function?&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;What are the differences between loss function and objective function?&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;By definition, a &lt;strong&gt;loss function&lt;/strong&gt; measures the difference between the predicted output of a machine learning model and the actual output. It measures how well the model predicts the output given a set of input x.&lt;/p&gt;
+
+&lt;p&gt;On the other hand, &lt;strong&gt;Objective function&lt;/strong&gt; measures the accuracy of the model’s predictions against the true output values in the training data. Objective function measures the overall model accuracy. Objective function takes sum all loss functions and average it by the number of training samples.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Equation of  Objective function and the meaning of each part:&lt;/p&gt;
+
+  &lt;p&gt;&lt;img src=&quot;https://s2.loli.net/2023/02/24/6N45JekgamVOI9R.jpg&quot; alt=&quot;IMG_06ECCE3729A3-1.jpeg&quot; /&gt;&lt;/p&gt;
+
+&lt;/blockquote&gt;
+
+&lt;h3 id=&quot;classification-vs-regression&quot;&gt;Classification vs. Regression&lt;/h3&gt;
+
+&lt;p&gt;Classification and regression describe two types of supervised learning model based on the model utility. In short:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Classification is used when target variable is categorical.
+    &lt;ul&gt;
+      &lt;li&gt;E.g. Classify this object as either a balloon or not.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Regression is used when target variable is continuous.
+    &lt;ul&gt;
+      &lt;li&gt;E.g. The target variable is the price and we want to predict it.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;model-fitting&quot;&gt;Model Fitting&lt;/h3&gt;
+
+&lt;h4 id=&quot;overfitting-vs-underfitting&quot;&gt;Overfitting vs. underfitting&lt;/h4&gt;
+
+&lt;p&gt;These are the two most common issues for a machine learning model.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;Overfitting&lt;/strong&gt; occurs if a model is trained too closely on the training set. So that the model doesn’t perform well on new data, e.g. testing set. We describe the model as not generalize well in this case.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Underfitting&lt;/strong&gt; means a model is too simple and cannot capture the mapping between input and output, i.e perform poorly on both testing and training set.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;variance-vs-bias-trade-off&quot;&gt;Variance vs. bias trade-off&lt;/h4&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;Variance&lt;/strong&gt; refers to the amount by which the predicted outcomes of a model vary for different training datasets.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Bias&lt;/strong&gt; is the difference between the average prediction of our model and the correct value which we are trying to predict.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;If a model is too complex, then the model is likely to be overfitting. In this case, the model has a high variance and low bia. Because the model predicts the training set accurately but does not generalize well on new data.&lt;/p&gt;
+
+&lt;h1 id=&quot;linear-threshold-units-ltus-and-perceptron&quot;&gt;Linear threshold units (LTUs) and Perceptron&lt;/h1&gt;
+
+&lt;h3 id=&quot;linear-threshold-units&quot;&gt;Linear threshold units&lt;/h3&gt;
+
+&lt;p&gt;This is the very first linear model used in surpervised learning. The reason we call it “linear” is because LTU performs a linear combination of inputs x and weights w. The reason behind “threshold” is that LTU uses step activation function, i.e. if reaches threshold predicted value &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;h(x) = 1&lt;/code&gt;, otherwise &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;h(x) = 0&lt;/code&gt;.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;LTU equation: w is a vector of weights, x is input, b is bias.&lt;/p&gt;
+
+  &lt;p&gt;&lt;img src=&quot;https://s2.loli.net/2023/02/24/E1SgaZG6ibRyhXu.png&quot; alt=&quot;截屏2023-02-20 下午4.11.46.png&quot; /&gt;&lt;/p&gt;
+
+&lt;/blockquote&gt;
+
+&lt;p&gt;Combining with the &lt;strong&gt;hypothesis space&lt;/strong&gt; concept we learned above, we find that the hypothesis space of LTU is Fixed Size, Deterministic, and has Continuous parameters. Also, it’s worth to note that Linear threshold units can only be used for &lt;strong&gt;binary classification&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;LTU Graphical Representation: &lt;a href=&quot;https://medium.com/@srajaninnov/introduction-to-neural-networks-11b009f1a97b&quot;&gt;Source&lt;/a&gt;&lt;/p&gt;
+
+  &lt;p&gt;&lt;img src=&quot;https://s2.loli.net/2023/02/24/ENKxjnQSChbFkH1.png&quot; alt=&quot;截屏2023-02-20 下午4.16.55.png&quot; /&gt;&lt;/p&gt;
+
+&lt;/blockquote&gt;
+
+&lt;h3 id=&quot;perceptron&quot;&gt;Perceptron&lt;/h3&gt;
+
+&lt;p&gt;Perceptron is simply one or multiple LTUs in one layer. Each LTU can be used for binary classification. By having multiple LTUs in one layer, i.e. perceptron, we can perform multi-class classification. The &lt;strong&gt;Loss function&lt;/strong&gt; used by perceptron is hinge-loss function, so that gradient descent optimization is feasible.&lt;/p&gt;
+
+&lt;p&gt;Perceptron linear model has a relatively simple implementation, thus faster training speed and better intepretability. However, since perceptron is a linear model, so the data must be linearly separable. Perceptron may also overfit if there’re too many input features. For non-linearly separable data, we need to use non-linear model, such as multi-layer perceptron and decision tree.&lt;/p&gt;
+
+&lt;h1 id=&quot;logistic-regression&quot;&gt;Logistic Regression&lt;/h1&gt;
+
+&lt;p&gt;Unlike perceptron learns the direct mapping &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;y = f(x)&lt;/code&gt;, logistic regression learns the &lt;strong&gt;conditional probability&lt;/strong&gt; &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;P(y|x)&lt;/code&gt;, i.e. given x, what is the probability of y (Learning a distribution). The learning goal is to find the most likely distribution given the training data.&lt;/p&gt;
+
+&lt;h3 id=&quot;sigmoid-activation-function&quot;&gt;Sigmoid Activation Function&lt;/h3&gt;
+
+&lt;p&gt;Logistic regression uses &lt;strong&gt;sigmoid activation function&lt;/strong&gt; to map the dependent variable y_hat into values between 0 and 1, so that this value can be interpreted as probability. Also note that each feature must be independent in logistic regression model.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://s2.loli.net/2023/02/24/neA9yJTbFNUfxX1.png&quot; alt=&quot;Untitled&quot; /&gt;&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;The conditional probability in mathematical formula is:&lt;/p&gt;
+
+  &lt;p&gt;&lt;img src=&quot;https://s2.loli.net/2023/02/24/yUfw4lVZ1pBa9ez.jpg&quot; alt=&quot;IMG_60752349717F-1.jpeg&quot; /&gt;&lt;/p&gt;
+
+  &lt;p&gt;Sigmoid function ranges from 0 to 1, and it introduces non-linearity to model. Also, exp is differentiable and easy to learn, which also handles noisy labels naturally.&lt;/p&gt;
+
+&lt;/blockquote&gt;
+
+&lt;h3 id=&quot;cross-entropy-loss&quot;&gt;Cross Entropy Loss&lt;/h3&gt;
+
+&lt;p&gt;Logistic regression model uses &lt;strong&gt;cross entropy loss&lt;/strong&gt; function to measure the accuracy of model. Cross entropy measures the difference between predicted distribution and actual distribution.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://s2.loli.net/2023/02/24/dqSVfc5DpTbRsto.png&quot; alt=&quot;截屏2023-02-22 下午9.55.49.png&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;softmax-activation-function&quot;&gt;Softmax Activation Function&lt;/h3&gt;
+
+&lt;p&gt;Logistic regression outputs the probabilty of input a belongs to certain class, which is a binary classifcation. But what if we want to use &lt;strong&gt;multi-class classification&lt;/strong&gt;? In this case, you need to use &lt;strong&gt;softmax&lt;/strong&gt; activation function at the output layer of neural network.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Neural network implementation&lt;/p&gt;
+
+  &lt;p&gt;&lt;img src=&quot;https://s2.loli.net/2023/02/24/mw6DoO7xUKJBY3g.jpg&quot; alt=&quot;Untitled&quot; /&gt;&lt;/p&gt;
+
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Softmax function&lt;/p&gt;
+
+  &lt;p&gt;&lt;img src=&quot;https://s2.loli.net/2023/02/24/Lhy1qOGcgVQUpRE.png&quot; alt=&quot;Untitled&quot; /&gt;&lt;/p&gt;
+
+&lt;/blockquote&gt;
+
+&lt;p&gt;Overall, logistic regression is relatively easy to implement and highly interpretable. But logistic regression is sensitive to outliers and requires features to be independent.&lt;/p&gt;
+
+&lt;h1 id=&quot;linear-discrimination-analysis&quot;&gt;Linear Discrimination Analysis&lt;/h1&gt;
+
+&lt;p&gt;The goal of LDA is to learn the joint distribution &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;p(x, y)&lt;/code&gt; between input features and output. It’s a statistical technique used to find a linear combination of features that best separates or discriminates between two or more classes. The separation is illustrated by the graph below.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Two classes of data are separated by a line&lt;/p&gt;
+
+  &lt;p&gt;&lt;img src=&quot;https://s2.loli.net/2023/02/24/5eSTCt9hobu8Rrg.png&quot; alt=&quot;截屏2023-02-23 下午8.09.14.png&quot; /&gt;&lt;/p&gt;
+
+&lt;/blockquote&gt;
+
+&lt;p&gt;Unlike other linear model, LDA has a strong &lt;strong&gt;assumption&lt;/strong&gt; to data, which is: &lt;strong&gt;Data are normally distributed&lt;/strong&gt;, or in another word, following the Gaussian distribution. Also, the classes defined must have same covariance matrix.&lt;/p&gt;
+
+&lt;p&gt;Linear discrimination analysis will calculate and give a &lt;strong&gt;Linear discriminant function&lt;/strong&gt; that separates classes. That means LDA does not need training, instead LDA is just calculations. This function is derived using class means and covariances of input variables. The goal of this function is to maximize the ratio of the between-class variance to the within-class variance, so that classes are separated in the best possible way. There’re two rules of classification that LDA can use, one is &lt;strong&gt;Bayes discriminant rule&lt;/strong&gt; and the other is &lt;strong&gt;Maximum likelihood rule&lt;/strong&gt;. You can view LDA  as computing &lt;strong&gt;Mahalanobis Distance&lt;/strong&gt; for all classes and then classifying x according to which mean it’s closest to.&lt;/p&gt;
+
+&lt;p&gt;LDA is a &lt;strong&gt;generative model&lt;/strong&gt; because it can generate new data based on the model. On the other hand, logistic regression and perceptron are predictive models because they can only make predictions. If the generative model is correct, LDA gives highest accuracy. It also requires less data to get the model compared to other models like logistic regression. Meanwhile, LDA is robust to missing values and noise. However, LDA has strong model assumption, i.e. data must be normally distributed. If the assumption is violated, model will perform poorly.&lt;/p&gt;
+
+&lt;h1 id=&quot;model-optimization-gradient-descent-algorithm&quot;&gt;Model Optimization: Gradient Descent Algorithm&lt;/h1&gt;
+
+&lt;p&gt;The reason we use gradient descent is to find the optimal parameters of model. There are three types of Gradient descent algorithms: &lt;strong&gt;Batch GD, mini-Batch GD, and Stochastic GD.&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Batch gradient descent works on the entire training dataset, while stochastic gradient descent works on one random sample at a time, and mini-batch gradient descent works on a group of sample each time.&lt;/p&gt;
+
+&lt;p&gt;Thus batch gradient descent requires a large amount of computational resources. Meanwhile, Batch gradient descent converges more smoothly but more slowly compared to the other two. The convergence curves are compared below.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Convergence cureve between GD and Stochastic GD&lt;/p&gt;
+
+  &lt;p&gt;&lt;img src=&quot;https://s2.loli.net/2023/02/24/o4JNPKbT1Lau7rn.jpg&quot; alt=&quot;IMG_1051.jpg&quot; /&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Stochastic GD and mini-batch GD have better generalization compared to batch GD. However, they are more likely to introduce noise during convergence. Overall, there are pros and cons to these three gradient descent methods, and we must make trade-offs when making decisions.&lt;/p&gt;
+
+&lt;p&gt;Keep Learning! : )&lt;/p&gt;
+</description>
+        <pubDate>Thu, 23 Feb 2023 00:00:00 -0500</pubDate>
+        <link>http://localhost:4000/2023/02/23/supervised-learning-and-linear-models/</link>
+        <guid isPermaLink="true">http://localhost:4000/2023/02/23/supervised-learning-and-linear-models/</guid>
+        
+        <category>Supervised Learning</category>
+        
+        <category>Linear Model</category>
+        
+        
+      </item>
     
       <item>
         <title>LC_52_N Queens II</title>

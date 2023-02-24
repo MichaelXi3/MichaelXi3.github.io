@@ -12,28 +12,28 @@
 
     <!-- Open Graph -->
     <meta property="og:title"
-        content="LC_52_N Queens II - Sphere | Xi">
+        content="Supervised Learning and Linear Models - Sphere | Xi">
     
     <meta property="og:type" content="article">
-    <meta property="og:description" content="Problem
+    <meta property="og:description" content="Introduction
 ">
     
-    <meta property="article:published_time" content=" 2023-02-20T00:00:00Z">
+    <meta property="article:published_time" content=" 2023-02-23T00:00:00Z">
     
     
     <meta property="article:author" content="Michael Xi">
     
     
-    <meta property="article:tag" content="LeetCode">
+    <meta property="article:tag" content="Supervised Learning">
     
-    <meta property="article:tag" content="BackTracking">
+    <meta property="article:tag" content="Linear Model">
     
     
     <meta property="og:image" content="http://localhost:4000">
-    <meta property="og:url" content="http://localhost:4000/2023/02/20/lc_52_n-queens-ii/">
+    <meta property="og:url" content="http://localhost:4000/2023/02/23/supervised-learning-and-linear-models/">
     <meta property="og:site_name" content="Sphere | Xi">
 
-    <title>LC_52_N Queens II - Sphere | Xi</title>
+    <title>Supervised Learning and Linear Models - Sphere | Xi</title>
 
     <!-- Web App Manifest -->
     <link rel="manifest" href="/pwa/manifest.json">
@@ -42,7 +42,7 @@
     <link rel="shortcut icon" href="/img/favicon.ico">
 
     <!-- Canonical URL -->
-    <link rel="canonical" href="http://localhost:4000/2023/02/20/lc_52_n-queens-ii/">
+    <link rel="canonical" href="http://localhost:4000/2023/02/23/supervised-learning-and-linear-models/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href=" /css/bootstrap.min.css">
@@ -208,7 +208,7 @@
 
     <!-- Image to hack wechat -->
 <!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
-<!-- <img src="/img/leetcode.jpg" width="0" height="0"> -->
+<!-- <img src="/img/ML_bg.jpg" width="0" height="0"> -->
 
 <!-- Post Header -->
 
@@ -217,7 +217,7 @@
 <style type="text/css">
     header.intro-header{
         position: relative;
-        background-image: url('/img/leetcode.jpg');
+        background-image: url('/img/ML_bg.jpg');
         background: ;
     }
 
@@ -237,15 +237,15 @@
                 <div class="post-heading">
                     <div class="tags">
                         
-                        <a class="tag" href="/archive/?tag=LeetCode" title="LeetCode">LeetCode</a>
+                        <a class="tag" href="/archive/?tag=Supervised+Learning" title="Supervised Learning">Supervised Learning</a>
                         
-                        <a class="tag" href="/archive/?tag=BackTracking" title="BackTracking">BackTracking</a>
+                        <a class="tag" href="/archive/?tag=Linear+Model" title="Linear Model">Linear Model</a>
                         
                     </div>
-                    <h1>LC_52_N Queens II</h1>
+                    <h1>Supervised Learning and Linear Models</h1>
                     
-                    <h2 class="subheading">LeetCode</h2>
-                    <span class="meta">Posted by Michael Xi on February 20, 2023</span>
+                    <h2 class="subheading">Machine Learning</h2>
+                    <span class="meta">Posted by Michael Xi on February 23, 2023</span>
                 </div>
             </div>
         </div>
@@ -272,132 +272,253 @@
                 <!-- Multi-Lingual -->
                 
 
-				<h1 id="problem">Problem</h1>
+				<h1 id="introduction">Introduction</h1>
+
+<p>For the beginners of machine learning like me, the first concept is always the linear models of supervised learning. In this post, I will go through some basic terms of supervised learning and several useful linear models.</p>
+
+<p>A quick overview of concepts covered in this post:</p>
+
+<ul>
+  <li>Supervised Learning
+    <ul>
+      <li>Train and test datasets</li>
+      <li>Model &amp; hypothesis &amp; hypothesis space</li>
+      <li>Training process and prediction</li>
+      <li>Loss function and objective function</li>
+      <li>Model Utilities: Classification vs. regression</li>
+      <li>Model Fitting: Overfitting vs. underfitting</li>
+      <li>Model Fitting: Variance vs. bias trade-off</li>
+    </ul>
+  </li>
+  <li>Linear Model_1: Linear threshold units (LTUs) and Perceptron</li>
+  <li>Linear Model_2: Logistic Regression</li>
+  <li>Linear Model_3: Linear Discrimination Analysis (LDA)</li>
+  <li>Model Optimization: Gradient Descent Algorithm</li>
+</ul>
+
+<h1 id="supervised-learning">Supervised Learning</h1>
+
+<h3 id="what-is-supervised-learning"><strong>What is supervised learning?</strong></h3>
+
+<p>Based on boring definition, supervised learning is a type of machine learning algorithm where the model learns to make predictions by being trained on a labeled dataset. In simple terms, the model knows the input data and the corresponding correct output, and the goal is to learn the mapping between the two. Other types of machine learning are unsupervised learning and reinforcement learning.</p>
+
+<p>Here comes the first term: <strong>Train and test datasets</strong></p>
+
+<p>The training set is used to fit the parameters of the model, such as the weights in a neural network. Machine can only see the training set during the training. The testing set is used to evaluate the performance of model, specifically, model’s ability on predicting unknown data. Example of visualizing the model’s performance includes confusion matrix, and there’re also many well-designed scores for measuring the performance, e.g. F1 score.</p>
 
 <blockquote>
-  <p>Queen 是一道经典的 <strong>BackTracking</strong> (回溯)题目</p>
+  <p>Confusion Matrix Example</p>
+
+  <p><img src="https://s2.loli.net/2023/02/24/lf46UVu9BiwkWEG.png" alt="Confusion Matrix Example" /></p>
+</blockquote>
+
+<p>By training dataset, we get a <strong>model</strong> h for mapping input to output. The overall goal of surpvised learning is to find the model h that approximate function f that maps x to y, i.e. <code class="language-plaintext highlighter-rouge">f(x) = y</code>. The closer that h to f, the better the model is. Model is not a mysterious blackbox, instead, it’s just a mathematical representation of a system used to make predictions. The model can range from a simple linear mapping to a highly complex one.</p>
+
+<p>The <strong>hypothesis</strong> is used to guide the learning process of the model, it’s a decision or assumption made by ourself. For example, for a price prediction problem, my hypthesis could be defined as linear regression models. So I will say the price prediction equation is <code class="language-plaintext highlighter-rouge">h(x) = w0 + w1 * quantity + w2 * quality_score + w3 * location</code>. This equation describes all the possible hypothesis for this problem, i.e. <strong>hypothesis space</strong>. Each hypothesis is represented as h that has specified values of weights. However, hypothesis does have limitations. What if the pricing problem cannot be predicted by linear regression? What if we need a more complex model? In this case, we need to modify the hypothesis to expand the hypothesis space.</p>
+
+<h3 id="training-process-and-prediction">Training Process and Prediction</h3>
+
+<p><em>What is the process of model training?</em></p>
+
+<p>Just like us, learning is a tough process for machine as well. Learning takes thousands and millions rounds of failure and improvements. Here are the general steps of training process:</p>
+
+<blockquote>
+  <p>Steps of model training:</p>
+
+  <p><img src="https://s2.loli.net/2023/02/24/VqZWlHMspohOYPu.png" alt="截屏2023-02-13 下午3.40.48.png" /></p>
 
 </blockquote>
 
-<p><img src="https://s2.loli.net/2023/02/17/aKiz32unby7qUDQ.png" alt="截屏2022-05-18 下午11.03.31.png" /></p>
+<ol>
+  <li><strong>Data preparation</strong>: prepare the training and testing dataset discussed above.</li>
+  <li>
+    <p><strong>Model selection/Learning algorithm</strong>: select appropriate algorithm for specific problem</p>
 
-<h1 id="thoughts">Thoughts</h1>
+    <blockquote>
+      <p>In supervised learning, the most common types of learning algorithms are summarized below: (of course, there’re more algorithms)</p>
+
+      <p><img src="https://s2.loli.net/2023/02/24/PE2Rwkif45dmGon.png" alt="Untitled" /></p>
+
+    </blockquote>
+  </li>
+  <li><strong>Model Training</strong>: using training dataset to train the model and obtain the optimal parameters.</li>
+  <li><strong>Validation via Loss Function (Objective Function)</strong>: using the testing dataset to evaluate the performance of the model.</li>
+  <li><strong>Fine-tuning</strong>: based on the performance of the model on the testing dataset, training will adjust the parameters for higher accuracy.</li>
+</ol>
+
+<h3 id="loss-function-and-objective-function">Loss function and Objective function</h3>
+
+<p><em>What is loss function?</em></p>
+
+<p><em>What are the differences between loss function and objective function?</em></p>
+
+<p>By definition, a <strong>loss function</strong> measures the difference between the predicted output of a machine learning model and the actual output. It measures how well the model predicts the output given a set of input x.</p>
+
+<p>On the other hand, <strong>Objective function</strong> measures the accuracy of the model’s predictions against the true output values in the training data. Objective function measures the overall model accuracy. Objective function takes sum all loss functions and average it by the number of training samples.</p>
 
 <blockquote>
-  <p>回溯的本质上是暴力枚举，但是回溯可以 identify 不符合条件的 branches 并返回上一步后继续尝试其他的。</p>
+  <p>Equation of  Objective function and the meaning of each part:</p>
+
+  <p><img src="https://s2.loli.net/2023/02/24/6N45JekgamVOI9R.jpg" alt="IMG_06ECCE3729A3-1.jpeg" /></p>
+
 </blockquote>
 
-<p>回溯一般会是 For loop of recursions，每一个 Rxecursion 都是在 making a choice，在做选择尝试时我们还需要 constraints，也就是要 identify 不符合条件的情况，以及 Goal，也就是 recursion 的 base case。总结来说，对于回溯，我们需要 make a choice, with contraints, to a Final Goal。</p>
+<h3 id="classification-vs-regression">Classification vs. Regression</h3>
+
+<p>Classification and regression describe two types of supervised learning model based on the model utility. In short:</p>
+
+<ul>
+  <li>Classification is used when target variable is categorical.
+    <ul>
+      <li>E.g. Classify this object as either a balloon or not.</li>
+    </ul>
+  </li>
+  <li>Regression is used when target variable is continuous.
+    <ul>
+      <li>E.g. The target variable is the price and we want to predict it.</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="model-fitting">Model Fitting</h3>
+
+<h4 id="overfitting-vs-underfitting">Overfitting vs. underfitting</h4>
+
+<p>These are the two most common issues for a machine learning model.</p>
+
+<ul>
+  <li><strong>Overfitting</strong> occurs if a model is trained too closely on the training set. So that the model doesn’t perform well on new data, e.g. testing set. We describe the model as not generalize well in this case.</li>
+  <li><strong>Underfitting</strong> means a model is too simple and cannot capture the mapping between input and output, i.e perform poorly on both testing and training set.</li>
+</ul>
+
+<h4 id="variance-vs-bias-trade-off">Variance vs. bias trade-off</h4>
+
+<ul>
+  <li><strong>Variance</strong> refers to the amount by which the predicted outcomes of a model vary for different training datasets.</li>
+  <li><strong>Bias</strong> is the difference between the average prediction of our model and the correct value which we are trying to predict.</li>
+</ul>
+
+<p>If a model is too complex, then the model is likely to be overfitting. In this case, the model has a high variance and low bia. Because the model predicts the training set accurately but does not generalize well on new data.</p>
+
+<h1 id="linear-threshold-units-ltus-and-perceptron">Linear threshold units (LTUs) and Perceptron</h1>
+
+<h3 id="linear-threshold-units">Linear threshold units</h3>
+
+<p>This is the very first linear model used in surpervised learning. The reason we call it “linear” is because LTU performs a linear combination of inputs x and weights w. The reason behind “threshold” is that LTU uses step activation function, i.e. if reaches threshold predicted value <code class="language-plaintext highlighter-rouge">h(x) = 1</code>, otherwise <code class="language-plaintext highlighter-rouge">h(x) = 0</code>.</p>
+
 <blockquote>
+  <p>LTU equation: w is a vector of weights, x is input, b is bias.</p>
+
+  <p><img src="https://s2.loli.net/2023/02/24/E1SgaZG6ibRyhXu.png" alt="截屏2023-02-20 下午4.11.46.png" /></p>
 
 </blockquote>
 
-<p>👨🏻‍💻 本题中我们有一个 n*n 的棋盘，我们使用回溯去尝试所有可能的情况，并记录下行得通的情况的数量。具体来说，我们从棋盘的每一层 row 入手，并尝试该 row 的全部columns，层层枚举打开像一棵树。在枚举的过程中，我们会发现有些情况会导致两个 Queen 相吃，违反条件，故终止。最后剩下的情况就都是符合条件的 situations。</p>
+<p>Combining with the <strong>hypothesis space</strong> concept we learned above, we find that the hypothesis space of LTU is Fixed Size, Deterministic, and has Continuous parameters. Also, it’s worth to note that Linear threshold units can only be used for <strong>binary classification</strong>.</p>
 
-<p><img src="https://s2.loli.net/2023/02/17/BDw9hEs28pAW5Jx.png" alt="Untitled" /></p>
+<blockquote>
+  <p>LTU Graphical Representation: <a href="https://medium.com/@srajaninnov/introduction-to-neural-networks-11b009f1a97b">Source</a></p>
 
-<h1 id="code">Code</h1>
+  <p><img src="https://s2.loli.net/2023/02/24/ENKxjnQSChbFkH1.png" alt="截屏2023-02-20 下午4.16.55.png" /></p>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
-33
-34
-35
-36
-37
-38
-39
-</pre></td><td class="rouge-code"><pre><span class="kd">class</span> <span class="nc">Solution</span> <span class="o">{</span>
+</blockquote>
 
-    <span class="c1">// Main method: driver method</span>
-    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">totalNQueens</span><span class="o">(</span><span class="kt">int</span> <span class="n">n</span><span class="o">)</span> <span class="o">{</span>
-        <span class="nc">ArrayList</span><span class="o">&lt;</span><span class="nc">ArrayList</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;&gt;</span> <span class="n">res</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;&gt;();</span>  <span class="c1">// All possible outcomes</span>
-        <span class="nc">ArrayList</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;</span> <span class="n">colPlacement</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;&gt;();</span> <span class="c1">// Queen Placement at each row</span>
-        <span class="c1">// Parameters: Dimension of Board ➕ Current rows we're solving ➕ List of each column's Placement ➕ List of res</span>
-        <span class="n">backTrack</span><span class="o">(</span><span class="n">n</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">colPlacement</span><span class="o">,</span> <span class="n">res</span><span class="o">);</span>
-        <span class="k">return</span> <span class="n">res</span><span class="o">.</span><span class="na">size</span><span class="o">();</span>
-    <span class="o">}</span>
+<h3 id="perceptron">Perceptron</h3>
 
-    <span class="c1">// BackTracking by rows!</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">backTrack</span><span class="o">(</span><span class="kt">int</span> <span class="n">dim</span><span class="o">,</span> <span class="kt">int</span> <span class="n">currentRow</span><span class="o">,</span> <span class="nc">ArrayList</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;</span> <span class="n">colPlacement</span><span class="o">,</span> <span class="nc">ArrayList</span><span class="o">&lt;</span><span class="nc">ArrayList</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;&gt;</span> <span class="n">res</span><span class="o">)</span> <span class="o">{</span>
-        <span class="c1">// Base case of Recursion (Finish_Line)</span>
-        <span class="k">if</span> <span class="o">(</span><span class="n">currentRow</span> <span class="o">==</span> <span class="n">dim</span><span class="o">)</span> <span class="o">{</span>
-            <span class="n">res</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;&gt;(</span><span class="n">colPlacement</span><span class="o">));</span>
-        <span class="o">}</span>
-        <span class="c1">// For loop of each column</span>
-        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">col</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">col</span><span class="o">&lt;</span><span class="n">dim</span><span class="o">;</span> <span class="n">col</span><span class="o">++)</span> <span class="o">{</span>
-            <span class="n">colPlacement</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">col</span><span class="o">);</span>
-            <span class="k">if</span> <span class="o">(</span><span class="n">isValid</span><span class="o">(</span><span class="n">colPlacement</span><span class="o">,</span> <span class="n">currentRow</span><span class="o">))</span> <span class="o">{</span>
-                <span class="n">backTrack</span><span class="o">(</span><span class="n">dim</span><span class="o">,</span> <span class="n">currentRow</span> <span class="o">+</span> <span class="mi">1</span><span class="o">,</span> <span class="n">colPlacement</span><span class="o">,</span> <span class="n">res</span><span class="o">);</span>
-            <span class="o">}</span>
-            <span class="c1">// If not a valid column choice at current row, remove the last input</span>
-            <span class="n">colPlacement</span><span class="o">.</span><span class="na">remove</span><span class="o">(</span><span class="n">colPlacement</span><span class="o">.</span><span class="na">size</span><span class="o">()</span> <span class="o">-</span> <span class="mi">1</span><span class="o">);</span>
-        <span class="o">}</span>
-    <span class="o">}</span>
+<p>Perceptron is simply one or multiple LTUs in one layer. Each LTU can be used for binary classification. By having multiple LTUs in one layer, i.e. perceptron, we can perform multi-class classification. The <strong>Loss function</strong> used by perceptron is hinge-loss function, so that gradient descent optimization is feasible.</p>
 
-    <span class="c1">// Helper method: determine valid position</span>
-    <span class="kd">private</span> <span class="kd">static</span> <span class="kt">boolean</span> <span class="nf">isValid</span><span class="o">(</span><span class="nc">ArrayList</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;</span> <span class="n">colPlacement</span><span class="o">,</span> <span class="kt">int</span> <span class="n">currentRow</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">currentRow</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
-            <span class="kt">int</span> <span class="n">diff</span> <span class="o">=</span> <span class="nc">Math</span><span class="o">.</span><span class="na">abs</span><span class="o">(</span><span class="n">colPlacement</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">i</span><span class="o">)</span> <span class="o">-</span> <span class="n">colPlacement</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">currentRow</span><span class="o">));</span>
-            <span class="k">if</span> <span class="o">(</span><span class="n">diff</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">||</span> <span class="n">diff</span> <span class="o">==</span> <span class="n">currentRow</span> <span class="o">-</span> <span class="n">i</span><span class="o">)</span> <span class="o">{</span>
-                <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
-            <span class="o">}</span>
-        <span class="o">}</span>
-        <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
-    <span class="o">}</span>
-<span class="o">}</span>
-</pre></td></tr></tbody></table></code></pre></div></div>
+<p>Perceptron linear model has a relatively simple implementation, thus faster training speed and better intepretability. However, since perceptron is a linear model, so the data must be linearly separable. Perceptron may also overfit if there’re too many input features. For non-linearly separable data, we need to use non-linear model, such as multi-layer perceptron and decision tree.</p>
 
-<p><img src="https://s2.loli.net/2023/02/17/M7rXpQHAKlSuWGx.png" alt="截屏2022-05-18 下午11.15.54.png" /></p>
+<h1 id="logistic-regression">Logistic Regression</h1>
+
+<p>Unlike perceptron learns the direct mapping <code class="language-plaintext highlighter-rouge">y = f(x)</code>, logistic regression learns the <strong>conditional probability</strong> <code class="language-plaintext highlighter-rouge">P(y|x)</code>, i.e. given x, what is the probability of y (Learning a distribution). The learning goal is to find the most likely distribution given the training data.</p>
+
+<h3 id="sigmoid-activation-function">Sigmoid Activation Function</h3>
+
+<p>Logistic regression uses <strong>sigmoid activation function</strong> to map the dependent variable y_hat into values between 0 and 1, so that this value can be interpreted as probability. Also note that each feature must be independent in logistic regression model.</p>
+
+<p><img src="https://s2.loli.net/2023/02/24/neA9yJTbFNUfxX1.png" alt="Untitled" /></p>
+
+<blockquote>
+  <p>The conditional probability in mathematical formula is:</p>
+
+  <p><img src="https://s2.loli.net/2023/02/24/yUfw4lVZ1pBa9ez.jpg" alt="IMG_60752349717F-1.jpeg" /></p>
+
+  <p>Sigmoid function ranges from 0 to 1, and it introduces non-linearity to model. Also, exp is differentiable and easy to learn, which also handles noisy labels naturally.</p>
+
+</blockquote>
+
+<h3 id="cross-entropy-loss">Cross Entropy Loss</h3>
+
+<p>Logistic regression model uses <strong>cross entropy loss</strong> function to measure the accuracy of model. Cross entropy measures the difference between predicted distribution and actual distribution.</p>
+
+<p><img src="https://s2.loli.net/2023/02/24/dqSVfc5DpTbRsto.png" alt="截屏2023-02-22 下午9.55.49.png" /></p>
+
+<h3 id="softmax-activation-function">Softmax Activation Function</h3>
+
+<p>Logistic regression outputs the probabilty of input a belongs to certain class, which is a binary classifcation. But what if we want to use <strong>multi-class classification</strong>? In this case, you need to use <strong>softmax</strong> activation function at the output layer of neural network.</p>
+
+<blockquote>
+  <p>Neural network implementation</p>
+
+  <p><img src="https://s2.loli.net/2023/02/24/mw6DoO7xUKJBY3g.jpg" alt="Untitled" /></p>
+
+</blockquote>
+
+<blockquote>
+  <p>Softmax function</p>
+
+  <p><img src="https://s2.loli.net/2023/02/24/Lhy1qOGcgVQUpRE.png" alt="Untitled" /></p>
+
+</blockquote>
+
+<p>Overall, logistic regression is relatively easy to implement and highly interpretable. But logistic regression is sensitive to outliers and requires features to be independent.</p>
+
+<h1 id="linear-discrimination-analysis">Linear Discrimination Analysis</h1>
+
+<p>The goal of LDA is to learn the joint distribution <code class="language-plaintext highlighter-rouge">p(x, y)</code> between input features and output. It’s a statistical technique used to find a linear combination of features that best separates or discriminates between two or more classes. The separation is illustrated by the graph below.</p>
+
+<blockquote>
+  <p>Two classes of data are separated by a line</p>
+
+  <p><img src="https://s2.loli.net/2023/02/24/5eSTCt9hobu8Rrg.png" alt="截屏2023-02-23 下午8.09.14.png" /></p>
+
+</blockquote>
+
+<p>Unlike other linear model, LDA has a strong <strong>assumption</strong> to data, which is: <strong>Data are normally distributed</strong>, or in another word, following the Gaussian distribution. Also, the classes defined must have same covariance matrix.</p>
+
+<p>Linear discrimination analysis will calculate and give a <strong>Linear discriminant function</strong> that separates classes. That means LDA does not need training, instead LDA is just calculations. This function is derived using class means and covariances of input variables. The goal of this function is to maximize the ratio of the between-class variance to the within-class variance, so that classes are separated in the best possible way. There’re two rules of classification that LDA can use, one is <strong>Bayes discriminant rule</strong> and the other is <strong>Maximum likelihood rule</strong>. You can view LDA  as computing <strong>Mahalanobis Distance</strong> for all classes and then classifying x according to which mean it’s closest to.</p>
+
+<p>LDA is a <strong>generative model</strong> because it can generate new data based on the model. On the other hand, logistic regression and perceptron are predictive models because they can only make predictions. If the generative model is correct, LDA gives highest accuracy. It also requires less data to get the model compared to other models like logistic regression. Meanwhile, LDA is robust to missing values and noise. However, LDA has strong model assumption, i.e. data must be normally distributed. If the assumption is violated, model will perform poorly.</p>
+
+<h1 id="model-optimization-gradient-descent-algorithm">Model Optimization: Gradient Descent Algorithm</h1>
+
+<p>The reason we use gradient descent is to find the optimal parameters of model. There are three types of Gradient descent algorithms: <strong>Batch GD, mini-Batch GD, and Stochastic GD.</strong></p>
+
+<p>Batch gradient descent works on the entire training dataset, while stochastic gradient descent works on one random sample at a time, and mini-batch gradient descent works on a group of sample each time.</p>
+
+<p>Thus batch gradient descent requires a large amount of computational resources. Meanwhile, Batch gradient descent converges more smoothly but more slowly compared to the other two. The convergence curves are compared below.</p>
+
+<blockquote>
+  <p>Convergence cureve between GD and Stochastic GD</p>
+
+  <p><img src="https://s2.loli.net/2023/02/24/o4JNPKbT1Lau7rn.jpg" alt="IMG_1051.jpg" /></p>
+</blockquote>
+
+<p>Stochastic GD and mini-batch GD have better generalization compared to batch GD. However, they are more likely to introduce noise during convergence. Overall, there are pros and cons to these three gradient descent methods, and we must make trade-offs when making decisions.</p>
+
+<p>Keep Learning! : )</p>
 
 
                 <hr style="visibility: hidden;">
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/2023/02/16/FirebaseMTM/" data-toggle="tooltip" data-placement="top" title="Firestore Many-to-many Relationship - Blog Taging">
+                        <a href="/2023/02/20/lc_52_n-queens-ii/" data-toggle="tooltip" data-placement="top" title="LC_52_N Queens II">
                         Previous<br>
-                        <span>Firestore Many-to-many Relationship - Blog Taging</span>
+                        <span>LC_52_N Queens II</span>
                         </a>
                     </li>
                     
-                    
-                    <li class="next">
-                        <a href="/2023/02/23/supervised-learning-and-linear-models/" data-toggle="tooltip" data-placement="top" title="Supervised Learning and Linear Models">
-                        Next<br>
-                        <span>Supervised Learning and Linear Models</span>
-                        </a>
-                    </li>
                     
                 </ul>
                 <hr style="visibility: hidden;">
@@ -486,8 +607,8 @@
 <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES * * */
     var disqus_shortname = "https-michaelxi3-github-io";
-    var disqus_identifier = "/2023/02/20/lc_52_n-queens-ii";
-    var disqus_url = "http://localhost:4000/2023/02/20/lc_52_n-queens-ii/";
+    var disqus_identifier = "/2023/02/23/supervised-learning-and-linear-models";
+    var disqus_url = "http://localhost:4000/2023/02/23/supervised-learning-and-linear-models/";
 
     (function() {
         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

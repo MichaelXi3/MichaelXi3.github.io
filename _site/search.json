@@ -1,6 +1,14 @@
 [
   
     {
+      "title"    : "Supervised Learning and Linear Models",
+      "subtitle" : "Machine Learning",
+      "tags"     : "Supervised Learning, Linear Model",
+      "url"      : "/2023/02/23/supervised-learning-and-linear-models/",
+      "date"     : "2023-02-23 00:00:00 -0500"
+    } ,
+  
+    {
       "title"    : "LC_52_N Queens II",
       "subtitle" : "LeetCode",
       "tags"     : "LeetCode, BackTracking",
