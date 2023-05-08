@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="theme-color" content="#000000">
+
+    <!-- Open Graph -->
+    <meta property="og:title"
+        content="Building Android Cuttlefish with a Customized Kernel: A Step by Step Guide - Sphere | Xi">
+    
+    <meta property="og:type" content="article">
+    <meta property="og:description" content="Cuttlefish Introduction
+">
+    
+    <meta property="article:published_time" content=" 2023-05-08T00:00:00Z">
+    
+    
+    <meta property="article:author" content="Michael Xi">
+    
+    
+    <meta property="article:tag" content="Android">
+    
+    <meta property="article:tag" content="System">
+    
+    <meta property="article:tag" content="Android Cuttlefish">
+    
+    
+    <meta property="og:image" content="http://localhost:4000">
+    <meta property="og:url" content="http://localhost:4000/2023/05/08/building-android-cuttlefish-with-a-customized-kernel-a-step-by-step-guide/">
+    <meta property="og:site_name" content="Sphere | Xi">
+
+    <title>Building Android Cuttlefish with a Customized Kernel: A Step by Step Guide - Sphere | Xi</title>
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/pwa/manifest.json">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="http://localhost:4000/2023/05/08/building-android-cuttlefish-with-a-customized-kernel-a-step-by-step-guide/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href=" /css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href=" /css/hux-blog.min.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet"
+        type="text/css">
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+
+    <!-- Google AdSense -->
+    <script data-ad-client="ca-pub-6487568398225121" async
+        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">Sphere</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div id="huxblog_navbar">
+                <div class="navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="/">Home</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/archive/">Archive</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li class="search-icon">
+                            <a href="javascript:void(0)">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <script>
+        // Drop Bootstarp low-performance Navbar
+        // Use customize navbar with high-quality material design animation
+        // in high-perf jank-free CSS3 implementation
+        var $body = document.body;
+        var $toggle = document.querySelector('.navbar-toggle');
+        var $navbar = document.querySelector('#huxblog_navbar');
+        var $collapse = document.querySelector('.navbar-collapse');
+
+        var __HuxNav__ = {
+            close: function () {
+                $navbar.className = " ";
+                // wait until animation end.
+                setTimeout(function () {
+                    // prevent frequently toggle
+                    if ($navbar.className.indexOf('in') < 0) {
+                        $collapse.style.height = "0px"
+                    }
+                }, 400)
+            },
+            open: function () {
+                $collapse.style.height = "auto"
+                $navbar.className += " in";
+            }
+        }
+
+        // Bind Event
+        $toggle.addEventListener('click', function (e) {
+            if ($navbar.className.indexOf('in') > 0) {
+                __HuxNav__.close()
+            } else {
+                __HuxNav__.open()
+            }
+        })
+
+        /**
+         * Since Fastclick is used to delegate 'touchstart' globally
+         * to hack 300ms delay in iOS by performing a fake 'click',
+         * Using 'e.stopPropagation' to stop 'touchstart' event from 
+         * $toggle/$collapse will break global delegation.
+         * 
+         * Instead, we use a 'e.target' filter to prevent handler
+         * added to document close HuxNav.  
+         *
+         * Also, we use 'click' instead of 'touchstart' as compromise
+         */
+        document.addEventListener('click', function (e) {
+            if (e.target == $toggle) return;
+            if (e.target.className == 'icon-bar') return;
+            __HuxNav__.close();
+        })
+    </script>
+    <!-- Search -->
+<div class="search-page">
+  <div class="search-icon-close-container">
+    <span class="search-icon-close">
+      <i class="fa fa-chevron-down"></i>
+    </span>
+  </div>
+  <div class="search-main container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <form></form>
+        <input type="text" id="search-input" placeholder="$ grep...">
+        </form>
+        <div id="search-results" class="mini-post-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/post-bg-2015.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/post-bg-2015.jpg');
+        background: ;
+    }
+
+    
+</style>
+
+
+
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/archive/?tag=Android" title="Android">Android</a>
+                        
+                        <a class="tag" href="/archive/?tag=System" title="System">System</a>
+                        
+                        <a class="tag" href="/archive/?tag=Android+Cuttlefish" title="Android Cuttlefish">Android Cuttlefish</a>
+                        
+                    </div>
+                    <h1>Building Android Cuttlefish with a Customized Kernel: A Step by Step Guide</h1>
+                    
+                    <h2 class="subheading">Android Cuttlefish Virtual Machine</h2>
+                    <span class="meta">Posted by Michael Xi on May 8, 2023</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <!-- Multi-Lingual -->
+                
+
+				<h1 id="cuttlefish-introduction">Cuttlefish Introduction</h1>
+
+<h2 id="what-is-cuttlefish">What is Cuttlefish?</h2>
+
+<p>Android Cuttlefish is an open-source Android Virtual Device (AVD) developed by Google. Its purpose is to run Android as a virtual machine on Linux-based systems for testing and development purposes. It leverages QEMU, a popular open-source emulator, and KVM, a hardware-assisted virtualization technology, to enable efficient virtualization and emulation of Android devices. This allows developers, researchers, and testers to work with AOSP without having access to a physical device.</p>
+
+<p><img src="https://s2.loli.net/2023/05/09/m4tcKaVC5UbXBWd.png" alt="22.png" /></p>
+
+<p><strong>Github Link</strong>: <a href="https://github.com/google/android-cuttlefish">https://github.com/google/android-cuttlefish</a></p>
+
+<p><strong>Cuttlefish Introduction Slide</strong>: <a href="https://2net.co.uk/slides/aosp-aaos-meetup/2022-march-cuttlefish.pdf">https://2net.co.uk/slides/aosp-aaos-meetup/2022-march-cuttlefish.pdf</a></p>
+
+<h1 id="cuttlefish-setup-guide">Cuttlefish Setup Guide</h1>
+
+<h2 id="step_1-make-sure-virtualization-with-kvm-is-available">Step_1: Make sure virtualization with KVM is available</h2>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre><span class="nb">grep</span> <span class="nt">-c</span> <span class="nt">-w</span> <span class="s2">"vmx</span><span class="se">\|</span><span class="s2">svm"</span> /proc/cpuinfo
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>This should return a non-zero value. If running on a cloud machine, this may take cloud-vendor-specific steps to enable.</p>
+
+<h2 id="step_2-download-build-and-install-the-host-debian-packages">Step_2: Download, build, and install the host debian packages</h2>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+</pre></td><td class="rouge-code"><pre><span class="nb">sudo </span>apt <span class="nb">install</span> <span class="nt">-y</span> git devscripts config-package-dev debhelper-compat golang curl
+git clone https://github.com/google/android-cuttlefish
+<span class="nb">cd </span>android-cuttlefish
+<span class="k">for </span><span class="nb">dir </span><span class="k">in </span>base frontend<span class="p">;</span> <span class="k">do
+  </span><span class="nb">cd</span> <span class="nv">$dir</span>
+  debuild <span class="nt">-i</span> <span class="nt">-us</span> <span class="nt">-uc</span> <span class="nt">-b</span> <span class="nt">-d</span>
+  <span class="nb">cd</span> ..
+<span class="k">done
+</span><span class="nb">sudo </span>dpkg <span class="nt">-i</span> ./cuttlefish-base_<span class="k">*</span>_<span class="k">*</span>64.deb <span class="o">||</span> <span class="nb">sudo </span>apt-get <span class="nb">install</span> <span class="nt">-f</span>
+<span class="nb">sudo </span>dpkg <span class="nt">-i</span> ./cuttlefish-user_<span class="k">*</span>_<span class="k">*</span>64.deb <span class="o">||</span> <span class="nb">sudo </span>apt-get <span class="nb">install</span> <span class="nt">-f</span>
+<span class="nb">sudo </span>usermod <span class="nt">-aG</span> kvm,cvdnetwork,render <span class="nv">$USER</span>
+<span class="nb">sudo </span>reboot
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>This script installs the Android Cuttlefish environment on a Linux-based system.</p>
+
+<h2 id="step_3-download-ota-images-and-host-package-for-cuttlefish">Step_3: Download OTA images and host package for cuttlefish</h2>
+
+<p>✍🏻 <strong>OTA</strong> (Over-The-Air) image contains the Android system image and the necessary files to run Cuttlefish on a virtual machine.</p>
+
+<p>✍🏻 <strong>Host package</strong> includes the necessary tools, libraries, and configuration files for running the Cuttlefish virtual machine on your host system.</p>
+
+<ol>
+  <li>Go to <a href="http://ci.android.com/">http://ci.android.com/</a></li>
+  <li>Enter a branch name. Start with <code class="language-plaintext highlighter-rouge">aosp-master</code> if you don‘t know what you’re looking for</li>
+  <li>Navigate to <code class="language-plaintext highlighter-rouge">aosp_cf_x86_64_phone</code> and click on <code class="language-plaintext highlighter-rouge">userdebug</code> for the latest build</li>
+  <li>Click on <code class="language-plaintext highlighter-rouge">Artifacts</code></li>
+  <li>Scroll down to the <strong>OTA</strong> images. These packages look like <code class="language-plaintext highlighter-rouge">aosp_cf_x86_64_phone-img-xxxxxx.zip</code> – it will always have <code class="language-plaintext highlighter-rouge">img</code> in the name. Download this file</li>
+  <li>Scroll down to <code class="language-plaintext highlighter-rouge">cvd-host_package.tar.gz</code>. You should always download a <strong>host package</strong> from the same build as your images</li>
+  <li>
+    <p>On your local system, combine the packages with following code</p>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="rouge-code"><pre> <span class="nb">mkdir </span>cf
+ <span class="nb">cd </span>cf
+ <span class="nb">tar </span>xvf /path/to/cvd-host_package.tar.gz
+ unzip /path/to/aosp_cf_x86_64_phone-img-xxxxxx.zip
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+  </li>
+</ol>
+
+<h2 id="step_4-launch-cuttlefish-and-other-useful-cuttlefish-commands">Step_4: Launch cuttlefish and other useful cuttlefish commands</h2>
+
+<ol>
+  <li>
+    <p>Launch cuttlefish virtual machine</p>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre> <span class="nv">$ HOME</span><span class="o">=</span><span class="nv">$PWD</span> ./bin/launch_cvd
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Enable cuttlefish root</p>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre> ./bin/adb root
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Launch cuttlefish shell</p>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre> ./bin/adb shell
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Stop cuttlefish virtual machine</p>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre> <span class="nv">HOME</span><span class="o">=</span><span class="nv">$PWD</span> ./bin/stop_cvd
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+  </li>
+</ol>
+
+<h1 id="build-customized-android-kernel-and-swap-into-cuttlefish">Build Customized Android Kernel and Swap into Cuttlefish</h1>
+
+<h2 id="build-customized-android-kernel">Build Customized Android Kernel</h2>
+
+<ol>
+  <li>
+    <p>Install <code class="language-plaintext highlighter-rouge">Repo</code> Command for downloading Android Kernel source code</p>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="rouge-code"><pre> <span class="c"># Debian/Ubuntu.</span>
+ <span class="nv">$ </span><span class="nb">sudo </span>apt-get <span class="nb">install </span>repo
+    
+ <span class="c"># Gentoo.</span>
+ <span class="nv">$ </span><span class="nb">sudo </span>emerge dev-vcs/repo
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+
+    <p>Or install manually by the following code:</p>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="rouge-code"><pre> <span class="nv">$ </span><span class="nb">mkdir</span> <span class="nt">-p</span> ~/.bin
+ <span class="nv">$ PATH</span><span class="o">=</span><span class="s2">"</span><span class="k">${</span><span class="nv">HOME</span><span class="k">}</span><span class="s2">/.bin:</span><span class="k">${</span><span class="nv">PATH</span><span class="k">}</span><span class="s2">"</span>
+ <span class="nv">$ </span>curl https://storage.googleapis.com/git-repo-downloads/repo <span class="o">&gt;</span> ~/.bin/repo
+ <span class="nv">$ </span><span class="nb">chmod </span>a+rx ~/.bin/repo
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Download Android Kernel source code</p>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre> <span class="c"># Branch common-android11-5.4 as an example</span>
+ repo init <span class="nt">-u</span> https://android.googlesource.com/kernel/manifest <span class="nt">-b</span> common-android11-5.4
+ repo <span class="nb">sync</span> <span class="nt">-j12</span>
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+
+    <p>The option <code class="language-plaintext highlighter-rouge">j12</code> means that the sync operation will use 12 parallel threads or jobs. If an error occurs during the sync process, you can try reducing the number of threads by lowering the number that follows the <code class="language-plaintext highlighter-rouge">j</code> option first.</p>
+  </li>
+  <li>
+    <p>Apply the kernel patches to Android Kernel source code for customization</p>
+
+    <blockquote>
+      <p>In this example, we are applying a Linux system provenance kernel patch to the kernel.</p>
+    </blockquote>
+
+    <ol>
+      <li><strong>Step_1</strong>: Download Camflow Kernel Patch from Camflow Repo
+        <ul>
+          <li>Camflow is a major LSM for Linux kernel Provenance</li>
+          <li>The link of Camflow patch releases is: <a href="https://github.com/CamFlow/camflow-dev/releases">https://github.com/CamFlow/camflow-dev/releases</a></li>
+          <li>Download one of the release of Camflow from the link above, in this example, we use Camflow v0.8.0 and Android Kernel branch Android13-5.15-LTS</li>
+        </ul>
+      </li>
+      <li><strong>Step_2</strong>: Install Camflow Kernel Patch to Kernel source code before building it
+        <ul>
+          <li>
+            <p>Apply the two Camflow patches to the <code class="language-plaintext highlighter-rouge">common</code> kernel source code directory</p>
+
+            <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre>  <span class="nb">cd </span>android-kernel-main-camflow/common
+  git apply ../../Downloads/0001-information-flow.patch
+  git apply ../../Downloads/0002-camflow.patch
+</pre></td></tr></tbody></table></code></pre></div>            </div>
+          </li>
+        </ul>
+      </li>
+    </ol>
+  </li>
+  <li>
+    <p>Build the Android Kernel</p>
+
+    <blockquote>
+      <p>Since Android 10, Android has introduced a new <strong><a href="https://source.android.com/devices/architecture/kernel/generic-kernel-image">Generic Kernel Image(GKI)</a></strong> in kernel 4.19 and above. This means that the kernel building process has been divided into two parts: <code class="language-plaintext highlighter-rouge">Generic Kernel</code> and <code class="language-plaintext highlighter-rouge">GKI Module</code>. We have to build these two parts separately.</p>
+
+      <p><img src="https://s2.loli.net/2023/05/09/4iUwsP7QLefFHTx.png" alt="33.png" /></p>
+    </blockquote>
+
+    <ul>
+      <li>
+        <p><strong>Build Generic Kernel</strong></p>
+
+        <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre>  <span class="c"># bazel build</span>
+  tools/bazel build //common:kernel_x86_64_dist
+</pre></td></tr></tbody></table></code></pre></div>        </div>
+      </li>
+      <li>
+        <p><strong>Build GKI Modules</strong></p>
+
+        <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>  tools/bazel build //common-modules/virtual-device:virtual_device_x86_64_dist
+</pre></td></tr></tbody></table></code></pre></div>        </div>
+
+        <p>Now, both <code class="language-plaintext highlighter-rouge">initramfs.img</code> and <code class="language-plaintext highlighter-rouge">bzImage</code> should be in <code class="language-plaintext highlighter-rouge">/home/username/android-kernel-5.15/vendor-build-output-x86</code>. You can now try swapping this kernel into your Cuttlefish Android Virtual Device.</p>
+
+        <p>✍🏻 <strong><code class="language-plaintext highlighter-rouge">initramfs.img</code></strong>: The initial RAM filesystem is a temporary in-memory file system that contains essential files and utilities required for mounting the root file system. It is compressed and stored as an image file, such as <code class="language-plaintext highlighter-rouge">initramfs.img</code>.</p>
+
+        <p>✍🏻 <strong><code class="language-plaintext highlighter-rouge">bzImage</code></strong>: The <code class="language-plaintext highlighter-rouge">bzImage</code> is a compressed Linux kernel image created during the kernel compilation process. It is designed to be small enough to fit within limited memory space during the boot process. The <code class="language-plaintext highlighter-rouge">bzImage</code> is loaded by the bootloader, decompressed, and executed to initialize the system hardware and kernel before transitioning to the root file system.</p>
+      </li>
+    </ul>
+  </li>
+</ol>
+
+<h2 id="swap-the-cutomized-android-kernel-into-cuttlefish">Swap the Cutomized Android Kernel into Cuttlefish</h2>
+
+<ol>
+  <li>
+    <p>Set the <code class="language-plaintext highlighter-rouge">DIST_FOLDER</code> as the folder that contains <code class="language-plaintext highlighter-rouge">initramfs.img</code> and <code class="language-plaintext highlighter-rouge">bzImage</code></p>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre> <span class="nv">DIST_FOLDER</span><span class="o">=</span><span class="si">$(</span><span class="nb">readlink</span> <span class="nt">-f</span> /home/username/android-kernel-5.15-success/out/android13-5.15/dist<span class="si">)</span>
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Navigate to <code class="language-plaintext highlighter-rouge">android-cuttlefish/cf</code>, and then use the following command to launch Cuttlefish using the kernel we just built.</p>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre> <span class="nv">HOME</span><span class="o">=</span><span class="k">${</span><span class="nv">PWD</span><span class="k">}</span> ./bin/launch_cvd <span class="nt">-daemon</span> <span class="nt">-initramfs_path</span> <span class="s2">"</span><span class="k">${</span><span class="nv">DIST_FOLDER</span><span class="k">}</span><span class="s2">"</span>/initramfs.img <span class="nt">-kernel_path</span> <span class="s2">"</span><span class="k">${</span><span class="nv">DIST_FOLDER</span><span class="k">}</span><span class="s2">"</span>/bzImage
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Launch the shell of cuttlefish and check the kernel version to verify that kernel is swapped successfully</p>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre> ./bin/adb shell
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre> vsoc_x86_64:/proc <span class="nv">$ </span><span class="nb">cat </span>version
+ Linux version 5.15.78-maybe-dirty <span class="o">(</span>build-user@build-host<span class="o">)</span> <span class="o">(</span>Android <span class="o">(</span>8508608, based on r450784e<span class="o">)</span> clang version 14.0.7 <span class="o">(</span>https://android.googlesource.com/toolchain/llvm-project 4c603efb0cca074e9238af8b4106c30add4418f6<span class="o">)</span>, LLD 14.0.7<span class="o">)</span>
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+  </li>
+  <li>
+    <p>To check the files of Camflow in Android Cuttlefish, we need to mount a few directories</p>
+    <ol>
+      <li><strong>Step_1</strong>: Exit current Cuttlefish: <code class="language-plaintext highlighter-rouge">HOME=$PWD ./bin/stop_cvd</code></li>
+      <li><strong>Step_2</strong>: Launch a new Cuttlefish: <code class="language-plaintext highlighter-rouge">HOME=${PWD} ./bin/launch_cvd -daemon -initramfs_path "${DIST_FOLDER}"/initramfs.img -kernel_path "${DIST_FOLDER}"/bzImage</code></li>
+      <li><strong>Step_3</strong>: Enable root: <code class="language-plaintext highlighter-rouge">./bin/adb root</code></li>
+      <li><strong>Step_4</strong>: Launch Cuttlefish root shell: <code class="language-plaintext highlighter-rouge">./bin/adb shell</code></li>
+      <li>
+        <p><strong>Step_5</strong>: mount <code class="language-plaintext highlighter-rouge">securityfs</code> manually</p>
+
+        <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre> mount <span class="nt">-t</span> securityfs securityfs /sys/kernel/security
+</pre></td></tr></tbody></table></code></pre></div>        </div>
+      </li>
+      <li>
+        <p><strong>Step_6</strong>: mount <code class="language-plaintext highlighter-rouge">debugfs</code> manually</p>
+
+        <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre> mount <span class="nt">-t</span> debugfs debugfs /sys/kernel/debug
+</pre></td></tr></tbody></table></code></pre></div>        </div>
+
+        <p>Files related to Camflow should exist in both the <code class="language-plaintext highlighter-rouge">debugfs</code> and <code class="language-plaintext highlighter-rouge">securityfs</code> directories.</p>
+      </li>
+    </ol>
+  </li>
+</ol>
+
+<h1 id="reference-and-useful-info">Reference and Useful Info</h1>
+
+<ol>
+  <li>Google Cuttlefish Documentation: <a href="https://android.googlesource.com/device/google/cuttlefish/">Link</a></li>
+  <li>
+    <p>Cheatsheat of <code class="language-plaintext highlighter-rouge">launch_cvd</code></p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>-start_vnc_server</th>
+          <th>Start VNC server on port 6444</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>-start_webrtc</td>
+          <td>Start web UI on https://localhost:8443</td>
+        </tr>
+        <tr>
+          <td>-console=true</td>
+          <td>Start console interface cuttlefish_runtime/console</td>
+        </tr>
+        <tr>
+          <td>-daemon</td>
+          <td>Daemon mode (run as a background process)</td>
+        </tr>
+        <tr>
+          <td>-pause-in-bootloader=true</td>
+          <td>Access bootloader via serial console</td>
+        </tr>
+        <tr>
+          <td>-x_res</td>
+          <td>screen width</td>
+        </tr>
+        <tr>
+          <td>-y_res</td>
+          <td>screen height</td>
+        </tr>
+        <tr>
+          <td>-dpi</td>
+          <td>screen resolution</td>
+        </tr>
+        <tr>
+          <td>-guest_enforce_security=false</td>
+          <td>SELinux in permissive mode</td>
+        </tr>
+        <tr>
+          <td>-extra_kernel_cmdline “”</td>
+          <td>additional Linux command line</td>
+        </tr>
+        <tr>
+          <td>-cpus</td>
+          <td>Number of CPUs to emulate</td>
+        </tr>
+        <tr>
+          <td>-memory_mb</td>
+          <td>amount of memory to give to device</td>
+        </tr>
+        <tr>
+          <td>-noresume</td>
+          <td>Start a new runtime: factory reset</td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+  <li>
+    <p><strong>Steps to Customize Kernel Configs</strong>: The goal is to enable any desired CONFIGs by modifying the kernel building script.</p>
+
+    <blockquote>
+      <p>Useful Blog: <a href="https://blog.senyuuri.info/posts/2021-06-30-ebpf-bcc-android-instrumentation/#2-build-a-custom-generic-kernel-image-gki">Link</a></p>
+
+      <p>Documentations relate to LSM in Android: <a href="https://android.googlesource.com/kernel/msm/+/android-5.1.0_r0.6/Documentation/security">Link</a></p>
+
+    </blockquote>
+
+    <p>In <code class="language-plaintext highlighter-rouge">android-kernel-5.15/common</code>, there is a config file named <code class="language-plaintext highlighter-rouge">build.config.gki</code>. Write an update config function here and configure the new CONFIG or delete unwanted CONFIG.</p>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+</pre></td><td class="rouge-code"><pre> <span class="nv">DEFCONFIG</span><span class="o">=</span>gki_defconfig
+ <span class="nv">POST_DEFCONFIG_CMDS</span><span class="o">=</span><span class="s2">"check_defconfig &amp;&amp; **update_lsm_config**"</span>
+    
+ <span class="k">function </span>update_lsm_config<span class="o">()</span> <span class="o">{</span>
+     <span class="k">${</span><span class="nv">KERNEL_DIR</span><span class="k">}</span>/scripts/config <span class="nt">--file</span> <span class="k">${</span><span class="nv">OUT_DIR</span><span class="k">}</span>/.config <span class="se">\</span>
+        <span class="nt">-d</span> CONFIG_LTO <span class="se">\</span>
+        <span class="nt">-d</span> CONFIG_LTO_CLANG <span class="se">\</span>
+        <span class="nt">-e</span> CONFIG_NETFILTER <span class="se">\</span>
+        <span class="nt">-e</span> CONFIG_SECURITYFS <span class="se">\</span>
+        <span class="nt">-e</span> CONFIG_SECURITY_NETWORK <span class="se">\</span>
+        <span class="nt">-e</span> CONFIG_SECURITY_PROVENANCE <span class="se">\</span>
+        <span class="nt">-e</span> CONFIG_SECURITY_TOMOYO <span class="se">\</span>
+        <span class="nt">-e</span> CONFIG_SECURITY_APPARMOR <span class="se">\</span>
+        <span class="nt">-e</span> CONFIG_LSM
+     <span class="o">(</span><span class="nb">cd</span> <span class="k">${</span><span class="nv">OUT_DIR</span><span class="k">}</span> <span class="o">&amp;&amp;</span> <span class="se">\</span>
+      make <span class="k">${</span><span class="nv">CC_LD_ARG</span><span class="k">}</span> <span class="nv">O</span><span class="o">=</span><span class="k">${</span><span class="nv">OUT_DIR</span><span class="k">}</span> olddefconfig<span class="o">)</span>
+ <span class="o">}</span>
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">-d</code> means delete configuration</li>
+      <li><code class="language-plaintext highlighter-rouge">-e</code> means add configuration</li>
+      <li>This function will change <code class="language-plaintext highlighter-rouge">.config</code> file directly</li>
+    </ul>
+  </li>
+</ol>
+
+
+                <hr style="visibility: hidden;">
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2023/02/23/supervised-learning-and-linear-models/" data-toggle="tooltip" data-placement="top" title="Supervised Learning and Linear Models">
+                        Previous<br>
+                        <span>Supervised Learning and Linear Models</span>
+                        </a>
+                    </li>
+                    
+                    
+                </ul>
+                <hr style="visibility: hidden;">
+
+                
+                <!-- disqus 评论框 start -->
+                <div class="comment">
+                    <div id="disqus_thread" class="disqus-thread"></div>
+                </div>
+                <!-- disqus 评论框 end -->
+                
+
+                
+            </div>  
+
+    <!-- Side Catalog Container -->
+        
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+        
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+
+
+<section>
+    
+        <hr class="hidden-sm hidden-xs">
+    
+    <h5><a href="/archive/">FEATURED TAGS</a></h5>
+    <div class="tags">
+        
+        
+        
+        
+        
+        
+                <a data-sort="0003" 
+                    href="/archive/?tag=Firebase"
+                    title="Firebase"
+                    rel="2">Firebase</a>
+    </div>
+</section>
+
+
+                <!-- Friends Blog -->
+                
+<hr>
+<h5>FRIENDS</h5>
+<ul class="list-inline">
+  
+  <li><a href="http://michaelxi.com/">Michael Xi</a></li>
+  
+</ul>
+
+            </div>
+        </div>
+    </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+
+
+
+
+
+
+<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = "https-michaelxi3-github-io";
+    var disqus_identifier = "/2023/05/08/building-android-cuttlefish-with-a-customized-kernel-a-step-by-step-guide";
+    var disqus_url = "http://localhost:4000/2023/05/08/building-android-cuttlefish-with-a-customized-kernel-a-step-by-step-guide/";
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<!-- disqus 公共JS代码 end -->
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'right',
+          // icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  
+  
+  
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/MichaelXi3">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="https://www.linkedin.com/in/yukun-xi">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; Sphere 2023
+                    <br>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Simple Jekyll Search -->
+<script src="/js/simple-jekyll-search.min.js"></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+<!-- Simple Jekyll Search -->
+<script>
+    // https://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript
+    function htmlDecode(input) {
+        var e = document.createElement('textarea');
+        e.innerHTML = input;
+        // handle case of empty input
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
+
+    SimpleJekyllSearch({
+        searchInput: document.getElementById('search-input'),
+        resultsContainer: document.getElementById('search-results'),
+        json: '/search.json',
+        searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
+        noResultsText: 'No results',
+        limit: 50,
+        fuzzy: false,
+        // a hack to get escaped subtitle unescaped. for some reason, 
+        // post.subtitle w/o escape filter nuke entire search.
+        templateMiddleware: function (prop, value, template) {
+            if (prop === 'subtitle' || prop === 'title') {
+                if (value.indexOf("code")) {
+                    return htmlDecode(value);
+                } else {
+                    return value;
+                }
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        var $searchPage = $('.search-page');
+        var $searchOpen = $('.search-icon');
+        var $searchClose = $('.search-icon-close');
+        var $searchInput = $('#search-input');
+        var $body = $('body');
+
+        $searchOpen.on('click', function (e) {
+            e.preventDefault();
+            $searchPage.toggleClass('search-active');
+            var prevClasses = $body.attr('class') || '';
+            setTimeout(function () {
+                $body.addClass('no-scroll');
+            }, 400)
+
+            if ($searchPage.hasClass('search-active')) {
+                $searchClose.on('click', function (e) {
+                    e.preventDefault();
+                    $searchPage.removeClass('search-active');
+                    $body.attr('class', prevClasses);  // from closure 
+                });
+                $searchInput.focus();
+            }
+        });
+    });
+</script>
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>

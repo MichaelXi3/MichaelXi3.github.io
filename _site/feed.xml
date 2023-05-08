@@ -5,9 +5,429 @@
     <description></description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Thu, 23 Feb 2023 21:50:52 -0500</pubDate>
-    <lastBuildDate>Thu, 23 Feb 2023 21:50:52 -0500</lastBuildDate>
+    <pubDate>Mon, 08 May 2023 14:43:15 -0400</pubDate>
+    <lastBuildDate>Mon, 08 May 2023 14:43:15 -0400</lastBuildDate>
     <generator>Jekyll v4.3.2</generator>
+    
+      <item>
+        <title>Building Android Cuttlefish with a Customized Kernel: A Step by Step Guide</title>
+        <description>&lt;h1 id=&quot;cuttlefish-introduction&quot;&gt;Cuttlefish Introduction&lt;/h1&gt;
+
+&lt;h2 id=&quot;what-is-cuttlefish&quot;&gt;What is Cuttlefish?&lt;/h2&gt;
+
+&lt;p&gt;Android Cuttlefish is an open-source Android Virtual Device (AVD) developed by Google. Its purpose is to run Android as a virtual machine on Linux-based systems for testing and development purposes. It leverages QEMU, a popular open-source emulator, and KVM, a hardware-assisted virtualization technology, to enable efficient virtualization and emulation of Android devices. This allows developers, researchers, and testers to work with AOSP without having access to a physical device.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://s2.loli.net/2023/05/09/m4tcKaVC5UbXBWd.png&quot; alt=&quot;22.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Github Link&lt;/strong&gt;: &lt;a href=&quot;https://github.com/google/android-cuttlefish&quot;&gt;https://github.com/google/android-cuttlefish&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Cuttlefish Introduction Slide&lt;/strong&gt;: &lt;a href=&quot;https://2net.co.uk/slides/aosp-aaos-meetup/2022-march-cuttlefish.pdf&quot;&gt;https://2net.co.uk/slides/aosp-aaos-meetup/2022-march-cuttlefish.pdf&lt;/a&gt;&lt;/p&gt;
+
+&lt;h1 id=&quot;cuttlefish-setup-guide&quot;&gt;Cuttlefish Setup Guide&lt;/h1&gt;
+
+&lt;h2 id=&quot;step_1-make-sure-virtualization-with-kvm-is-available&quot;&gt;Step_1: Make sure virtualization with KVM is available&lt;/h2&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;nb&quot;&gt;grep&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-c&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-w&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;vmx&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\|&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;svm&quot;&lt;/span&gt; /proc/cpuinfo
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;This should return a non-zero value. If running on a cloud machine, this may take cloud-vendor-specific steps to enable.&lt;/p&gt;
+
+&lt;h2 id=&quot;step_2-download-build-and-install-the-host-debian-packages&quot;&gt;Step_2: Download, build, and install the host debian packages&lt;/h2&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;apt &lt;span class=&quot;nb&quot;&gt;install&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-y&lt;/span&gt; git devscripts config-package-dev debhelper-compat golang curl
+git clone https://github.com/google/android-cuttlefish
+&lt;span class=&quot;nb&quot;&gt;cd &lt;/span&gt;android-cuttlefish
+&lt;span class=&quot;k&quot;&gt;for &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;dir &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;in &lt;/span&gt;base frontend&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do
+  &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;cd&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$dir&lt;/span&gt;
+  debuild &lt;span class=&quot;nt&quot;&gt;-i&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-us&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-uc&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-b&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-d&lt;/span&gt;
+  &lt;span class=&quot;nb&quot;&gt;cd&lt;/span&gt; ..
+&lt;span class=&quot;k&quot;&gt;done
+&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;dpkg &lt;span class=&quot;nt&quot;&gt;-i&lt;/span&gt; ./cuttlefish-base_&lt;span class=&quot;k&quot;&gt;*&lt;/span&gt;_&lt;span class=&quot;k&quot;&gt;*&lt;/span&gt;64.deb &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;apt-get &lt;span class=&quot;nb&quot;&gt;install&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-f&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;dpkg &lt;span class=&quot;nt&quot;&gt;-i&lt;/span&gt; ./cuttlefish-user_&lt;span class=&quot;k&quot;&gt;*&lt;/span&gt;_&lt;span class=&quot;k&quot;&gt;*&lt;/span&gt;64.deb &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;apt-get &lt;span class=&quot;nb&quot;&gt;install&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-f&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;usermod &lt;span class=&quot;nt&quot;&gt;-aG&lt;/span&gt; kvm,cvdnetwork,render &lt;span class=&quot;nv&quot;&gt;$USER&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;reboot
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;This script installs the Android Cuttlefish environment on a Linux-based system.&lt;/p&gt;
+
+&lt;h2 id=&quot;step_3-download-ota-images-and-host-package-for-cuttlefish&quot;&gt;Step_3: Download OTA images and host package for cuttlefish&lt;/h2&gt;
+
+&lt;p&gt;✍🏻 &lt;strong&gt;OTA&lt;/strong&gt; (Over-The-Air) image contains the Android system image and the necessary files to run Cuttlefish on a virtual machine.&lt;/p&gt;
+
+&lt;p&gt;✍🏻 &lt;strong&gt;Host package&lt;/strong&gt; includes the necessary tools, libraries, and configuration files for running the Cuttlefish virtual machine on your host system.&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Go to &lt;a href=&quot;http://ci.android.com/&quot;&gt;http://ci.android.com/&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Enter a branch name. Start with &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;aosp-master&lt;/code&gt; if you don‘t know what you’re looking for&lt;/li&gt;
+  &lt;li&gt;Navigate to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;aosp_cf_x86_64_phone&lt;/code&gt; and click on &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;userdebug&lt;/code&gt; for the latest build&lt;/li&gt;
+  &lt;li&gt;Click on &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Artifacts&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;Scroll down to the &lt;strong&gt;OTA&lt;/strong&gt; images. These packages look like &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;aosp_cf_x86_64_phone-img-xxxxxx.zip&lt;/code&gt; – it will always have &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;img&lt;/code&gt; in the name. Download this file&lt;/li&gt;
+  &lt;li&gt;Scroll down to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;cvd-host_package.tar.gz&lt;/code&gt;. You should always download a &lt;strong&gt;host package&lt;/strong&gt; from the same build as your images&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;On your local system, combine the packages with following code&lt;/p&gt;
+
+    &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+3
+4
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt; &lt;span class=&quot;nb&quot;&gt;mkdir &lt;/span&gt;cf
+ &lt;span class=&quot;nb&quot;&gt;cd &lt;/span&gt;cf
+ &lt;span class=&quot;nb&quot;&gt;tar &lt;/span&gt;xvf /path/to/cvd-host_package.tar.gz
+ unzip /path/to/aosp_cf_x86_64_phone-img-xxxxxx.zip
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;step_4-launch-cuttlefish-and-other-useful-cuttlefish-commands&quot;&gt;Step_4: Launch cuttlefish and other useful cuttlefish commands&lt;/h2&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;Launch cuttlefish virtual machine&lt;/p&gt;
+
+    &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt; &lt;span class=&quot;nv&quot;&gt;$ HOME&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$PWD&lt;/span&gt; ./bin/launch_cvd
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Enable cuttlefish root&lt;/p&gt;
+
+    &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt; ./bin/adb root
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Launch cuttlefish shell&lt;/p&gt;
+
+    &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt; ./bin/adb shell
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Stop cuttlefish virtual machine&lt;/p&gt;
+
+    &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt; &lt;span class=&quot;nv&quot;&gt;HOME&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$PWD&lt;/span&gt; ./bin/stop_cvd
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h1 id=&quot;build-customized-android-kernel-and-swap-into-cuttlefish&quot;&gt;Build Customized Android Kernel and Swap into Cuttlefish&lt;/h1&gt;
+
+&lt;h2 id=&quot;build-customized-android-kernel&quot;&gt;Build Customized Android Kernel&lt;/h2&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;Install &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Repo&lt;/code&gt; Command for downloading Android Kernel source code&lt;/p&gt;
+
+    &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+3
+4
+5
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt; &lt;span class=&quot;c&quot;&gt;# Debian/Ubuntu.&lt;/span&gt;
+ &lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;apt-get &lt;span class=&quot;nb&quot;&gt;install &lt;/span&gt;repo
+    
+ &lt;span class=&quot;c&quot;&gt;# Gentoo.&lt;/span&gt;
+ &lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;emerge dev-vcs/repo
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+
+    &lt;p&gt;Or install manually by the following code:&lt;/p&gt;
+
+    &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+3
+4
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt; &lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;mkdir&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-p&lt;/span&gt; ~/.bin
+ &lt;span class=&quot;nv&quot;&gt;$ PATH&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;HOME&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;/.bin:&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;PATH&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;
+ &lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;curl https://storage.googleapis.com/git-repo-downloads/repo &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; ~/.bin/repo
+ &lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;chmod &lt;/span&gt;a+rx ~/.bin/repo
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Download Android Kernel source code&lt;/p&gt;
+
+    &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+3
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt; &lt;span class=&quot;c&quot;&gt;# Branch common-android11-5.4 as an example&lt;/span&gt;
+ repo init &lt;span class=&quot;nt&quot;&gt;-u&lt;/span&gt; https://android.googlesource.com/kernel/manifest &lt;span class=&quot;nt&quot;&gt;-b&lt;/span&gt; common-android11-5.4
+ repo &lt;span class=&quot;nb&quot;&gt;sync&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-j12&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+
+    &lt;p&gt;The option &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;j12&lt;/code&gt; means that the sync operation will use 12 parallel threads or jobs. If an error occurs during the sync process, you can try reducing the number of threads by lowering the number that follows the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;j&lt;/code&gt; option first.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Apply the kernel patches to Android Kernel source code for customization&lt;/p&gt;
+
+    &lt;blockquote&gt;
+      &lt;p&gt;In this example, we are applying a Linux system provenance kernel patch to the kernel.&lt;/p&gt;
+    &lt;/blockquote&gt;
+
+    &lt;ol&gt;
+      &lt;li&gt;&lt;strong&gt;Step_1&lt;/strong&gt;: Download Camflow Kernel Patch from Camflow Repo
+        &lt;ul&gt;
+          &lt;li&gt;Camflow is a major LSM for Linux kernel Provenance&lt;/li&gt;
+          &lt;li&gt;The link of Camflow patch releases is: &lt;a href=&quot;https://github.com/CamFlow/camflow-dev/releases&quot;&gt;https://github.com/CamFlow/camflow-dev/releases&lt;/a&gt;&lt;/li&gt;
+          &lt;li&gt;Download one of the release of Camflow from the link above, in this example, we use Camflow v0.8.0 and Android Kernel branch Android13-5.15-LTS&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+      &lt;li&gt;&lt;strong&gt;Step_2&lt;/strong&gt;: Install Camflow Kernel Patch to Kernel source code before building it
+        &lt;ul&gt;
+          &lt;li&gt;
+            &lt;p&gt;Apply the two Camflow patches to the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;common&lt;/code&gt; kernel source code directory&lt;/p&gt;
+
+            &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+3
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt;  &lt;span class=&quot;nb&quot;&gt;cd &lt;/span&gt;android-kernel-main-camflow/common
+  git apply ../../Downloads/0001-information-flow.patch
+  git apply ../../Downloads/0002-camflow.patch
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;            &lt;/div&gt;
+          &lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+    &lt;/ol&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Build the Android Kernel&lt;/p&gt;
+
+    &lt;blockquote&gt;
+      &lt;p&gt;Since Android 10, Android has introduced a new &lt;strong&gt;&lt;a href=&quot;https://source.android.com/devices/architecture/kernel/generic-kernel-image&quot;&gt;Generic Kernel Image(GKI)&lt;/a&gt;&lt;/strong&gt; in kernel 4.19 and above. This means that the kernel building process has been divided into two parts: &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Generic Kernel&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;GKI Module&lt;/code&gt;. We have to build these two parts separately.&lt;/p&gt;
+
+      &lt;p&gt;&lt;img src=&quot;https://s2.loli.net/2023/05/09/4iUwsP7QLefFHTx.png&quot; alt=&quot;33.png&quot; /&gt;&lt;/p&gt;
+    &lt;/blockquote&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;
+        &lt;p&gt;&lt;strong&gt;Build Generic Kernel&lt;/strong&gt;&lt;/p&gt;
+
+        &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt;  &lt;span class=&quot;c&quot;&gt;# bazel build&lt;/span&gt;
+  tools/bazel build //common:kernel_x86_64_dist
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;        &lt;/div&gt;
+      &lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;&lt;strong&gt;Build GKI Modules&lt;/strong&gt;&lt;/p&gt;
+
+        &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt;  tools/bazel build //common-modules/virtual-device:virtual_device_x86_64_dist
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;        &lt;/div&gt;
+
+        &lt;p&gt;Now, both &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;initramfs.img&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;bzImage&lt;/code&gt; should be in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/home/username/android-kernel-5.15/vendor-build-output-x86&lt;/code&gt;. You can now try swapping this kernel into your Cuttlefish Android Virtual Device.&lt;/p&gt;
+
+        &lt;p&gt;✍🏻 &lt;strong&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;initramfs.img&lt;/code&gt;&lt;/strong&gt;: The initial RAM filesystem is a temporary in-memory file system that contains essential files and utilities required for mounting the root file system. It is compressed and stored as an image file, such as &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;initramfs.img&lt;/code&gt;.&lt;/p&gt;
+
+        &lt;p&gt;✍🏻 &lt;strong&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;bzImage&lt;/code&gt;&lt;/strong&gt;: The &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;bzImage&lt;/code&gt; is a compressed Linux kernel image created during the kernel compilation process. It is designed to be small enough to fit within limited memory space during the boot process. The &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;bzImage&lt;/code&gt; is loaded by the bootloader, decompressed, and executed to initialize the system hardware and kernel before transitioning to the root file system.&lt;/p&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;swap-the-cutomized-android-kernel-into-cuttlefish&quot;&gt;Swap the Cutomized Android Kernel into Cuttlefish&lt;/h2&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;Set the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;DIST_FOLDER&lt;/code&gt; as the folder that contains &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;initramfs.img&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;bzImage&lt;/code&gt;&lt;/p&gt;
+
+    &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt; &lt;span class=&quot;nv&quot;&gt;DIST_FOLDER&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;$(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;readlink&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-f&lt;/span&gt; /home/username/android-kernel-5.15-success/out/android13-5.15/dist&lt;span class=&quot;si&quot;&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Navigate to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;android-cuttlefish/cf&lt;/code&gt;, and then use the following command to launch Cuttlefish using the kernel we just built.&lt;/p&gt;
+
+    &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt; &lt;span class=&quot;nv&quot;&gt;HOME&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;PWD&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt; ./bin/launch_cvd &lt;span class=&quot;nt&quot;&gt;-daemon&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-initramfs_path&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;DIST_FOLDER&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;/initramfs.img &lt;span class=&quot;nt&quot;&gt;-kernel_path&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;DIST_FOLDER&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;/bzImage
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Launch the shell of cuttlefish and check the kernel version to verify that kernel is swapped successfully&lt;/p&gt;
+
+    &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt; ./bin/adb shell
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+
+    &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt; vsoc_x86_64:/proc &lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;cat &lt;/span&gt;version
+ Linux version 5.15.78-maybe-dirty &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;build-user@build-host&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;Android &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;8508608, based on r450784e&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; clang version 14.0.7 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;https://android.googlesource.com/toolchain/llvm-project 4c603efb0cca074e9238af8b4106c30add4418f6&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;, LLD 14.0.7&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;To check the files of Camflow in Android Cuttlefish, we need to mount a few directories&lt;/p&gt;
+    &lt;ol&gt;
+      &lt;li&gt;&lt;strong&gt;Step_1&lt;/strong&gt;: Exit current Cuttlefish: &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;HOME=$PWD ./bin/stop_cvd&lt;/code&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;strong&gt;Step_2&lt;/strong&gt;: Launch a new Cuttlefish: &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;HOME=${PWD} ./bin/launch_cvd -daemon -initramfs_path &quot;${DIST_FOLDER}&quot;/initramfs.img -kernel_path &quot;${DIST_FOLDER}&quot;/bzImage&lt;/code&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;strong&gt;Step_3&lt;/strong&gt;: Enable root: &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;./bin/adb root&lt;/code&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;strong&gt;Step_4&lt;/strong&gt;: Launch Cuttlefish root shell: &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;./bin/adb shell&lt;/code&gt;&lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;&lt;strong&gt;Step_5&lt;/strong&gt;: mount &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;securityfs&lt;/code&gt; manually&lt;/p&gt;
+
+        &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt; mount &lt;span class=&quot;nt&quot;&gt;-t&lt;/span&gt; securityfs securityfs /sys/kernel/security
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;        &lt;/div&gt;
+      &lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;&lt;strong&gt;Step_6&lt;/strong&gt;: mount &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;debugfs&lt;/code&gt; manually&lt;/p&gt;
+
+        &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt; mount &lt;span class=&quot;nt&quot;&gt;-t&lt;/span&gt; debugfs debugfs /sys/kernel/debug
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;        &lt;/div&gt;
+
+        &lt;p&gt;Files related to Camflow should exist in both the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;debugfs&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;securityfs&lt;/code&gt; directories.&lt;/p&gt;
+      &lt;/li&gt;
+    &lt;/ol&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h1 id=&quot;reference-and-useful-info&quot;&gt;Reference and Useful Info&lt;/h1&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Google Cuttlefish Documentation: &lt;a href=&quot;https://android.googlesource.com/device/google/cuttlefish/&quot;&gt;Link&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Cheatsheat of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;launch_cvd&lt;/code&gt;&lt;/p&gt;
+
+    &lt;table&gt;
+      &lt;thead&gt;
+        &lt;tr&gt;
+          &lt;th&gt;-start_vnc_server&lt;/th&gt;
+          &lt;th&gt;Start VNC server on port 6444&lt;/th&gt;
+        &lt;/tr&gt;
+      &lt;/thead&gt;
+      &lt;tbody&gt;
+        &lt;tr&gt;
+          &lt;td&gt;-start_webrtc&lt;/td&gt;
+          &lt;td&gt;Start web UI on https://localhost:8443&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+          &lt;td&gt;-console=true&lt;/td&gt;
+          &lt;td&gt;Start console interface cuttlefish_runtime/console&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+          &lt;td&gt;-daemon&lt;/td&gt;
+          &lt;td&gt;Daemon mode (run as a background process)&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+          &lt;td&gt;-pause-in-bootloader=true&lt;/td&gt;
+          &lt;td&gt;Access bootloader via serial console&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+          &lt;td&gt;-x_res&lt;/td&gt;
+          &lt;td&gt;screen width&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+          &lt;td&gt;-y_res&lt;/td&gt;
+          &lt;td&gt;screen height&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+          &lt;td&gt;-dpi&lt;/td&gt;
+          &lt;td&gt;screen resolution&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+          &lt;td&gt;-guest_enforce_security=false&lt;/td&gt;
+          &lt;td&gt;SELinux in permissive mode&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+          &lt;td&gt;-extra_kernel_cmdline “”&lt;/td&gt;
+          &lt;td&gt;additional Linux command line&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+          &lt;td&gt;-cpus&lt;/td&gt;
+          &lt;td&gt;Number of CPUs to emulate&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+          &lt;td&gt;-memory_mb&lt;/td&gt;
+          &lt;td&gt;amount of memory to give to device&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+          &lt;td&gt;-noresume&lt;/td&gt;
+          &lt;td&gt;Start a new runtime: factory reset&lt;/td&gt;
+        &lt;/tr&gt;
+      &lt;/tbody&gt;
+    &lt;/table&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;Steps to Customize Kernel Configs&lt;/strong&gt;: The goal is to enable any desired CONFIGs by modifying the kernel building script.&lt;/p&gt;
+
+    &lt;blockquote&gt;
+      &lt;p&gt;Useful Blog: &lt;a href=&quot;https://blog.senyuuri.info/posts/2021-06-30-ebpf-bcc-android-instrumentation/#2-build-a-custom-generic-kernel-image-gki&quot;&gt;Link&lt;/a&gt;&lt;/p&gt;
+
+      &lt;p&gt;Documentations relate to LSM in Android: &lt;a href=&quot;https://android.googlesource.com/kernel/msm/+/android-5.1.0_r0.6/Documentation/security&quot;&gt;Link&lt;/a&gt;&lt;/p&gt;
+
+    &lt;/blockquote&gt;
+
+    &lt;p&gt;In &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;android-kernel-5.15/common&lt;/code&gt;, there is a config file named &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;build.config.gki&lt;/code&gt;. Write an update config function here and configure the new CONFIG or delete unwanted CONFIG.&lt;/p&gt;
+
+    &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt; &lt;span class=&quot;nv&quot;&gt;DEFCONFIG&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;gki_defconfig
+ &lt;span class=&quot;nv&quot;&gt;POST_DEFCONFIG_CMDS&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;check_defconfig &amp;amp;&amp;amp; **update_lsm_config**&quot;&lt;/span&gt;
+    
+ &lt;span class=&quot;k&quot;&gt;function &lt;/span&gt;update_lsm_config&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+     &lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;KERNEL_DIR&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;/scripts/config &lt;span class=&quot;nt&quot;&gt;--file&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;OUT_DIR&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;/.config &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;-d&lt;/span&gt; CONFIG_LTO &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;-d&lt;/span&gt; CONFIG_LTO_CLANG &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;-e&lt;/span&gt; CONFIG_NETFILTER &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;-e&lt;/span&gt; CONFIG_SECURITYFS &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;-e&lt;/span&gt; CONFIG_SECURITY_NETWORK &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;-e&lt;/span&gt; CONFIG_SECURITY_PROVENANCE &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;-e&lt;/span&gt; CONFIG_SECURITY_TOMOYO &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;-e&lt;/span&gt; CONFIG_SECURITY_APPARMOR &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+        &lt;span class=&quot;nt&quot;&gt;-e&lt;/span&gt; CONFIG_LSM
+     &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;cd&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;OUT_DIR&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+      make &lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;CC_LD_ARG&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;O&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;OUT_DIR&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt; olddefconfig&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+ &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-d&lt;/code&gt; means delete configuration&lt;/li&gt;
+      &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-e&lt;/code&gt; means add configuration&lt;/li&gt;
+      &lt;li&gt;This function will change &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;.config&lt;/code&gt; file directly&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+</description>
+        <pubDate>Mon, 08 May 2023 00:00:00 -0400</pubDate>
+        <link>http://localhost:4000/2023/05/08/building-android-cuttlefish-with-a-customized-kernel-a-step-by-step-guide/</link>
+        <guid isPermaLink="true">http://localhost:4000/2023/05/08/building-android-cuttlefish-with-a-customized-kernel-a-step-by-step-guide/</guid>
+        
+        <category>Android</category>
+        
+        <category>System</category>
+        
+        <category>Android Cuttlefish</category>
+        
+        
+      </item>
     
       <item>
         <title>Supervised Learning and Linear Models</title>
