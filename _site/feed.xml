@@ -5,15 +5,15 @@
     <description></description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Mon, 08 May 2023 14:43:15 -0400</pubDate>
-    <lastBuildDate>Mon, 08 May 2023 14:43:15 -0400</lastBuildDate>
+    <pubDate>Mon, 08 May 2023 14:50:38 -0400</pubDate>
+    <lastBuildDate>Mon, 08 May 2023 14:50:38 -0400</lastBuildDate>
     <generator>Jekyll v4.3.2</generator>
     
       <item>
         <title>Building Android Cuttlefish with a Customized Kernel: A Step by Step Guide</title>
         <description>&lt;h1 id=&quot;cuttlefish-introduction&quot;&gt;Cuttlefish Introduction&lt;/h1&gt;
 
-&lt;h2 id=&quot;what-is-cuttlefish&quot;&gt;What is Cuttlefish?&lt;/h2&gt;
+&lt;h3 id=&quot;what-is-cuttlefish&quot;&gt;What is Cuttlefish?&lt;/h3&gt;
 
 &lt;p&gt;Android Cuttlefish is an open-source Android Virtual Device (AVD) developed by Google. Its purpose is to run Android as a virtual machine on Linux-based systems for testing and development purposes. It leverages QEMU, a popular open-source emulator, and KVM, a hardware-assisted virtualization technology, to enable efficient virtualization and emulation of Android devices. This allows developers, researchers, and testers to work with AOSP without having access to a physical device.&lt;/p&gt;
 
@@ -25,7 +25,7 @@
 
 &lt;h1 id=&quot;cuttlefish-setup-guide&quot;&gt;Cuttlefish Setup Guide&lt;/h1&gt;
 
-&lt;h2 id=&quot;step_1-make-sure-virtualization-with-kvm-is-available&quot;&gt;Step_1: Make sure virtualization with KVM is available&lt;/h2&gt;
+&lt;h3 id=&quot;step_1-make-sure-virtualization-with-kvm-is-available&quot;&gt;Step_1: Make sure virtualization with KVM is available&lt;/h3&gt;
 
 &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
 &lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;nb&quot;&gt;grep&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-c&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-w&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;vmx&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\|&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;svm&quot;&lt;/span&gt; /proc/cpuinfo
@@ -33,7 +33,7 @@
 
 &lt;p&gt;This should return a non-zero value. If running on a cloud machine, this may take cloud-vendor-specific steps to enable.&lt;/p&gt;
 
-&lt;h2 id=&quot;step_2-download-build-and-install-the-host-debian-packages&quot;&gt;Step_2: Download, build, and install the host debian packages&lt;/h2&gt;
+&lt;h3 id=&quot;step_2-download-build-and-install-the-host-debian-packages&quot;&gt;Step_2: Download, build, and install the host debian packages&lt;/h3&gt;
 
 &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
 2
@@ -63,7 +63,7 @@ git clone https://github.com/google/android-cuttlefish
 
 &lt;p&gt;This script installs the Android Cuttlefish environment on a Linux-based system.&lt;/p&gt;
 
-&lt;h2 id=&quot;step_3-download-ota-images-and-host-package-for-cuttlefish&quot;&gt;Step_3: Download OTA images and host package for cuttlefish&lt;/h2&gt;
+&lt;h3 id=&quot;step_3-download-ota-images-and-host-package-for-cuttlefish&quot;&gt;Step_3: Download OTA images and host package for cuttlefish&lt;/h3&gt;
 
 &lt;p&gt;✍🏻 &lt;strong&gt;OTA&lt;/strong&gt; (Over-The-Air) image contains the Android system image and the necessary files to run Cuttlefish on a virtual machine.&lt;/p&gt;
 
@@ -91,7 +91,7 @@ git clone https://github.com/google/android-cuttlefish
   &lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;h2 id=&quot;step_4-launch-cuttlefish-and-other-useful-cuttlefish-commands&quot;&gt;Step_4: Launch cuttlefish and other useful cuttlefish commands&lt;/h2&gt;
+&lt;h3 id=&quot;step_4-launch-cuttlefish-and-other-useful-cuttlefish-commands&quot;&gt;Step_4: Launch cuttlefish and other useful cuttlefish commands&lt;/h3&gt;
 
 &lt;ol&gt;
   &lt;li&gt;
@@ -126,7 +126,7 @@ git clone https://github.com/google/android-cuttlefish
 
 &lt;h1 id=&quot;build-customized-android-kernel-and-swap-into-cuttlefish&quot;&gt;Build Customized Android Kernel and Swap into Cuttlefish&lt;/h1&gt;
 
-&lt;h2 id=&quot;build-customized-android-kernel&quot;&gt;Build Customized Android Kernel&lt;/h2&gt;
+&lt;h3 id=&quot;build-customized-android-kernel&quot;&gt;Build Customized Android Kernel&lt;/h3&gt;
 
 &lt;ol&gt;
   &lt;li&gt;
@@ -237,7 +237,7 @@ git clone https://github.com/google/android-cuttlefish
   &lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;h2 id=&quot;swap-the-cutomized-android-kernel-into-cuttlefish&quot;&gt;Swap the Cutomized Android Kernel into Cuttlefish&lt;/h2&gt;
+&lt;h3 id=&quot;swap-the-cutomized-android-kernel-into-cuttlefish&quot;&gt;Swap the Cutomized Android Kernel into Cuttlefish&lt;/h3&gt;
 
 &lt;ol&gt;
   &lt;li&gt;

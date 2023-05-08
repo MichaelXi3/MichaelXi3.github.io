@@ -4,13 +4,13 @@ title: "Building Android Cuttlefish with a Customized Kernel: A Step by Step Gui
 subtitle: "Android Cuttlefish Virtual Machine"
 date: 2023-05-08
 author: "Michael Xi"
-header-img: "img/post-bg-2015.jpg"
+header-img: "img/Android.jpeg"
 tags: [Android, System, Android Cuttlefish]
 ---
 
 # Cuttlefish Introduction
 
-## What is Cuttlefish?
+### What is Cuttlefish?
 
 Android Cuttlefish is an open-source Android Virtual Device (AVD) developed by Google. Its purpose is to run Android as a virtual machine on Linux-based systems for testing and development purposes. It leverages QEMU, a popular open-source emulator, and KVM, a hardware-assisted virtualization technology, to enable efficient virtualization and emulation of Android devices. This allows developers, researchers, and testers to work with AOSP without having access to a physical device.
 
@@ -22,7 +22,7 @@ Android Cuttlefish is an open-source Android Virtual Device (AVD) developed by G
 
 # Cuttlefish Setup Guide
 
-## Step_1: Make sure virtualization with KVM is available
+### Step_1: Make sure virtualization with KVM is available
 
 ```bash
 grep -c -w "vmx\|svm" /proc/cpuinfo
@@ -30,7 +30,7 @@ grep -c -w "vmx\|svm" /proc/cpuinfo
 
 This should return a non-zero value. If running on a cloud machine, this may take cloud-vendor-specific steps to enable.
 
-## Step_2: Download, build, and install the host debian packages
+### Step_2: Download, build, and install the host debian packages
 
 ```bash
 sudo apt install -y git devscripts config-package-dev debhelper-compat golang curl
@@ -49,7 +49,7 @@ sudo reboot
 
 This script installs the Android Cuttlefish environment on a Linux-based system.
 
-## Step_3: Download OTA images and host package for cuttlefish
+### Step_3: Download OTA images and host package for cuttlefish
 
 ✍🏻 **OTA** (Over-The-Air) image contains the Android system image and the necessary files to run Cuttlefish on a virtual machine.
 
@@ -71,7 +71,7 @@ This script installs the Android Cuttlefish environment on a Linux-based system.
     ```
     
 
-## Step_4: Launch cuttlefish and other useful cuttlefish commands
+### Step_4: Launch cuttlefish and other useful cuttlefish commands
 
 1. Launch cuttlefish virtual machine
     
@@ -100,7 +100,7 @@ This script installs the Android Cuttlefish environment on a Linux-based system.
 
 # Build Customized Android Kernel and Swap into Cuttlefish
 
-## Build Customized Android Kernel
+### Build Customized Android Kernel
 
 1. Install `Repo` Command for downloading Android Kernel source code
     
@@ -176,7 +176,7 @@ This script installs the Android Cuttlefish environment on a Linux-based system.
         ✍🏻 **`bzImage`**: The `bzImage` is a compressed Linux kernel image created during the kernel compilation process. It is designed to be small enough to fit within limited memory space during the boot process. The `bzImage` is loaded by the bootloader, decompressed, and executed to initialize the system hardware and kernel before transitioning to the root file system.
                 
 
-## Swap the Cutomized Android Kernel into Cuttlefish
+### Swap the Cutomized Android Kernel into Cuttlefish
 
 1. Set the `DIST_FOLDER` as the folder that contains `initramfs.img` and `bzImage`
     

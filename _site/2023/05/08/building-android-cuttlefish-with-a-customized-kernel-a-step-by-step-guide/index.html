@@ -210,7 +210,7 @@
 
     <!-- Image to hack wechat -->
 <!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
-<!-- <img src="/img/post-bg-2015.jpg" width="0" height="0"> -->
+<!-- <img src="/img/Android.jpeg" width="0" height="0"> -->
 
 <!-- Post Header -->
 
@@ -219,7 +219,7 @@
 <style type="text/css">
     header.intro-header{
         position: relative;
-        background-image: url('/img/post-bg-2015.jpg');
+        background-image: url('/img/Android.jpeg');
         background: ;
     }
 
@@ -278,7 +278,7 @@
 
 				<h1 id="cuttlefish-introduction">Cuttlefish Introduction</h1>
 
-<h2 id="what-is-cuttlefish">What is Cuttlefish?</h2>
+<h3 id="what-is-cuttlefish">What is Cuttlefish?</h3>
 
 <p>Android Cuttlefish is an open-source Android Virtual Device (AVD) developed by Google. Its purpose is to run Android as a virtual machine on Linux-based systems for testing and development purposes. It leverages QEMU, a popular open-source emulator, and KVM, a hardware-assisted virtualization technology, to enable efficient virtualization and emulation of Android devices. This allows developers, researchers, and testers to work with AOSP without having access to a physical device.</p>
 
@@ -290,7 +290,7 @@
 
 <h1 id="cuttlefish-setup-guide">Cuttlefish Setup Guide</h1>
 
-<h2 id="step_1-make-sure-virtualization-with-kvm-is-available">Step_1: Make sure virtualization with KVM is available</h2>
+<h3 id="step_1-make-sure-virtualization-with-kvm-is-available">Step_1: Make sure virtualization with KVM is available</h3>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
 </pre></td><td class="rouge-code"><pre><span class="nb">grep</span> <span class="nt">-c</span> <span class="nt">-w</span> <span class="s2">"vmx</span><span class="se">\|</span><span class="s2">svm"</span> /proc/cpuinfo
@@ -298,7 +298,7 @@
 
 <p>This should return a non-zero value. If running on a cloud machine, this may take cloud-vendor-specific steps to enable.</p>
 
-<h2 id="step_2-download-build-and-install-the-host-debian-packages">Step_2: Download, build, and install the host debian packages</h2>
+<h3 id="step_2-download-build-and-install-the-host-debian-packages">Step_2: Download, build, and install the host debian packages</h3>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
 2
@@ -328,7 +328,7 @@ git clone https://github.com/google/android-cuttlefish
 
 <p>This script installs the Android Cuttlefish environment on a Linux-based system.</p>
 
-<h2 id="step_3-download-ota-images-and-host-package-for-cuttlefish">Step_3: Download OTA images and host package for cuttlefish</h2>
+<h3 id="step_3-download-ota-images-and-host-package-for-cuttlefish">Step_3: Download OTA images and host package for cuttlefish</h3>
 
 <p>✍🏻 <strong>OTA</strong> (Over-The-Air) image contains the Android system image and the necessary files to run Cuttlefish on a virtual machine.</p>
 
@@ -356,7 +356,7 @@ git clone https://github.com/google/android-cuttlefish
   </li>
 </ol>
 
-<h2 id="step_4-launch-cuttlefish-and-other-useful-cuttlefish-commands">Step_4: Launch cuttlefish and other useful cuttlefish commands</h2>
+<h3 id="step_4-launch-cuttlefish-and-other-useful-cuttlefish-commands">Step_4: Launch cuttlefish and other useful cuttlefish commands</h3>
 
 <ol>
   <li>
@@ -391,7 +391,7 @@ git clone https://github.com/google/android-cuttlefish
 
 <h1 id="build-customized-android-kernel-and-swap-into-cuttlefish">Build Customized Android Kernel and Swap into Cuttlefish</h1>
 
-<h2 id="build-customized-android-kernel">Build Customized Android Kernel</h2>
+<h3 id="build-customized-android-kernel">Build Customized Android Kernel</h3>
 
 <ol>
   <li>
@@ -502,7 +502,7 @@ git clone https://github.com/google/android-cuttlefish
   </li>
 </ol>
 
-<h2 id="swap-the-cutomized-android-kernel-into-cuttlefish">Swap the Cutomized Android Kernel into Cuttlefish</h2>
+<h3 id="swap-the-cutomized-android-kernel-into-cuttlefish">Swap the Cutomized Android Kernel into Cuttlefish</h3>
 
 <ol>
   <li>
