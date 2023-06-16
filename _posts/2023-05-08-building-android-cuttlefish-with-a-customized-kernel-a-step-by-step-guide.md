@@ -162,11 +162,21 @@ This script installs the Android Cuttlefish environment on a Linux-based system.
         # bazel build
         tools/bazel build //common:kernel_x86_64_dist
         ```
+
+        ```bash
+        # create output distribution
+        tools/bazel run //common:kernel_x86_64_dist -- --dist_dir=/home/username/android-kernel-5.15/vendor-build-output-x86
+        ```
         
     - **Build GKI Modules**
         
         ```bash
         tools/bazel build //common-modules/virtual-device:virtual_device_x86_64_dist
+        ```
+
+        ```bash
+        # create output distribution
+        tools/bazel run //common-modules/virtual-device:virtual_device_x86_64_dist -- --dist_dir=/home/username/android-kernel-5.15/vendor-build-output-x86
         ```
         
         Now, both `initramfs.img` and `bzImage` should be in `/home/username/android-kernel-5.15/vendor-build-output-x86`. You can now try swapping this kernel into your Cuttlefish Android Virtual Device.
