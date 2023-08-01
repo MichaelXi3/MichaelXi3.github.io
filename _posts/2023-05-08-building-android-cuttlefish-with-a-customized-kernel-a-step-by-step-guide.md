@@ -111,10 +111,11 @@ This script installs the Android Cuttlefish environment on a Linux-based system.
     ```bash
     HOME=$PWD ./bin/launch_cvd
     ```
+    
     ```bash
     # launch in daemon mode and set disk, ram, and cpu
     HOME=${PWD} ./bin/launch_cvd -daemon -memory_mb 27000 -data_policy always_create -blank_data_image_mb 30000 -cpus 1
-		```
+	```
 2. Enable cuttlefish root
     ```bash
     ./bin/adb root

@@ -12,7 +12,7 @@
 
     <!-- Open Graph -->
     <meta property="og:title"
-        content="Building Android Cuttlefish with a Customized Kernel: A Step by Step Guide - Sphere | Xi">
+        content="Android Cuttlefish Virtual Device Launch Automation: A Step by Step Guide - Sphere | Xi">
     
     <meta property="og:type" content="article">
     <meta property="og:description" content="Cuttlefish Introduction
@@ -35,7 +35,7 @@
     <meta property="og:url" content="http://localhost:4000/2023/05/08/building-android-cuttlefish-with-a-customized-kernel-a-step-by-step-guide/">
     <meta property="og:site_name" content="Sphere | Xi">
 
-    <title>Building Android Cuttlefish with a Customized Kernel: A Step by Step Guide - Sphere | Xi</title>
+    <title>Android Cuttlefish Virtual Device Launch Automation: A Step by Step Guide - Sphere | Xi</title>
 
     <!-- Web App Manifest -->
     <link rel="manifest" href="/pwa/manifest.json">
@@ -246,9 +246,9 @@
                         <a class="tag" href="/archive/?tag=Android+Cuttlefish" title="Android Cuttlefish">Android Cuttlefish</a>
                         
                     </div>
-                    <h1>Building Android Cuttlefish with a Customized Kernel: A Step by Step Guide</h1>
+                    <h1>Android Cuttlefish Virtual Device Launch Automation: A Step by Step Guide</h1>
                     
-                    <h2 class="subheading">Android Cuttlefish Virtual Machine</h2>
+                    <h2 class="subheading">Android Cuttlefish Virtual Device</h2>
                     <span class="meta">Posted by Michael Xi on May 8, 2023</span>
                 </div>
             </div>
@@ -278,19 +278,64 @@
 
 				<h1 id="cuttlefish-introduction">Cuttlefish Introduction</h1>
 
-<h3 id="what-is-cuttlefish">What is Cuttlefish?</h3>
+<h3 id="what-is-android-cuttlefish">What is Android Cuttlefish?</h3>
 
 <p>Android Cuttlefish is an open-source Android Virtual Device (AVD) developed by Google. Its purpose is to run Android as a virtual machine on Linux-based systems for testing and development purposes. It leverages QEMU, a popular open-source emulator, and KVM, a hardware-assisted virtualization technology, to enable efficient virtualization and emulation of Android devices. This allows developers, researchers, and testers to work with AOSP without having access to a physical device.</p>
 
-<p><img src="https://s2.loli.net/2023/05/09/m4tcKaVC5UbXBWd.png" alt="22.png" /></p>
+<p><img src="https://s2.loli.net/2023/05/09/m4tcKaVC5UbXBWd.png" alt="cuttlefish.png" /></p>
 
-<p><strong>Github Link</strong>: <a href="https://github.com/google/android-cuttlefish">https://github.com/google/android-cuttlefish</a></p>
+<ul>
+  <li><strong>Android Cuttlefish Documentation</strong>: https://source.android.com/docs/setup/create/cuttlefish</li>
+  <li><strong>Github Link</strong>: <a href="https://github.com/google/android-cuttlefish">https://github.com/google/android-cuttlefish</a></li>
+  <li><strong>Cuttlefish Introduction Slide</strong>: <a href="https://2net.co.uk/slides/aosp-aaos-meetup/2022-march-cuttlefish.pdf">https://2net.co.uk/slides/aosp-aaos-meetup/2022-march-cuttlefish.pdf</a></li>
+</ul>
 
-<p><strong>Cuttlefish Introduction Slide</strong>: <a href="https://2net.co.uk/slides/aosp-aaos-meetup/2022-march-cuttlefish.pdf">https://2net.co.uk/slides/aosp-aaos-meetup/2022-march-cuttlefish.pdf</a></p>
+<h3 id="why-we-need-android-cuttlefish">Why we need Android Cuttlefish?</h3>
 
-<h1 id="cuttlefish-setup-guide">Cuttlefish Setup Guide</h1>
+<p>One important feature of Android Cuttlefish is its full fidelity with the Android framework. This means that Cuttlefish responds to your interactions just like a physical phone with the same or modified Android OS source. In other words, Android Cuttlefish is designed for Android OS or Android Kernel hackers. On the other hand, the Android emulator commonly seen in Android studio is optimized for Android application development, with many functional hooks to appeal to the use cases of Android app developers. It is not suitable for OS developers.</p>
 
-<h3 id="step_1-make-sure-virtualization-with-kvm-is-available">Step_1: Make sure virtualization with KVM is available</h3>
+<h1 id="cuttlefish-setup-guide---automation">Cuttlefish Setup Guide - Automation</h1>
+
+<h3 id="step-0-prerequisites">Step 0: Prerequisites</h3>
+
+<ul>
+  <li><a href="https://old-releases.ubuntu.com/releases/22.04.1/">Ubuntu 22.04.1</a>: the following installation instructions have been tested on the Ubuntu Linux distribution with version 22.04.1. It is encouraged to use the same environment.</li>
+  <li><a href="https://github.com/MichaelXi3/android-cuttlefish-automation">Cuttlefish Launch Automation Github Repo</a>: provides shell scripts to automate the Android Cuttlefish launch. It also includes a Makefile to make the interaction with Cuttlefish easier by encapsulating android cuttlefish commands.</li>
+</ul>
+
+<h3 id="step-1-on-linux-desktop-clone-this-repository-and-navigate-to-the-android-cuttlefish-automation-folder-at-the-root-level-of-the-repository-then-run-the-shell-script">Step 1: On Linux desktop, clone this repository and navigate to the <code class="language-plaintext highlighter-rouge">android-cuttlefish-automation</code> folder at the root level of the repository. Then, run the shell script.</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>git clone https://github.com/MichaelXi3/android-cuttlefish-automation.git
+</pre></td></tr></tbody></table></code></pre></div></div>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre><span class="nb">source</span> ./create-android-cuttlefish.sh
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><strong>Note</strong>: During Step 2 of the process, your laptop will <strong>reboot</strong>. Once the reboot is complete, simply execute the shell script again. The progress of shell scripts will be tracked, and previously completed commands will not be re-run. The reason for the reboot is to trigger the installation of additional kernel modules and the application of udev rules for android cuttlefish.</p>
+
+<h3 id="step-2-interact-with-android-cuttlefish-using-makefile">Step 2: Interact with Android Cuttlefish using Makefile</h3>
+
+<p>After executing the shell script, you should be located in the <code class="language-plaintext highlighter-rouge">~android-cuttlefish/cf</code> directory. The script also copied a Makefile to this directory to help you interact with the Android Cuttlefish virtual device. The commands are described as follows:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="rouge-code"><pre>make shell                  <span class="c"># enter the shell of Android Cuttlefish</span>
+make root                   <span class="c"># running as root</span>
+make stop                   <span class="c"># stop the cuttlefish device</span>
+<span class="nv">HOME</span><span class="o">=</span><span class="nv">$PWD</span> ./bin/launch_cvd  <span class="c"># launch a new cuttlefish virtual device</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p>You also can add additional commands into this Makefile to make the interaction with android cuttlefish more straightforward.</p>
+
+<h1 id="cuttlefish-setup-guide---manual">Cuttlefish Setup Guide - Manual</h1>
+
+<blockquote>
+  <p>For  lastest manual launch instructions, check: https://android.googlesource.com/device/google/cuttlefish/</p>
+</blockquote>
+
+<h3 id="step-1-in-linux-desktop-or-virtual-machine-make-sure-virtualization-with-kvm-is-available">Step 1: In Linux desktop or virtual machine, make sure virtualization with KVM is available</h3>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
 </pre></td><td class="rouge-code"><pre><span class="nb">grep</span> <span class="nt">-c</span> <span class="nt">-w</span> <span class="s2">"vmx</span><span class="se">\|</span><span class="s2">svm"</span> /proc/cpuinfo
@@ -298,7 +343,7 @@
 
 <p>This should return a non-zero value. If running on a cloud machine, this may take cloud-vendor-specific steps to enable.</p>
 
-<h3 id="step_2-download-build-and-install-the-host-debian-packages">Step_2: Download, build, and install the host debian packages</h3>
+<h3 id="step-2-download-build-and-install-the-cuttlefish-host-debian-packages">Step 2: Download, build, and install the cuttlefish host debian packages</h3>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
 2
@@ -325,14 +370,14 @@ git clone https://github.com/google/android-cuttlefish
 <span class="nb">sudo </span>usermod <span class="nt">-aG</span> kvm,cvdnetwork,render <span class="nv">$USER</span>
 <span class="nb">sudo </span>reboot
 </pre></td></tr></tbody></table></code></pre></div></div>
-
 <p>This script installs the Android Cuttlefish environment on a Linux-based system.</p>
 
-<h3 id="step_3-download-ota-images-and-host-package-for-cuttlefish">Step_3: Download OTA images and host package for cuttlefish</h3>
+<h3 id="step-3-download-ota-images-and-host-package-of-android-cuttlefish">Step 3: Download OTA images and host package of Android Cuttlefish</h3>
 
-<p>✍🏻 <strong>OTA</strong> (Over-The-Air) image contains the Android system image and the necessary files to run Cuttlefish on a virtual machine.</p>
-
-<p>✍🏻 <strong>Host package</strong> includes the necessary tools, libraries, and configuration files for running the Cuttlefish virtual machine on your host system.</p>
+<ul>
+  <li><strong>OTA</strong> (Over-The-Air) image:  this file is a system image for the Cuttlefish Virtual Device (CVD), which is a part of AOSP.</li>
+  <li><strong>Host package</strong>: this file is a host package for Cuttlefish. It includes binaries and scripts that need to be run on the host machine to set up and run the Cuttlefish virtual device.</li>
+</ul>
 
 <ol>
   <li>Go to <a href="http://ci.android.com/">http://ci.android.com/</a></li>
@@ -342,7 +387,7 @@ git clone https://github.com/google/android-cuttlefish
   <li>Scroll down to the <strong>OTA</strong> images. These packages look like <code class="language-plaintext highlighter-rouge">aosp_cf_x86_64_phone-img-xxxxxx.zip</code> – it will always have <code class="language-plaintext highlighter-rouge">img</code> in the name. Download this file</li>
   <li>Scroll down to <code class="language-plaintext highlighter-rouge">cvd-host_package.tar.gz</code>. You should always download a <strong>host package</strong> from the same build as your images</li>
   <li>
-    <p>On your local system, combine the packages with following code</p>
+    <p>On your local system, <code class="language-plaintext highlighter-rouge">cd /path/to/android-cuttlefish</code>, combine the packages with following code</p>
 
     <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
 2
@@ -356,218 +401,34 @@ git clone https://github.com/google/android-cuttlefish
   </li>
 </ol>
 
-<h3 id="step_4-launch-cuttlefish-and-other-useful-cuttlefish-commands">Step_4: Launch cuttlefish and other useful cuttlefish commands</h3>
+<h3 id="step-4-launch-cuttlefish-and-other-useful-cuttlefish-commands">Step 4: Launch cuttlefish and other useful cuttlefish commands</h3>
 
 <ol>
-  <li>
-    <p>Launch cuttlefish virtual machine</p>
+  <li>Launch cuttlefish virtual machine
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre> <span class="nv">HOME</span><span class="o">=</span><span class="nv">$PWD</span> ./bin/launch_cvd
+</pre></td></tr></tbody></table></code></pre></div>    </div>
 
     <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-</pre></td><td class="rouge-code"><pre> <span class="nv">$ HOME</span><span class="o">=</span><span class="nv">$PWD</span> ./bin/launch_cvd
+2
+</pre></td><td class="rouge-code"><pre> <span class="c"># launch in daemon mode and set disk, ram, and cpu</span>
+ <span class="nv">HOME</span><span class="o">=</span><span class="k">${</span><span class="nv">PWD</span><span class="k">}</span> ./bin/launch_cvd <span class="nt">-daemon</span> <span class="nt">-memory_mb</span> 27000 <span class="nt">-data_policy</span> always_create <span class="nt">-blank_data_image_mb</span> 30000 <span class="nt">-cpus</span> 1
 </pre></td></tr></tbody></table></code></pre></div>    </div>
   </li>
-  <li>
-    <p>Enable cuttlefish root</p>
-
+  <li>Enable cuttlefish root
     <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
 </pre></td><td class="rouge-code"><pre> ./bin/adb root
 </pre></td></tr></tbody></table></code></pre></div>    </div>
   </li>
-  <li>
-    <p>Launch cuttlefish shell</p>
-
+  <li>Launch cuttlefish shell
     <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
 </pre></td><td class="rouge-code"><pre> ./bin/adb shell
 </pre></td></tr></tbody></table></code></pre></div>    </div>
   </li>
-  <li>
-    <p>Stop cuttlefish virtual machine</p>
-
+  <li>Stop cuttlefish virtual machine
     <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-</pre></td><td class="rouge-code"><pre> <span class="nv">HOME</span><span class="o">=</span><span class="nv">$PWD</span> ./bin/stop_cvd
+</pre></td><td class="rouge-code"><pre> pkill run_cvd
 </pre></td></tr></tbody></table></code></pre></div>    </div>
-  </li>
-</ol>
-
-<h1 id="build-customized-android-kernel-and-swap-into-cuttlefish">Build Customized Android Kernel and Swap into Cuttlefish</h1>
-
-<h3 id="build-customized-android-kernel">Build Customized Android Kernel</h3>
-
-<ol>
-  <li>
-    <p>Install <code class="language-plaintext highlighter-rouge">Repo</code> Command for downloading Android Kernel source code</p>
-
-    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-2
-3
-4
-5
-</pre></td><td class="rouge-code"><pre> <span class="c"># Debian/Ubuntu.</span>
- <span class="nv">$ </span><span class="nb">sudo </span>apt-get <span class="nb">install </span>repo
-    
- <span class="c"># Gentoo.</span>
- <span class="nv">$ </span><span class="nb">sudo </span>emerge dev-vcs/repo
-</pre></td></tr></tbody></table></code></pre></div>    </div>
-
-    <p>Or install manually by the following code:</p>
-
-    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-2
-3
-4
-</pre></td><td class="rouge-code"><pre> <span class="nv">$ </span><span class="nb">mkdir</span> <span class="nt">-p</span> ~/.bin
- <span class="nv">$ PATH</span><span class="o">=</span><span class="s2">"</span><span class="k">${</span><span class="nv">HOME</span><span class="k">}</span><span class="s2">/.bin:</span><span class="k">${</span><span class="nv">PATH</span><span class="k">}</span><span class="s2">"</span>
- <span class="nv">$ </span>curl https://storage.googleapis.com/git-repo-downloads/repo <span class="o">&gt;</span> ~/.bin/repo
- <span class="nv">$ </span><span class="nb">chmod </span>a+rx ~/.bin/repo
-</pre></td></tr></tbody></table></code></pre></div>    </div>
-  </li>
-  <li>
-    <p>Download Android Kernel source code</p>
-
-    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-2
-3
-</pre></td><td class="rouge-code"><pre> <span class="c"># Branch common-android11-5.4 as an example</span>
- repo init <span class="nt">-u</span> https://android.googlesource.com/kernel/manifest <span class="nt">-b</span> common-android11-5.4
- repo <span class="nb">sync</span> <span class="nt">-j12</span>
-</pre></td></tr></tbody></table></code></pre></div>    </div>
-
-    <p>The option <code class="language-plaintext highlighter-rouge">j12</code> means that the sync operation will use 12 parallel threads or jobs. If an error occurs during the sync process, you can try reducing the number of threads by lowering the number that follows the <code class="language-plaintext highlighter-rouge">j</code> option first.</p>
-  </li>
-  <li>
-    <p>Apply the kernel patches to Android Kernel source code for customization</p>
-
-    <blockquote>
-      <p>In this example, we are applying a Linux system provenance kernel patch to the kernel.</p>
-    </blockquote>
-
-    <ol>
-      <li><strong>Step_1</strong>: Download Camflow Kernel Patch from Camflow Repo
-        <ul>
-          <li>Camflow is a major LSM for Linux kernel Provenance</li>
-          <li>The link of Camflow patch releases is: <a href="https://github.com/CamFlow/camflow-dev/releases">https://github.com/CamFlow/camflow-dev/releases</a></li>
-          <li>Download one of the release of Camflow from the link above, in this example, we use Camflow v0.8.0 and Android Kernel branch Android13-5.15-LTS</li>
-        </ul>
-      </li>
-      <li><strong>Step_2</strong>: Install Camflow Kernel Patch to Kernel source code before building it
-        <ul>
-          <li>
-            <p>Apply the two Camflow patches to the <code class="language-plaintext highlighter-rouge">common</code> kernel source code directory</p>
-
-            <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-2
-3
-</pre></td><td class="rouge-code"><pre>  <span class="nb">cd </span>android-kernel-main-camflow/common
-  git apply ../../Downloads/0001-information-flow.patch
-  git apply ../../Downloads/0002-camflow.patch
-</pre></td></tr></tbody></table></code></pre></div>            </div>
-          </li>
-        </ul>
-      </li>
-    </ol>
-  </li>
-  <li>
-    <p>Build the Android Kernel</p>
-
-    <blockquote>
-      <p>Since Android 10, Android has introduced a new <strong><a href="https://source.android.com/devices/architecture/kernel/generic-kernel-image">Generic Kernel Image(GKI)</a></strong> in kernel 4.19 and above. This means that the kernel building process has been divided into two parts: <code class="language-plaintext highlighter-rouge">Generic Kernel</code> and <code class="language-plaintext highlighter-rouge">GKI Module</code>. We have to build these two parts separately.</p>
-
-      <p><img src="https://s2.loli.net/2023/05/09/4iUwsP7QLefFHTx.png" alt="33.png" /></p>
-    </blockquote>
-
-    <ul>
-      <li>
-        <p><strong>Build Generic Kernel</strong></p>
-
-        <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-2
-</pre></td><td class="rouge-code"><pre>  <span class="c"># bazel build</span>
-  tools/bazel build //common:kernel_x86_64_dist
-</pre></td></tr></tbody></table></code></pre></div>        </div>
-
-        <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-2
-</pre></td><td class="rouge-code"><pre>  <span class="c"># create output distribution</span>
-  tools/bazel run //common:kernel_x86_64_dist <span class="nt">--</span> <span class="nt">--dist_dir</span><span class="o">=</span>/home/username/android-kernel-5.15/vendor-build-output-x86
-</pre></td></tr></tbody></table></code></pre></div>        </div>
-      </li>
-      <li>
-        <p><strong>Build GKI Modules</strong></p>
-
-        <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-</pre></td><td class="rouge-code"><pre>  tools/bazel build //common-modules/virtual-device:virtual_device_x86_64_dist
-</pre></td></tr></tbody></table></code></pre></div>        </div>
-
-        <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-2
-</pre></td><td class="rouge-code"><pre>  <span class="c"># create output distribution</span>
-  tools/bazel run //common-modules/virtual-device:virtual_device_x86_64_dist <span class="nt">--</span> <span class="nt">--dist_dir</span><span class="o">=</span>/home/username/android-kernel-5.15/vendor-build-output-x86
-</pre></td></tr></tbody></table></code></pre></div>        </div>
-
-        <p>Now, both <code class="language-plaintext highlighter-rouge">initramfs.img</code> and <code class="language-plaintext highlighter-rouge">bzImage</code> should be in <code class="language-plaintext highlighter-rouge">/home/username/android-kernel-5.15/vendor-build-output-x86</code>. You can now try swapping this kernel into your Cuttlefish Android Virtual Device.</p>
-
-        <p>✍🏻 <strong><code class="language-plaintext highlighter-rouge">initramfs.img</code></strong>: The initial RAM filesystem is a temporary in-memory file system that contains essential files and utilities required for mounting the root file system. It is compressed and stored as an image file, such as <code class="language-plaintext highlighter-rouge">initramfs.img</code>.</p>
-
-        <p>✍🏻 <strong><code class="language-plaintext highlighter-rouge">bzImage</code></strong>: The <code class="language-plaintext highlighter-rouge">bzImage</code> is a compressed Linux kernel image created during the kernel compilation process. It is designed to be small enough to fit within limited memory space during the boot process. The <code class="language-plaintext highlighter-rouge">bzImage</code> is loaded by the bootloader, decompressed, and executed to initialize the system hardware and kernel before transitioning to the root file system.</p>
-      </li>
-    </ul>
-  </li>
-</ol>
-
-<h3 id="swap-the-cutomized-android-kernel-into-cuttlefish">Swap the Cutomized Android Kernel into Cuttlefish</h3>
-
-<ol>
-  <li>
-    <p>Set the <code class="language-plaintext highlighter-rouge">DIST_FOLDER</code> as the folder that contains <code class="language-plaintext highlighter-rouge">initramfs.img</code> and <code class="language-plaintext highlighter-rouge">bzImage</code></p>
-
-    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-</pre></td><td class="rouge-code"><pre> <span class="nv">DIST_FOLDER</span><span class="o">=</span><span class="si">$(</span><span class="nb">readlink</span> <span class="nt">-f</span> /home/username/android-kernel-5.15-success/out/android13-5.15/dist<span class="si">)</span>
-</pre></td></tr></tbody></table></code></pre></div>    </div>
-  </li>
-  <li>
-    <p>Navigate to <code class="language-plaintext highlighter-rouge">android-cuttlefish/cf</code>, and then use the following command to launch Cuttlefish using the kernel we just built.</p>
-
-    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-</pre></td><td class="rouge-code"><pre> <span class="nv">HOME</span><span class="o">=</span><span class="k">${</span><span class="nv">PWD</span><span class="k">}</span> ./bin/launch_cvd <span class="nt">-daemon</span> <span class="nt">-initramfs_path</span> <span class="s2">"</span><span class="k">${</span><span class="nv">DIST_FOLDER</span><span class="k">}</span><span class="s2">"</span>/initramfs.img <span class="nt">-kernel_path</span> <span class="s2">"</span><span class="k">${</span><span class="nv">DIST_FOLDER</span><span class="k">}</span><span class="s2">"</span>/bzImage
-</pre></td></tr></tbody></table></code></pre></div>    </div>
-  </li>
-  <li>
-    <p>Launch the shell of cuttlefish and check the kernel version to verify that kernel is swapped successfully</p>
-
-    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-</pre></td><td class="rouge-code"><pre> ./bin/adb shell
-</pre></td></tr></tbody></table></code></pre></div>    </div>
-
-    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-2
-</pre></td><td class="rouge-code"><pre> vsoc_x86_64:/proc <span class="nv">$ </span><span class="nb">cat </span>version
- Linux version 5.15.78-maybe-dirty <span class="o">(</span>build-user@build-host<span class="o">)</span> <span class="o">(</span>Android <span class="o">(</span>8508608, based on r450784e<span class="o">)</span> clang version 14.0.7 <span class="o">(</span>https://android.googlesource.com/toolchain/llvm-project 4c603efb0cca074e9238af8b4106c30add4418f6<span class="o">)</span>, LLD 14.0.7<span class="o">)</span>
-</pre></td></tr></tbody></table></code></pre></div>    </div>
-  </li>
-  <li>
-    <p>To check the files of Camflow in Android Cuttlefish, we need to mount a few directories</p>
-    <ol>
-      <li><strong>Step_1</strong>: Exit current Cuttlefish: <code class="language-plaintext highlighter-rouge">HOME=$PWD ./bin/stop_cvd</code></li>
-      <li><strong>Step_2</strong>: Launch a new Cuttlefish: <code class="language-plaintext highlighter-rouge">HOME=${PWD} ./bin/launch_cvd -daemon -initramfs_path "${DIST_FOLDER}"/initramfs.img -kernel_path "${DIST_FOLDER}"/bzImage</code></li>
-      <li><strong>Step_3</strong>: Enable root: <code class="language-plaintext highlighter-rouge">./bin/adb root</code></li>
-      <li><strong>Step_4</strong>: Launch Cuttlefish root shell: <code class="language-plaintext highlighter-rouge">./bin/adb shell</code></li>
-      <li>
-        <p><strong>Step_5</strong>: mount <code class="language-plaintext highlighter-rouge">securityfs</code> manually</p>
-
-        <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-</pre></td><td class="rouge-code"><pre> mount <span class="nt">-t</span> securityfs securityfs /sys/kernel/security
-</pre></td></tr></tbody></table></code></pre></div>        </div>
-      </li>
-      <li>
-        <p><strong>Step_6</strong>: mount <code class="language-plaintext highlighter-rouge">debugfs</code> manually</p>
-
-        <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-</pre></td><td class="rouge-code"><pre> mount <span class="nt">-t</span> debugfs debugfs /sys/kernel/debug
-</pre></td></tr></tbody></table></code></pre></div>        </div>
-
-        <p>Files related to Camflow should exist in both the <code class="language-plaintext highlighter-rouge">debugfs</code> and <code class="language-plaintext highlighter-rouge">securityfs</code> directories.</p>
-      </li>
-    </ol>
   </li>
 </ol>
 
@@ -576,7 +437,7 @@ git clone https://github.com/google/android-cuttlefish
 <ol>
   <li>Google Cuttlefish Documentation: <a href="https://android.googlesource.com/device/google/cuttlefish/">Link</a></li>
   <li>
-    <p>Cheatsheat of <code class="language-plaintext highlighter-rouge">launch_cvd</code></p>
+    <p>Cheatsheat of cuttlefish <code class="language-plaintext highlighter-rouge">launch_cvd</code></p>
 
     <table>
       <thead>
@@ -637,60 +498,7 @@ git clone https://github.com/google/android-cuttlefish
       </tbody>
     </table>
   </li>
-  <li>
-    <p><strong>Steps to Customize Kernel Configs</strong>: The goal is to enable any desired CONFIGs by modifying the kernel building script.</p>
-
-    <blockquote>
-      <p>Useful Blog: <a href="https://blog.senyuuri.info/posts/2021-06-30-ebpf-bcc-android-instrumentation/#2-build-a-custom-generic-kernel-image-gki">Link</a></p>
-
-      <p>Documentations relate to LSM in Android: <a href="https://android.googlesource.com/kernel/msm/+/android-5.1.0_r0.6/Documentation/security">Link</a></p>
-
-    </blockquote>
-
-    <p>In <code class="language-plaintext highlighter-rouge">android-kernel-5.15/common</code>, there is a config file named <code class="language-plaintext highlighter-rouge">build.config.gki</code>. Write an update config function here and configure the new CONFIG or delete unwanted CONFIG.</p>
-
-    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-</pre></td><td class="rouge-code"><pre> <span class="nv">DEFCONFIG</span><span class="o">=</span>gki_defconfig
- <span class="nv">POST_DEFCONFIG_CMDS</span><span class="o">=</span><span class="s2">"check_defconfig &amp;&amp; **update_lsm_config**"</span>
-    
- <span class="k">function </span>update_lsm_config<span class="o">()</span> <span class="o">{</span>
-     <span class="k">${</span><span class="nv">KERNEL_DIR</span><span class="k">}</span>/scripts/config <span class="nt">--file</span> <span class="k">${</span><span class="nv">OUT_DIR</span><span class="k">}</span>/.config <span class="se">\</span>
-        <span class="nt">-d</span> CONFIG_LTO <span class="se">\</span>
-        <span class="nt">-d</span> CONFIG_LTO_CLANG <span class="se">\</span>
-        <span class="nt">-e</span> CONFIG_NETFILTER <span class="se">\</span>
-        <span class="nt">-e</span> CONFIG_SECURITYFS <span class="se">\</span>
-        <span class="nt">-e</span> CONFIG_SECURITY_NETWORK <span class="se">\</span>
-        <span class="nt">-e</span> CONFIG_SECURITY_PROVENANCE <span class="se">\</span>
-        <span class="nt">-e</span> CONFIG_SECURITY_TOMOYO <span class="se">\</span>
-        <span class="nt">-e</span> CONFIG_SECURITY_APPARMOR <span class="se">\</span>
-        <span class="nt">-e</span> CONFIG_LSM
-     <span class="o">(</span><span class="nb">cd</span> <span class="k">${</span><span class="nv">OUT_DIR</span><span class="k">}</span> <span class="o">&amp;&amp;</span> <span class="se">\</span>
-      make <span class="k">${</span><span class="nv">CC_LD_ARG</span><span class="k">}</span> <span class="nv">O</span><span class="o">=</span><span class="k">${</span><span class="nv">OUT_DIR</span><span class="k">}</span> olddefconfig<span class="o">)</span>
- <span class="o">}</span>
-</pre></td></tr></tbody></table></code></pre></div>    </div>
-
-    <ul>
-      <li><code class="language-plaintext highlighter-rouge">-d</code> means delete configuration</li>
-      <li><code class="language-plaintext highlighter-rouge">-e</code> means add configuration</li>
-      <li>This function will change <code class="language-plaintext highlighter-rouge">.config</code> file directly</li>
-    </ul>
-  </li>
+  <li>Virtual Machine in Android: Everything you need to know: <a href="https://medium.com/android-news/virtual-machine-in-android-everything-you-need-to-know-9ec695f7313b">Link</a></li>
 </ol>
 
 
