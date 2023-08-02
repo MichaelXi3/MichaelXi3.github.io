@@ -15,7 +15,8 @@ $ bundle exec jekyll serve  # alternatively, npm start
 ```
 
 ---
-> Note: `tags` section can also be written as `tags: [Life, Meta]`.
+
+### Create New Post
 
 After [Rake](https://github.com/ruby/rake) is introduced, we can use the command below to simplify the post creation:
 
@@ -23,4 +24,6 @@ After [Rake](https://github.com/ruby/rake) is introduced, we can use the command
 rake post title="Hello 2015" subtitle="Hello World, Hello Blog"
 ```
 
-This command will automatially generate a sample post similar as above under the `_posts/` folder.
+> Note: `tags` section can also be written as `tags: [Life, Meta]`.
+
+This command will automatically generate a sample post similar to the above under the `_posts/` folder.
