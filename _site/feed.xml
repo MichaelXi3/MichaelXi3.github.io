@@ -5,9 +5,1113 @@
     <description></description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Tue, 01 Aug 2023 18:01:48 -0400</pubDate>
-    <lastBuildDate>Tue, 01 Aug 2023 18:01:48 -0400</lastBuildDate>
+    <pubDate>Fri, 04 Aug 2023 16:18:32 -0400</pubDate>
+    <lastBuildDate>Fri, 04 Aug 2023 16:18:32 -0400</lastBuildDate>
     <generator>Jekyll v4.3.2</generator>
+    
+      <item>
+        <title>CamFlow Android Provenance System</title>
+        <description>&lt;p&gt;&lt;a href=&quot;https://camflow.org/&quot;&gt;CamFlow&lt;/a&gt; uses &lt;a href=&quot;https://en.wikipedia.org/wiki/Linux_Security_Modules&quot;&gt;Linux Security Module (LSM)&lt;/a&gt; to capture data provenance for whole-system auditing purposes. The provenance capture mechanism is highly configurable. The CamFlow Android Provenance project is a transplant of CamFlow to Android, applying the whole-system provenance concept to AOSP and capturing system-level activities. For the project source code, see: &lt;a href=&quot;https://github.com/MichaelXi3/camflow-android-provenance&quot;&gt;https://github.com/MichaelXi3/camflow-android-provenance&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;getting-started&quot;&gt;Getting Started&lt;/h2&gt;
+
+&lt;p&gt;These instructions will guide you through building and installing CamFlow in an Android environment, specifically the Android Cuttlefish virtual device.&lt;/p&gt;
+
+&lt;h3 id=&quot;prerequisites&quot;&gt;Prerequisites&lt;/h3&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://old-releases.ubuntu.com/releases/22.04.1/&quot;&gt;Ubuntu 22.04.1&lt;/a&gt;: we use this Ubuntu distribution as our development environment.&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://source.android.com/docs/setup/create/cuttlefish&quot;&gt;Android Cuttlefish Virtual Device&lt;/a&gt;: a configurable virtual Android device that replicates the framework-based behavior of a real device.&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://source.android.com/docs/setup/build/building-kernels&quot;&gt;Android Kernel&lt;/a&gt;: build Android Kernel with the CamFlow patch. We will install the kernel part of CamFlow in the Android kernel. We use the Android kernel branch &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;common-android13-5.15-lts&lt;/code&gt;.&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://developer.android.com/studio&quot;&gt;Android Studio&lt;/a&gt;: CamFlow user-space daemons are compiled and built in Android Studio.&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://github.com/CamFlow/camflow-dev/releases/tag/v0.8.0&quot;&gt;CamFlow&lt;/a&gt;: the CamFlow kernel patch used in Android is &lt;strong&gt;v0.8.0&lt;/strong&gt;. The modified userspace CamFlow deamons are included in this repo and should be built in Android studio using &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;android-ndk-r23b&lt;/code&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;installing&quot;&gt;Installing&lt;/h3&gt;
+
+&lt;p&gt;A step by step guide of setting up CamFlow Android Provenance System on Android virtual device.&lt;/p&gt;
+
+&lt;hr /&gt;
+&lt;h4 id=&quot;set-up-android-cuttlefish---automation&quot;&gt;Set Up Android Cuttlefish - Automation&lt;/h4&gt;
+
+&lt;h5 id=&quot;step-1-on-the-linux-desktop-clone-this-repository-and-navigate-to-the-android-cuttlefish-automation-folder-then-run-the-shell-script&quot;&gt;Step 1: On the Linux desktop, clone this repository and navigate to the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;android-cuttlefish-automation&lt;/code&gt; folder. Then, run the shell script.&lt;/h5&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;nb&quot;&gt;source&lt;/span&gt; ./create-android-cuttlefish.sh
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;:warning: During this process, your laptop will &lt;strong&gt;reboot&lt;/strong&gt;. Once the reboot is complete, simply execute the shell script again. The progress will be tracked, and previously completed commands will not be re-run. The reason for the reboot is to trigger the installation of additional kernel modules and update udev rules.&lt;/p&gt;
+
+&lt;h5 id=&quot;step-2-interact-with-android-cuttlefish-using-makefile&quot;&gt;Step 2: Interact with Android Cuttlefish using Makefile&lt;/h5&gt;
+
+&lt;p&gt;After executing the shell script, you should be located in the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;~android-cuttlefish/cf&lt;/code&gt; directory. The script also copied a Makefile to this directory to help you interact with the Android Cuttlefish virtual device. Here are the commands you can run to interact with the Android virtual device:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+3
+4
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt;make root                   &lt;span class=&quot;c&quot;&gt;# running as root in the shell&lt;/span&gt;
+make shell                  &lt;span class=&quot;c&quot;&gt;# enter the shell of Android Cuttlefish&lt;/span&gt;
+make stop                   &lt;span class=&quot;c&quot;&gt;# stop the cuttlefish device&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;HOME&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$PWD&lt;/span&gt; ./bin/launch_cvd &lt;span class=&quot;nt&quot;&gt;-daemon&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;# launch a new cuttlefish virtual device after the previous one is stopped&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;hr /&gt;
+&lt;h4 id=&quot;set-up-android-cuttlefish---manual&quot;&gt;Set Up Android Cuttlefish - Manual&lt;/h4&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;:warning: &lt;strong&gt;If you used “&lt;em&gt;Set Up Android Cuttlefish - Automation&lt;/em&gt;”, you can skip this part.&lt;/strong&gt; For the lastest manual launch instructions, check: https://android.googlesource.com/device/google/cuttlefish/&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h5 id=&quot;step-1-in-the-linux-desktop-or-virtual-machine-make-sure-virtualization-with-kvm-is-available&quot;&gt;Step 1: In the Linux desktop or virtual machine, make sure virtualization with KVM is available&lt;/h5&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;nb&quot;&gt;grep&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-c&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-w&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;vmx&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\|&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;svm&quot;&lt;/span&gt; /proc/cpuinfo
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;This should return a non-zero value. If running on a cloud machine, this may take cloud-vendor-specific steps to enable.&lt;/p&gt;
+
+&lt;h5 id=&quot;step-2-download-build-and-install-the-cuttlefish-host-debian-packages&quot;&gt;Step 2: Download, build, and install the Cuttlefish host debian packages&lt;/h5&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;apt &lt;span class=&quot;nb&quot;&gt;install&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-y&lt;/span&gt; git devscripts config-package-dev debhelper-compat golang curl
+git clone https://github.com/google/android-cuttlefish
+&lt;span class=&quot;nb&quot;&gt;cd &lt;/span&gt;android-cuttlefish
+&lt;span class=&quot;k&quot;&gt;for &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;dir &lt;/span&gt;&lt;span class=&quot;k&quot;&gt;in &lt;/span&gt;base frontend&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do
+  &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;cd&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$dir&lt;/span&gt;
+  debuild &lt;span class=&quot;nt&quot;&gt;-i&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-us&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-uc&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-b&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-d&lt;/span&gt;
+  &lt;span class=&quot;nb&quot;&gt;cd&lt;/span&gt; ..
+&lt;span class=&quot;k&quot;&gt;done
+&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;dpkg &lt;span class=&quot;nt&quot;&gt;-i&lt;/span&gt; ./cuttlefish-base_&lt;span class=&quot;k&quot;&gt;*&lt;/span&gt;_&lt;span class=&quot;k&quot;&gt;*&lt;/span&gt;64.deb &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;apt-get &lt;span class=&quot;nb&quot;&gt;install&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-f&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;dpkg &lt;span class=&quot;nt&quot;&gt;-i&lt;/span&gt; ./cuttlefish-user_&lt;span class=&quot;k&quot;&gt;*&lt;/span&gt;_&lt;span class=&quot;k&quot;&gt;*&lt;/span&gt;64.deb &lt;span class=&quot;o&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;apt-get &lt;span class=&quot;nb&quot;&gt;install&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-f&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;usermod &lt;span class=&quot;nt&quot;&gt;-aG&lt;/span&gt; kvm,cvdnetwork,render &lt;span class=&quot;nv&quot;&gt;$USER&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;reboot
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;This script installs the Android Cuttlefish environment on a Linux-based system.&lt;/p&gt;
+
+&lt;h5 id=&quot;step-3-download-ota-images-and-host-package-of-android-cuttlefish&quot;&gt;Step 3: Download OTA images and host package of Android Cuttlefish&lt;/h5&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;OTA&lt;/strong&gt; (Over-The-Air) image:  this file is a system image for the Cuttlefish Virtual Device (CVD), which is a part of AOSP.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Host package&lt;/strong&gt;: this file is a host package for Cuttlefish. It includes binaries and scripts that need to be run on the host machine to set up and run the Cuttlefish virtual device.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Go to &lt;a href=&quot;http://ci.android.com/&quot;&gt;http://ci.android.com/&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Enter a branch name. Start with &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;aosp-master&lt;/code&gt; if you don‘t know what you’re looking for&lt;/li&gt;
+  &lt;li&gt;Navigate to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;aosp_cf_x86_64_phone&lt;/code&gt; and click on &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;userdebug&lt;/code&gt; for the latest build&lt;/li&gt;
+  &lt;li&gt;Click on &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Artifacts&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;Scroll down to the &lt;strong&gt;OTA&lt;/strong&gt; images. These packages look like &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;aosp_cf_x86_64_phone-img-xxxxxx.zip&lt;/code&gt; – it will always have &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;img&lt;/code&gt; in the name. Download this file&lt;/li&gt;
+  &lt;li&gt;Scroll down to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;cvd-host_package.tar.gz&lt;/code&gt;. You should always download a &lt;strong&gt;host package&lt;/strong&gt; from the same build as your images&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;On your local system, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;cd /path/to/android-cuttlefish&lt;/code&gt;, combine the packages with following code&lt;/p&gt;
+
+    &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+3
+4
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt; &lt;span class=&quot;nb&quot;&gt;mkdir &lt;/span&gt;cf
+ &lt;span class=&quot;nb&quot;&gt;cd &lt;/span&gt;cf
+ &lt;span class=&quot;nb&quot;&gt;tar &lt;/span&gt;xvf /path/to/cvd-host_package.tar.gz
+ unzip /path/to/aosp_cf_x86_64_phone-img-xxxxxx.zip
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h5 id=&quot;step-4-launch-cuttlefish-and-other-useful-cuttlefish-commands&quot;&gt;Step 4: Launch cuttlefish and other useful cuttlefish commands&lt;/h5&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Launch cuttlefish virtual machine
+    &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt; &lt;span class=&quot;nv&quot;&gt;HOME&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$PWD&lt;/span&gt; ./bin/launch_cvd &lt;span class=&quot;nt&quot;&gt;-daemon&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Enable cuttlefish root
+    &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt; ./bin/adb root
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Launch cuttlefish shell&lt;/p&gt;
+
+    &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt; ./bin/adb shell
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Stop cuttlefish virtual machine
+    &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt; pkill run_cvd
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+    &lt;hr /&gt;
+    &lt;h4 id=&quot;build-android-kernel-with-camflow-patch-applied&quot;&gt;Build Android Kernel with CamFlow Patch Applied&lt;/h4&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h5 id=&quot;step-1-install-the--repo-command-to-download-android-kernel-source-code-and-create-a-directory-for-android-kernel-build&quot;&gt;Step 1: Install the  &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Repo&lt;/code&gt; command to download Android Kernel source code and create a directory for Android kernel build&lt;/h5&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Repo&lt;/code&gt; command page: https://gerrit.googlesource.com/git-repo/+/refs/heads/main/README.md&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+3
+4
+5
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;c&quot;&gt;# Debian/Ubuntu&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;apt-get &lt;span class=&quot;nb&quot;&gt;install &lt;/span&gt;repo
+
+&lt;span class=&quot;c&quot;&gt;# Gentoo&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;emerge dev-vcs/repo
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;Or install &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;repo&lt;/code&gt; manually using the following commands:&lt;/p&gt;
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+3
+4
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;mkdir&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-p&lt;/span&gt; ~/.bin
+&lt;span class=&quot;nv&quot;&gt;$ PATH&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;HOME&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;/.bin:&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;PATH&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;curl https://storage.googleapis.com/git-repo-downloads/repo &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; ~/.bin/repo
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;chmod &lt;/span&gt;a+rx ~/.bin/repo
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;Then at your home directory, create a directory for Android Kernel: (this directory &lt;strong&gt;MUST&lt;/strong&gt; be separated from Android cuttlefish directory!)&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;cd&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;mkdir &lt;/span&gt;android-kernel-5.15 &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;cd &lt;/span&gt;android-kernel-5.15
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h5 id=&quot;step-2-download-android-kernel-source-code&quot;&gt;Step 2: Download Android Kernel source code&lt;/h5&gt;
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+3
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;c&quot;&gt;# Branch android13-5.15-LTS as an example&lt;/span&gt;
+repo init &lt;span class=&quot;nt&quot;&gt;-u&lt;/span&gt; https://android.googlesource.com/kernel/manifest &lt;span class=&quot;nt&quot;&gt;-b&lt;/span&gt; common-android13-5.15-lts
+repo &lt;span class=&quot;nb&quot;&gt;sync&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-j12&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;The option &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;j12&lt;/code&gt; means that the sync operation will use 12 parallel threads or jobs. If an error occurs during the sync process, you can try reducing the number of threads by lowering the number that follows the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;j&lt;/code&gt; option first.&lt;/p&gt;
+
+&lt;h5 id=&quot;step-3-apply-the-kernel-patches-to-android-kernel-source-code-for-customization&quot;&gt;Step 3: Apply the kernel patches to Android Kernel source code for customization&lt;/h5&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Download CamFlow kernel patch from the CamFlow repository
+    &lt;ul&gt;
+      &lt;li&gt;CamFlow is a major LSM for Linux kernel provenance&lt;/li&gt;
+      &lt;li&gt;Download one of the releases of CamFlow from the link below. In this example, we use &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Camflow v0.8.0&lt;/code&gt; since it’s compatible with the Android Kernel branch &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;android13-5.15-LTS&lt;/code&gt;&lt;/li&gt;
+      &lt;li&gt;The link of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Camflow v0.8.0&lt;/code&gt; patch releases is: &lt;a href=&quot;https://github.com/CamFlow/camflow-dev/releases/tag/v0.8.0&quot;&gt;Link&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Install CamFlow kernel patch to kernel source code before building it
+    &lt;ul&gt;
+      &lt;li&gt;Apply the two CamFlow patches to the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;common&lt;/code&gt; kernel source code directory
+        &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+3
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt; &lt;span class=&quot;nb&quot;&gt;cd  &lt;/span&gt;android-kernel-5.15/common
+ git apply path/to/0001-information-flow.patch
+ git apply path/to/0002-camflow.patch
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;        &lt;/div&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Configure the kernel configuration to ensure the camflow provenance LSM is properly loaded and is processed last
+    &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt; &lt;span class=&quot;nb&quot;&gt;cd  &lt;/span&gt;android-kernel-5.15/common
+ make menuconfig
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+    &lt;p&gt;&lt;img src=&quot;https://s2.loli.net/2023/07/29/uol1rChpDmw2Ls9.png&quot; alt=&quot;camflow-config1&quot; /&gt;
+ &lt;img src=&quot;https://s2.loli.net/2023/07/29/MaABjHfgT9mzusN.png&quot; alt=&quot;camflow-config2&quot; /&gt;
+ &lt;img src=&quot;https://s2.loli.net/2023/07/29/tLJuprdmaMlGkE6.png&quot; alt=&quot;camflow-config3&quot; /&gt;&lt;/p&gt;
+    &lt;ul&gt;
+      &lt;li&gt;Make sure the “provenance” is added at the end of enabled LSMs list&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Download and run this shell script to modify the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;gki_defconfig&lt;/code&gt; to &lt;strong&gt;avoid the savedefconfig mismatch error&lt;/strong&gt;
+    &lt;blockquote&gt;
+      &lt;p&gt;If the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;gdown&lt;/code&gt; command is not working, you can obtain this shell script from the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;kernel-config-setting-shell&lt;/code&gt; directory at the root level of this repository.&lt;/p&gt;
+    &lt;/blockquote&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+3
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt;  &lt;span class=&quot;nb&quot;&gt;cd&lt;/span&gt; ..   &lt;span class=&quot;c&quot;&gt;# go to android-kernel-5.15&lt;/span&gt;
+  gdown &lt;span class=&quot;nt&quot;&gt;--id&lt;/span&gt; 1x2fLFHlr_UtoCa0_MmHSWHLkiDBnZrNe
+  &lt;span class=&quot;nb&quot;&gt;source&lt;/span&gt; ./modify-build-configs.sh
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h5 id=&quot;step-4-build-the-android-kernel&quot;&gt;Step 4: Build the Android Kernel&lt;/h5&gt;
+&lt;blockquote&gt;
+  &lt;p&gt;Since Android 10, Android has introduced a new &lt;strong&gt;&lt;a href=&quot;https://source.android.com/devices/architecture/kernel/generic-kernel-image&quot;&gt;Generic Kernel Image(GKI)&lt;/a&gt;&lt;/strong&gt; in kernel 4.19 and above. This means that the kernel building process has been divided into two parts: &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Generic Kernel&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Vendor Modules&lt;/code&gt;. We have to build these two parts separately.&lt;/p&gt;
+
+  &lt;p&gt;&lt;img src=&quot;https://s2.loli.net/2023/05/09/4iUwsP7QLefFHTx.png&quot; alt=&quot;kernel.png&quot; /&gt;&lt;/p&gt;
+  &lt;ul&gt;
+    &lt;li&gt;&lt;strong&gt;GKI modules&lt;/strong&gt;: Kernel modules built by Google that can be dynamically loaded on devices where applicable. These modules are built as artifacts of the GKI kernel and are delivered alongside GKI as the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;system_dlkm_staging_archive.tar.gz&lt;/code&gt; archive.&lt;/li&gt;
+    &lt;li&gt;&lt;strong&gt;Vendor module&lt;/strong&gt;: A hardware-specific module developed by a partner and that contains system on a chip (SoC) and device-specific functionality. A vendor module is a type of dynamically loadable kernel module.&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/blockquote&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;&lt;strong&gt;Build Generic Kernel&lt;/strong&gt;
+    &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt; &lt;span class=&quot;c&quot;&gt;# bazel build&lt;/span&gt;
+ tools/bazel build //common:kernel_x86_64_dist
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+    &lt;p&gt;Successful build should output the following message:&lt;/p&gt;
+    &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt; INFO: From Building GKI artifacts //common:kernel_x86_64_gki_artifacts:
+ Creating boot-img.tar.gz for gki-info.txt boot.img
+ INFO: From Building system_dlkm //common:kernel_x86_64_images_system_dlkm_image:
+ ========================================================
+ Creating system_dlkm image
+ Target //common:kernel_x86_64_dist up-to-date:
+ bazel-bin/common/kernel_x86_64_dist
+ INFO: Elapsed time: 1377.103s, Critical Path: 1356.84s
+ INFO: 253 processes: 239 internal, 14 linux-sandbox.
+ INFO: Build completed successfully, 253 total actions
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+
+    &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt; &lt;span class=&quot;c&quot;&gt;# create output distribution&lt;/span&gt;
+ tools/bazel run //common:kernel_x86_64_dist &lt;span class=&quot;nt&quot;&gt;--&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--dist_dir&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/absolute/path/to/android-kernel-5.15/vendor-build-output-x86
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+
+    &lt;p&gt;After you run the command above, you should see a directory named &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;vendor-build-output-x86&lt;/code&gt; and a file named &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;bzImage&lt;/code&gt;.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Build Vendor Modules for the Virtual Device&lt;/strong&gt;
+    &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt; &lt;span class=&quot;c&quot;&gt;# bazel build&lt;/span&gt;
+ tools/bazel build //common-modules/virtual-device:virtual_device_x86_64_dist
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+
+    &lt;p&gt;Successful build should output the following message:&lt;/p&gt;
+    &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+3
+4
+5
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt; Target //common-modules/virtual-device:virtual_device_x86_64_dist up-to-date:
+ bazel-bin/common-modules/virtual-device/virtual_device_x86_64_dist
+ INFO: Elapsed time: 185.179s, Critical Path: 183.47s
+ INFO: 24 processes: 13 internal, 11 linux-sandbox.
+ INFO: Build completed successfully, 24 total actions
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+
+    &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt; &lt;span class=&quot;c&quot;&gt;# create output distribution&lt;/span&gt;
+ tools/bazel run //common-modules/virtual-device:virtual_device_x86_64_dist &lt;span class=&quot;nt&quot;&gt;--&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--dist_dir&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;/absolute/path/to/android-kernel-5.15/vendor-build-output-x86
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+    &lt;p&gt;Upon successful completion of the build, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;initramfs.img&lt;/code&gt; should be located at &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/path/to/android-kernel-5.15/vendor-build-output-x86&lt;/code&gt;. You can now proceed to swap this kernel into your Cuttlefish Android Virtual Device.&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;initramfs.img&lt;/code&gt;: the initial RAM filesystem is a temporary in-memory file system that contains essential files and utilities required for mounting the root file system. It is compressed and stored as an image file with the name: &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;initramfs.img&lt;/code&gt;.&lt;/li&gt;
+      &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;bzImage&lt;/code&gt;: the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;bzImage&lt;/code&gt; is a compressed Linux kernel image created during the kernel compilation process. It is designed to be small enough to fit within limited memory space during the boot process. The &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;bzImage&lt;/code&gt; is loaded by the bootloader, decompressed, and executed to initialize the system hardware and kernel before transitioning to the root file system.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;hr /&gt;
+&lt;h4 id=&quot;swap-the-customized-android-kernel-into-android-cuttlefish-virtual-device&quot;&gt;Swap the Customized Android Kernel into Android Cuttlefish Virtual Device&lt;/h4&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;In &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;~/android-cuttlefish/cf&lt;/code&gt; directory, set the environment variable &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;DIST_FOLDER&lt;/code&gt; as the folder that contains &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;initramfs.img&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;bzImage&lt;/code&gt;&lt;/p&gt;
+
+    &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt; &lt;span class=&quot;nv&quot;&gt;DIST_FOLDER&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;$(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;readlink&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-f&lt;/span&gt; /absolute/path/to/android-kernel-5.15/vendor-build-output-x86&lt;span class=&quot;si&quot;&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Navigate to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;android-cuttlefish/cf&lt;/code&gt;, and then use the following command to launch Cuttlefish using the kernel we just built.
+    &lt;blockquote&gt;
+      &lt;p&gt;If the launch of cuttlefish failed, try to stop previously launched cuttlefish first by &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pkill run_cvd&lt;/code&gt;&lt;/p&gt;
+    &lt;/blockquote&gt;
+
+    &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+3
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;c&quot;&gt;# This command launches a Cuttlefish Virtual Device (CVD) in daemon mode. It&apos;s configured with 27GB of RAM, always creates a new data policy, includes a blank data image of 30GB, and use a single CPU core&lt;/span&gt;
+   
+&lt;span class=&quot;nv&quot;&gt;HOME&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;PWD&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt; ./bin/launch_cvd &lt;span class=&quot;nt&quot;&gt;-daemon&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-initramfs_path&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;DIST_FOLDER&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;/initramfs.img &lt;span class=&quot;nt&quot;&gt;-kernel_path&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;DIST_FOLDER&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;/bzImage &lt;span class=&quot;nt&quot;&gt;-memory_mb&lt;/span&gt; 27000 &lt;span class=&quot;nt&quot;&gt;-data_policy&lt;/span&gt; always_create &lt;span class=&quot;nt&quot;&gt;-blank_data_image_mb&lt;/span&gt; 30000 &lt;span class=&quot;nt&quot;&gt;-cpus&lt;/span&gt; 1
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Launch the shell of cuttlefish and check the kernel version to verify that kernel is swapped successfully&lt;/p&gt;
+
+    &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt; ./bin/adb shell  &lt;span class=&quot;c&quot;&gt;# alternatively, make shell&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+
+    &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+3
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt; &lt;span class=&quot;c&quot;&gt;# run cat version before and after the kernel swap, the output should be different&lt;/span&gt;
+ vsoc_x86_64:/ &lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;cd &lt;/span&gt;proc &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;cat &lt;/span&gt;version
+ Linux version 5.15.120-maybe-dirty &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;build-user@build-host&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;Android &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;8508608, based on r450784e&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; clang version 14.0.7 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;https://android.googlesource.com/toolchain/llvm-project 4c603efb0cca074e9238af8b4106c30add4418f6&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;, LLD 14.0.7&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;#1 SMP PREEMPT Thu Jan 1 00:00:00 UTC 1970&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;hr /&gt;
+&lt;h4 id=&quot;set-up-camflow-android-user-space-daemons&quot;&gt;Set Up Camflow Android User-Space Daemons&lt;/h4&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;CamFlow provenance system consists of kernel space capture mechanism and user space daemons. The architecture is described below. For more information, check &lt;a href=&quot;https://camflow.org/#overview&quot;&gt;camflow.org&lt;/a&gt;.&lt;/p&gt;
+
+  &lt;p&gt;&lt;img src=&quot;https://s2.loli.net/2023/07/29/qeCQIR7WEL1TfGn.png&quot; alt=&quot;camflow.png&quot; /&gt;&lt;/p&gt;
+  &lt;ul&gt;
+    &lt;li&gt;&lt;strong&gt;camflowd&lt;/strong&gt;: is a daemon responsible for recording the provenance captured in the kernel by CamFlow. Provenance records are published by CamFlow to pseudo-files in relayfs. The daemon retrieves these records, serializes them to a format specified in the configuration, and writes them to an output specified in the configuration.&lt;/li&gt;
+    &lt;li&gt;&lt;strong&gt;camconfd&lt;/strong&gt;: camconfd is a daemon charged with configuring the in-kernel capture mechanism. The configuration daemon reads from &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;camflow.ini&lt;/code&gt; and loads the specified configuration into the kernel via a securityfs interface.&lt;/li&gt;
+    &lt;li&gt;&lt;strong&gt;libprovenance&lt;/strong&gt;: a C library implementing userspace utility functions to interact with CamFlow relayfs and securityfs interfaces.&lt;/li&gt;
+    &lt;li&gt;&lt;strong&gt;camflow-cli&lt;/strong&gt;: CLI that allows the user to dynamically modify the capture configuration through the command line.&lt;/li&gt;
+    &lt;li&gt;&lt;strong&gt;camflow.ini&lt;/strong&gt;: captures configuration file read during the boot process by the camconfd service, and is used to set the capture policy.&lt;/li&gt;
+    &lt;li&gt;&lt;strong&gt;camflowd.ini&lt;/strong&gt;: output configuration file that specifies what and where the provenance information is published. (Currently only support log output in &lt;strong&gt;SPADE JSON&lt;/strong&gt; format )&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/blockquote&gt;
+
+&lt;h5 id=&quot;step-1a--using-prebuilt-camflow-android-user-space-daemons&quot;&gt;Step 1a:  Using Prebuilt Camflow Android User-Space Daemons&lt;/h5&gt;
+
+&lt;p&gt;First, move all prebuilt daemons, shared library, and config files to the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Downloads&lt;/code&gt; directory using the command below. You should execute the following command in the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;camflow-android-provenance&lt;/code&gt; directory.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;c&quot;&gt;# copy prebuilts to Downloads directory&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;cd &lt;/span&gt;prebuilt-userspace-daemons &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;cp&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;*&lt;/span&gt; ~/Downloads &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;cd&lt;/span&gt; .. &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;cd &lt;/span&gt;camflow-config-files &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;cp&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;*&lt;/span&gt; ~/Downloads &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;cd&lt;/span&gt; ..
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h5 id=&quot;step-1b-build-camflow-android-user-space-daemons-in-android-studio-from-source&quot;&gt;Step 1b: Build Camflow Android User-Space Daemons in Android Studio from Source&lt;/h5&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;:warning: &lt;strong&gt;If you followed  “Step 1a:  Using Prebuilt Camflow Android User-Space Daemons”, you can skip this part.&lt;/strong&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Assuming we build the user-space daemons in Android Studio on a Mac, and Android Cuttlefish runs on a Linux desktop.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;On Mac desktop, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;git clone&lt;/code&gt; this repo to Desktop and open this folder in Android Studio (Proceed to the next step if you have already cloned the repository)
+    &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt;git clone https://github.com/MichaelXi3/camflow-android-provenance.git
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Click the green hammer &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Build&lt;/code&gt; button &lt;strong&gt;twice&lt;/strong&gt; on the top right corner of Android Studio&lt;/p&gt;
+
+    &lt;blockquote&gt;
+      &lt;p&gt;Clicking once builds only x86 executables. Building it again will generate x86_64 executables. We want x86_64.&lt;/p&gt;
+      &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt;BUILD SUCCESSFUL in 13s
+43 actionable tasks: 43 executed
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;      &lt;/div&gt;
+      &lt;p&gt;All the executables should be located at:&lt;/p&gt;
+      &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt;/Desktop/camflow-android-provenance/app/build/intermediates/cxx/Debug/k4r535v6/obj/x86_64
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;      &lt;/div&gt;
+      &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;nb&quot;&gt;cd &lt;/span&gt;app/build/intermediates/cxx/Debug/k4r535v6/obj/x86_64
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;      &lt;/div&gt;
+      &lt;p&gt;The executable and shared library list should include:&lt;/p&gt;
+      &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt;camconfd     camflow-cli     camflowd     camflowexample     libprovenance.so
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;      &lt;/div&gt;
+    &lt;/blockquote&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Move the userspace daemons and shared library to the Linux Desktop from Mac, assume all these five files are now moved to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/Downloads&lt;/code&gt; folder on Linux Desktop&lt;/li&gt;
+  &lt;li&gt;Move the configuration files &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;camflow.ini&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;camflowd.ini&lt;/code&gt; located at &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;camflow-config-files&lt;/code&gt; folder in this repo to  &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/Downloads&lt;/code&gt; folder on Linux Desktop as well&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h5 id=&quot;step-2-install-these-executables-and-shared-library-to-android-cuttlefish&quot;&gt;Step 2: Install these executables and shared library to Android Cuttlefish&lt;/h5&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Navigate to &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;android-cuttlefish/cf&lt;/code&gt;, enter the following commands to launch the Android virtual device with specified configurations (skip these commands is the Android virtual device is already running)
+    &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt; &lt;span class=&quot;c&quot;&gt;# stop the previous launched Android virtual device if there is any&lt;/span&gt;
+ pkill run_cvd
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+    &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt; &lt;span class=&quot;c&quot;&gt;# set DIST_FOLDER to the directory that contains bzImage and initramfs.img&lt;/span&gt;
+ &lt;span class=&quot;nv&quot;&gt;DIST_FOLDER&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;$(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;readlink&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-f&lt;/span&gt; /path/to/android-kernel-5.15/vendor-build-output-x86&lt;span class=&quot;si&quot;&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+    &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt; &lt;span class=&quot;c&quot;&gt;# Launch Android cuttlefish with RAM 27GB, Disk Space 30GB, 1 CPU&lt;/span&gt;
+ &lt;span class=&quot;nv&quot;&gt;HOME&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;PWD&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt; ./bin/launch_cvd &lt;span class=&quot;nt&quot;&gt;-daemon&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-memory_mb&lt;/span&gt; 27000 &lt;span class=&quot;nt&quot;&gt;-data_policy&lt;/span&gt; always_create &lt;span class=&quot;nt&quot;&gt;-blank_data_image_mb&lt;/span&gt; 30000 &lt;span class=&quot;nt&quot;&gt;-cpus&lt;/span&gt; 1 &lt;span class=&quot;nt&quot;&gt;-initramfs_path&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;DIST_FOLDER&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;/initramfs.img &lt;span class=&quot;nt&quot;&gt;-kernel_path&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;DIST_FOLDER&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;/bzImage
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Install the shared library and user-space daemons to Android Cuttlefish
+    &lt;blockquote&gt;
+      &lt;p&gt;&lt;strong&gt;Using Makefile commands to automate is recommended&lt;/strong&gt;. A Makefile has been placed at &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;android-cuttlefish/cf&lt;/code&gt; directory, you can use it right away or modify it to your needs.&lt;/p&gt;
+    &lt;/blockquote&gt;
+
+    &lt;p&gt;&lt;strong&gt;First:  &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;make remount-all&lt;/code&gt;&lt;/strong&gt;, or use following commands&lt;/p&gt;
+    &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt; &lt;span class=&quot;c&quot;&gt;# remount Android cuttlefish device - need to install shared library&lt;/span&gt;
+ ./bin/adb root
+ ./bin/adb remount
+ ./bin/adb reboot
+   
+ &lt;span class=&quot;c&quot;&gt;# mount several filesystem in Android cuttlefish device&lt;/span&gt;
+ &lt;span class=&quot;c&quot;&gt;# if encounter &apos;Device or resource busy&apos; error, wait a minute and try again&lt;/span&gt;
+ ./bin/adb root
+ ./bin/adb shell mount &lt;span class=&quot;nt&quot;&gt;-t&lt;/span&gt; securityfs /sys/kernel/security
+ ./bin/adb shell mount &lt;span class=&quot;nt&quot;&gt;-t&lt;/span&gt; debugfs /sys/kernel/debugfs
+ ./bin/adb shell mount &lt;span class=&quot;nt&quot;&gt;-o&lt;/span&gt; rw,remount /system
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+
+    &lt;p&gt;&lt;strong&gt;Second:  &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;make prepare&lt;/code&gt;&lt;/strong&gt;, assume everything is located at &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/Downloads&lt;/code&gt; directory&lt;/p&gt;
+    &lt;blockquote&gt;
+      &lt;p&gt;Checklist of what you need in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/Downloads&lt;/code&gt; directory: &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;camconfd&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;camflow-cli&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;camflowd&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;1ibprovenance.so&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;camflowexample&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;camflow.ini&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;camflowd.ini&lt;/code&gt;&lt;/p&gt;
+    &lt;/blockquote&gt;
+
+    &lt;p&gt;You can execute the following commands if the files are not in the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/Downloads&lt;/code&gt;, but they perform the same actions as &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;make prepare&lt;/code&gt;.&lt;/p&gt;
+
+    &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+3
+4
+5
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt; &lt;span class=&quot;c&quot;&gt;# install user-space daemons to android cuttlefish /data/local/tmp&lt;/span&gt;
+ ./bin/adb push /path/to/camflowd /data/local/tmp
+ ./bin/adb push /path/to/camflowexample /data/local/tmp
+ ./bin/adb push /path/to/camconfd /data/local/tmp
+ ./bin/adb shell &lt;span class=&quot;s2&quot;&gt;&quot;cd /data/local/tmp &amp;amp;&amp;amp; chmod 755 camflowd &amp;amp;&amp;amp; chmod 755 camconfd &amp;amp;&amp;amp; chmod 755 camflowexample&quot;&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+    &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+3
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt; &lt;span class=&quot;c&quot;&gt;# install camflow-cli to android cuttlefish&lt;/span&gt;
+ ./bin/adb push /path/to/camflow-cli /system/bin
+ ./bin/adb shell &lt;span class=&quot;s2&quot;&gt;&quot;cd /system/bin &amp;amp;&amp;amp; mv camflow-cli camflow &amp;amp;&amp;amp; chmod 755 /system/bin/camflow&quot;&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+    &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt; &lt;span class=&quot;c&quot;&gt;# install libprovenance.so shared library to android cuttlefish&lt;/span&gt;
+ ./bin/adb push /path/to/libprovenance.so /system/lib64
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+    &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+3
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt; &lt;span class=&quot;c&quot;&gt;# install the camflow and camflowd configuration files&lt;/span&gt;
+ ./bin/adb push /path/to/camflow.ini /data/local/tmp
+ ./bin/adb push /path/to/camflowd.ini /data/local/tmp
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h5 id=&quot;step-3-run-user-space-daemons-to-capture-provenance-of-android-system&quot;&gt;Step 3: Run User-Space Daemons to Capture Provenance of Android System&lt;/h5&gt;
+&lt;ol&gt;
+  &lt;li&gt;Run the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;camconfd&lt;/code&gt; daemon to set the capture configuration. Note that in the default &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;camflow.ini&lt;/code&gt;, the capture-all provenance is set to false since there will be massive provenance data generated if capture-all is set to true. You can fine-tune the capture policy later by modifying the configurations listed in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;camflow.ini&lt;/code&gt;.
+    &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt; &lt;span class=&quot;c&quot;&gt;# or, make run-camconfd&lt;/span&gt;
+ ./bin/adb shell /data/local/tmp/camconfd &amp;amp;
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Run the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;camflowd&lt;/code&gt; daemon to record the provenance captured in the kernel and serialize them to SPADE JSON format log in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/data/local/tmp/audit.log&lt;/code&gt; file.
+    &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt; &lt;span class=&quot;c&quot;&gt;# or, make run-camflowd&lt;/span&gt;
+ ./bin/adb shell /data/local/tmp/camflowd &amp;amp;
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Now there should be a file called &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;audit.log&lt;/code&gt; located at &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/data/local/tmp/&lt;/code&gt; that contains provenance log entries. Note that the log may be empty if your capture configuration is set to not capture anything, as defined in the default &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;camflow.ini&lt;/code&gt;.
+    &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+3
+4
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt; &lt;span class=&quot;c&quot;&gt;# enter android cuttlefish shell as root&lt;/span&gt;
+ make root &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; make shell
+ &lt;span class=&quot;nb&quot;&gt;cd&lt;/span&gt; /data/local/tmp
+ vi audit.log
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+    &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt; &lt;span class=&quot;c&quot;&gt;# the provenance log should be something similar to the following&lt;/span&gt;
+ &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;type&quot;&lt;/span&gt;:&lt;span class=&quot;s2&quot;&gt;&quot;Entity&quot;&lt;/span&gt;,&lt;span class=&quot;s2&quot;&gt;&quot;id&quot;&lt;/span&gt;:&lt;span class=&quot;s2&quot;&gt;&quot;EAAAAAAAABQFFQAAAAAAAAAAAAAAAAAAAQAAAAAAAAA=&quot;&lt;/span&gt;,&lt;span class=&quot;s2&quot;&gt;&quot;annotations&quot;&lt;/span&gt;: &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;object_id&quot;&lt;/span&gt;:&lt;span class=&quot;s2&quot;&gt;&quot;5381&quot;&lt;/span&gt;,&lt;span class=&quot;s2&quot;&gt;&quot;object_type&quot;&lt;/span&gt;:&lt;span class=&quot;s2&quot;&gt;&quot;machine&quot;&lt;/span&gt;,&lt;span class=&quot;s2&quot;&gt;&quot;boot_id&quot;&lt;/span&gt;:0,&lt;span class=&quot;s2&quot;&gt;&quot;cf:machine_id&quot;&lt;/span&gt;:&lt;span class=&quot;s2&quot;&gt;&quot;cf:0&quot;&lt;/span&gt;,&lt;span class=&quot;s2&quot;&gt;&quot;version&quot;&lt;/span&gt;:1,&lt;span class=&quot;s2&quot;&gt;&quot;cf:date&quot;&lt;/span&gt;:&lt;span class=&quot;s2&quot;&gt;&quot;2023:07:24T15:23:35&quot;&lt;/span&gt;,&lt;span class=&quot;s2&quot;&gt;&quot;cf:taint&quot;&lt;/span&gt;:&lt;span class=&quot;s2&quot;&gt;&quot;0&quot;&lt;/span&gt;,&lt;span class=&quot;s2&quot;&gt;&quot;cf:jiffies&quot;&lt;/span&gt;:&lt;span class=&quot;s2&quot;&gt;&quot;0&quot;&lt;/span&gt;,&lt;span class=&quot;s2&quot;&gt;&quot;cf:epoch&quot;&lt;/span&gt;:0,&lt;span class=&quot;s2&quot;&gt;&quot;u_sysname&quot;&lt;/span&gt;:&lt;span class=&quot;s2&quot;&gt;&quot;Linux&quot;&lt;/span&gt;,&lt;span class=&quot;s2&quot;&gt;&quot;u_nodename&quot;&lt;/span&gt;:&lt;span class=&quot;s2&quot;&gt;&quot;(none)&quot;&lt;/span&gt;,&lt;span class=&quot;s2&quot;&gt;&quot;u_release&quot;&lt;/span&gt;:&lt;span class=&quot;s2&quot;&gt;&quot;5.15.104-maybe-dirty&quot;&lt;/span&gt;,&lt;span class=&quot;s2&quot;&gt;&quot;u_version&quot;&lt;/span&gt;:&lt;span class=&quot;s2&quot;&gt;&quot;#1 SMP PREEMPT Thu Jan 1 00:00:00 UTC 1970&quot;&lt;/span&gt;,&lt;span class=&quot;s2&quot;&gt;&quot;u_machine&quot;&lt;/span&gt;:&lt;span class=&quot;s2&quot;&gt;&quot;x86_64&quot;&lt;/span&gt;,&lt;span class=&quot;s2&quot;&gt;&quot;u_domainname&quot;&lt;/span&gt;:&lt;span class=&quot;s2&quot;&gt;&quot;(none)&quot;&lt;/span&gt;,&lt;span class=&quot;s2&quot;&gt;&quot;k_version&quot;&lt;/span&gt;:&lt;span class=&quot;s2&quot;&gt;&quot;0.8.0&quot;&lt;/span&gt;,&lt;span class=&quot;s2&quot;&gt;&quot;l_version&quot;&lt;/span&gt;:&lt;span class=&quot;s2&quot;&gt;&quot;v0.5.5&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;}}&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+    &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+3
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt; &lt;span class=&quot;c&quot;&gt;# to copy the provenance log file to /Documents directory&lt;/span&gt;
+ &lt;span class=&quot;nb&quot;&gt;exit&lt;/span&gt;         &lt;span class=&quot;c&quot;&gt;# exit android cuttlefish shell, now you should at ~/android-cuttlefish/cf&lt;/span&gt;
+ make pull    &lt;span class=&quot;c&quot;&gt;# pull audit.log from cuttlefish to local machine&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;running-tests&quot;&gt;Running Tests&lt;/h2&gt;
+
+&lt;p&gt;This section provides a walk-through of the Camflow Android Provenance System test, assuming that the user has already completed the instructions described above. Specifically, user should have already launched Android cuttlefish successfully, installed all user space daemons, shared library, and executed camconfd and camflowd to apply capture configurations and to generate provenance.&lt;/p&gt;
+
+&lt;h3 id=&quot;test-1-get-the-provenance-graph-of-an-executable-that-opens-and-writes-a-file&quot;&gt;Test 1: Get the provenance graph of an executable that opens and writes a file&lt;/h3&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Run &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;camflowexample&lt;/code&gt; located at &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/data/loca/tmp&lt;/code&gt; installed in the previous steps
+    &lt;ul&gt;
+      &lt;li&gt;In the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;camflowexample&lt;/code&gt; executable (the source code is located at &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;CamFlow-Android-Provenance/app/src/main/cpp/example&lt;/code&gt;), it turns on the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;track-me&lt;/code&gt; bit, so that this process can be tracked.
+        &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt; &lt;span class=&quot;c&quot;&gt;# execute this command at /android-cuttlefish/cf&lt;/span&gt;
+ ./bin/adb shell /data/local/tmp/camflowexample    &lt;span class=&quot;c&quot;&gt;# or, make run-example&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;        &lt;/div&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Check out the provenance log generated in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;audit.log&lt;/code&gt;
+    &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+3
+4
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt; &lt;span class=&quot;c&quot;&gt;# enter the android cuttlefish commandline interface&lt;/span&gt;
+ ./bin/adb shell      &lt;span class=&quot;c&quot;&gt;# or, make shell&lt;/span&gt;
+ &lt;span class=&quot;nb&quot;&gt;cd&lt;/span&gt; /data/local/tmp
+ vi audit.log
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Using Camflow Android Log Parser to parse and visualize the generated log
+    &lt;ul&gt;
+      &lt;li&gt;&lt;strong&gt;Camflow Log Parser Github Link&lt;/strong&gt;: &lt;a href=&quot;https://github.com/MichaelXi3/android-provenance-parser&quot;&gt;https://github.com/MichaelXi3/android-provenance-parser&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://s2.loli.net/2023/08/05/zvKIZy8RkjopD15.png&quot; alt=&quot;provG.jpg&quot; /&gt;&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;built-with&quot;&gt;Built With&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://bazel.build/&quot;&gt;Bazel&lt;/a&gt; - The build and test tool developed by Google to automate build processes for large-scale software such as Android Kernel and Modules&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.jetbrains.com/help/clion/cmakelists-txt-file.html&quot;&gt;CMake&lt;/a&gt; - The build system used for building Camflow Android user space daemons and shared library&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://rometools.github.io/rome/&quot;&gt;AndroidNDK&lt;/a&gt; - A cross-compiling tool for compiling code written in C/C++ for Android&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;project-structure&quot;&gt;Project Structure&lt;/h2&gt;
+
+&lt;p&gt;At the root directory of the project, there’re a few important directories:&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;camflow-config-files&lt;/code&gt;: stores &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;camflow.ini&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;camflowd.ini&lt;/code&gt; for capture and output configurations&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;camflow-makefile-example&lt;/code&gt;: provides a sample makefile for android-cuttlefish commands&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;prebuilt-userspace-daemons&lt;/code&gt;: provides prebuilt daemons that can be used right away&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;android-cuttlefish-automation&lt;/code&gt;: provides the shell script that automates the android cuttlefish launch&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;kernel-config-setting-shell&lt;/code&gt;: provides a shell script that modifies Android kernel build configs, for backup purposes&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;app&lt;/code&gt;: is the directory that contains all source codes, specifically, the path is &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;AndroidStudioProjects/camflow-android-provenance/app/src/main/cpp&lt;/code&gt;
+    &lt;div class=&quot;language-plaintext highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt;    .
+├── CMakeLists.txt
+├── camconfd
+│   ├── CMakeLists.txt
+│   ├── camconf.h
+│   ├── config.c
+│   └── ini
+├── camflow-cli
+│   ├── CMakeLists.txt
+│   └── camflow.c
+├── camflowdd
+│   ├── CMakeLists.txt
+│   ├── camflowd-include
+│   │   ├── service-config.h
+│   │   └── service-log.h
+│   ├── ini
+│   └── main.c
+├── example
+│   ├── CMakeLists.txt
+│   ├── cp.c
+│   ├── printf.c
+│   └── write.c
+└── provenancelib
+ ├── CMakeLists.txt
+ ├── camflow-dev-include
+ │   ├── provenance_fs.h
+ │   ├── provenance_types.h
+ │   └── provenanceh.h
+ ├── libprovenance-include
+ │   ├── provenance.h
+ │   ├── provenanceSPADEJSON.h
+ │   ├── provenanceW3CJSON.h
+ │   ├── provenance_utils.h
+ │   └── provenancefilter.h
+ ├── libprovenance.c
+ ├── provenanceJSONcommon.h
+ ├── provenanceSPADEJSON.c
+ ├── provenanceW3CJSON.c
+ ├── provenancefilter.c
+ ├── provenanceutils.c
+ ├── relay.c
+ ├── threadpool
+ │   ├── CMakeLists.txt
+ │   ├── thpool.c
+ │   └── thpool.h
+ └── uthash.h
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+</description>
+        <pubDate>Fri, 04 Aug 2023 00:00:00 -0400</pubDate>
+        <link>http://localhost:4000/2023/08/04/CamFlow-Android-Provenance-System/</link>
+        <guid isPermaLink="true">http://localhost:4000/2023/08/04/CamFlow-Android-Provenance-System/</guid>
+        
+        <category>Android</category>
+        
+        <category>Android Cuttlefish</category>
+        
+        <category>System</category>
+        
+        <category>Provenance</category>
+        
+        <category>Linux</category>
+        
+        <category>Kernel</category>
+        
+        
+      </item>
+    
+      <item>
+        <title>Dynamic Programming</title>
+        <description>&lt;h1 id=&quot;what-is-dynamic-programming&quot;&gt;What is Dynamic Programming?&lt;/h1&gt;
+
+&lt;p&gt;Dynamic programming is based on the concept of &lt;strong&gt;induction&lt;/strong&gt;. The approach involves breaking down a large problem into smaller sub-problems and solving them &lt;strong&gt;incrementally&lt;/strong&gt;. This process starts with a base case and then uses an &lt;strong&gt;induction rule&lt;/strong&gt; to build up to the larger problem, transforming a problem of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;size = n - 1&lt;/code&gt; into a problem of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;size = n&lt;/code&gt;. Through iterations based on the induction rule, we can ultimately solve the complex problem at hand.&lt;/p&gt;
+
+&lt;h3 id=&quot;how-does-dynamic-programming-differ-from-recursion&quot;&gt;How Does Dynamic Programming Differ from Recursion?&lt;/h3&gt;
+
+&lt;p&gt;Recursion is also an algorithm that solves a big problem by dividing it into smaller ones. However, there is a significant difference between dynamic programming and recursion:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;Approach&lt;/strong&gt;: Recursion is a top-down approach that solves a big problem by breaking it into smaller subproblems. Each subproblem has a smaller size until it reaches the base case. In contrast, dynamic programming is a bottom-up approach that starts from the smallest size problem and uses induction rules to incrementally solve bigger problems until it reaches the original problem.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Memory Management&lt;/strong&gt;: Recursion only considers the base case, subproblems, and recursive rules. It does not record any sub-solutions or states. On the other hand, dynamic programming records the sub-solutions or states of each smaller problem. It uses the sub-solutions of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;size &amp;lt; n&lt;/code&gt; problems to induce the solution for a &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;size = n&lt;/code&gt; problem.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Problem Types To Solve&lt;/strong&gt;: Recursion and dynamic programming are used to solve different types of problems. Recursion is often used when exploring “all possible solutions” or determining “does this solution exist?” questions. Dynamic programming, on the other hand, is ideal for solving optimization problems such as “What is the largest/smallest?”&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;fibonacci-number-example&quot;&gt;Fibonacci Number Example&lt;/h3&gt;
+
+&lt;p&gt;If our goal is to find the Fibonacci number of an integer, then recursion and dp will solve this problem differently, here is a visualization:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://s2.loli.net/2023/08/04/7QM5PZvzsqje6uN.png&quot; width=&quot;350&quot; /&gt; &lt;img src=&quot;https://s2.loli.net/2023/08/04/vFRwoKaDbtHMBg6.png&quot; width=&quot;350&quot; /&gt;&lt;/p&gt;
+
+&lt;h1 id=&quot;how-to-use-dynamic-programming&quot;&gt;How to use Dynamic Programming?&lt;/h1&gt;
+
+&lt;p&gt;Key Information to Write Down&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;DP[i] meaning&lt;/strong&gt;: the meaning of DP[i] is defined as exactly what the question is asking. For example, in the Fibonacci problem, dp[i] means the Fibonacci number of i.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Base Case&lt;/strong&gt;: what is the answer to the smallest problem that we can get right away? For example, fib(1) and fib(2) are both equal to 1 by default.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Induction Rule&lt;/strong&gt;: how to transform from a smaller state to a bigger one? You can find the rule by enumerating cases. For example, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;fib(n) = fib(n-1) + fib(n-2)&lt;/code&gt; is the induction rule for finding the Fibonacci Number.&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Return&lt;/strong&gt;: what do we want to return? It can be the last element of the dp array or global max/min depending on the context of the problem. For example, in the Fibonacci Number problem, we want to return dp[n].&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h1 id=&quot;practice-makes-perfect&quot;&gt;Practice Makes Perfect&lt;/h1&gt;
+
+&lt;h3 id=&quot;q1-fibonacci-number&quot;&gt;Q1: Fibonacci Number&lt;/h3&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Get the Kth number in the Fibonacci Sequence. (K is 0-indexed, the 0th Fibonacci number is 0 and the 1st Fibonacci number is 1).&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;&lt;strong&gt;Clarification &amp;amp; Assumption&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Example inputs and outputs:
+    &lt;ul&gt;
+      &lt;li&gt;0th fibonacci number is 0&lt;/li&gt;
+      &lt;li&gt;1st fibonacci number is 1&lt;/li&gt;
+      &lt;li&gt;2nd fibonacci number is 1&lt;/li&gt;
+      &lt;li&gt;6th fibonacci number is 8&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Assume if input K &amp;lt; 0, the function returns 0&lt;/li&gt;
+  &lt;li&gt;Assume the output Fib number does not overflow long&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;strong&gt;Result&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;High Level Algorithm
+    &lt;ul&gt;
+      &lt;li&gt;Base case: dp[0] = 0, dp[1] = 1, dp[2] = 1&lt;/li&gt;
+      &lt;li&gt;Induction rule: dp[i] = dp[i-1] + dp[i-2]&lt;/li&gt;
+      &lt;li&gt;Return dp[K]&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Detail Level Implementation
+    &lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;long&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;fibonacci&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;K&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;// corner case&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;K&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;kt&quot;&gt;long&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dp&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;long&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;K&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;];&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;// base case&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;dp&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;// induction rule&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;K&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;dp&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dp&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dp&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;];&lt;/span&gt;
+  &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dp&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;K&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;];&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Time and Space Complexity&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;TC: O(n)  - Iteration&lt;/li&gt;
+      &lt;li&gt;SC: O(n)  - dp array in heap&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;Follow-Up: How to reduce space complexity?&lt;/strong&gt;&lt;/p&gt;
+
+    &lt;p&gt;Each dp[i] state only relies on the previous two states, so it’s unnecessary to keep track of all previous states in a O(n) long dp array. The improved function is:&lt;/p&gt;
+
+    &lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;long&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;fibonacci&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;K&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;// corner case&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;K&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;// base case&lt;/span&gt;
+  &lt;span class=&quot;kt&quot;&gt;long&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;prev&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;kt&quot;&gt;long&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cur&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;// induction rule&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;K&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;long&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tmp&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;prev&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cur&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;prev&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cur&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;cur&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tmp&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cur&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;q2-longest-ascending-subarray&quot;&gt;Q2: Longest Ascending SubArray&lt;/h3&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Given an unsorted array, find the length of the longest subarray in which the numbers are in ascending order.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;&lt;strong&gt;Clarification &amp;amp; Assumption&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Example inputs and outputs:
+    &lt;ul&gt;
+      &lt;li&gt;{7, 2, 3, 1, 5, 8, 9, 6}, longest ascending subarray is {1, 5, 8, 9}, length is 4&lt;/li&gt;
+      &lt;li&gt;{1, 2, 3, 3, 4, 4, 5}, longest ascending subarray is {1, 2, 3}, length is 3&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Assume the given array is not null&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;strong&gt;Result&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;High Level Algorithm&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;
+        &lt;p&gt;Base case: if the input array has length 1, then the longest ascending subarray has length 1&lt;/p&gt;
+      &lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;Induction rule&lt;/p&gt;
+
+        &lt;ul&gt;
+          &lt;li&gt;
+            &lt;p&gt;Case 1: If current element is “keep ascending”&lt;/p&gt;
+
+            &lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;dp[i] = dp[i - 1] + 1&lt;/code&gt;&lt;/p&gt;
+          &lt;/li&gt;
+          &lt;li&gt;
+            &lt;p&gt;Case 2: if current element is “not ascending”&lt;/p&gt;
+
+            &lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;dp[i] = 1&lt;/code&gt;&lt;/p&gt;
+          &lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;Return the globalMax of longest ascending subarray length&lt;/p&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Detail Level Implementation&lt;/p&gt;
+
+    &lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;longest&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;array&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// corner case&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;array&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;length&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// base case&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dp&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;array&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;length&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;];&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;dp&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// induction rule&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;globalMax&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;array&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;length&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;array&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;array&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;])&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;dp&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dp&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+      &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;dp&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+      &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;globalMax&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;globalMax&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dp&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;])&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;?&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dp&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;globalMax&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;globalMax&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Time and Space Complexity&lt;/p&gt;
+    &lt;ul&gt;
+      &lt;li&gt;TC: O(n)&lt;/li&gt;
+      &lt;li&gt;SC: O(n)&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;q3-max-product-of-cutting-rope&quot;&gt;Q3: Max Product Of Cutting Rope&lt;/h3&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Given a rope with positive integer-length &lt;em&gt;n&lt;/em&gt;, how to cut the rope into &lt;em&gt;m&lt;/em&gt; integer-length parts with length &lt;em&gt;p&lt;/em&gt;[0], &lt;em&gt;p&lt;/em&gt;[1], …,&lt;em&gt;p&lt;/em&gt;[&lt;em&gt;m&lt;/em&gt;-1], in order to get the maximal product of &lt;em&gt;p&lt;/em&gt;[0]&lt;em&gt;p&lt;/em&gt;[1]* … &lt;em&gt;p&lt;/em&gt;[&lt;em&gt;m&lt;/em&gt;-1]? &lt;em&gt;m&lt;/em&gt; is determined by you and must be greater than 0 &lt;strong&gt;(at least one cut must be made&lt;/strong&gt;). Return the max product you can have.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;&lt;strong&gt;Clarification &amp;amp; Assumption&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Example: if n = 12, the max product of cutting rope is 3 * 3 * 3 * 3 = 81&lt;/li&gt;
+  &lt;li&gt;Assume input n &amp;gt;= 2, so that at least one cut can be made&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;strong&gt;Result&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;High Level Algorithm&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;
+        &lt;p&gt;Base case: if the rope has length 0 or 1, then it’s invalid, so &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;dp[0] = -1&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;dp[1] = -1&lt;/code&gt;&lt;/p&gt;
+      &lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;Induction rule&lt;/p&gt;
+
+        &lt;ul&gt;
+          &lt;li&gt;
+            &lt;p&gt;&lt;strong&gt;What does dp[i] represents?&lt;/strong&gt; dp[i] represents the max product of cutting rope given a rope with length i.&lt;/p&gt;
+          &lt;/li&gt;
+          &lt;li&gt;
+            &lt;p&gt;To find the maximum product of a cut rope, we need to consider all possible cutting positions and calculate the product of the different ways of cutting.&lt;/p&gt;
+          &lt;/li&gt;
+          &lt;li&gt;
+            &lt;p&gt;Let’s assume we cut at position j, where j starts from 1 since we must cut at least once. After the cut, the rope is divided into two parts.&lt;/p&gt;
+
+            &lt;ul&gt;
+              &lt;li&gt;
+                &lt;p&gt;For the left part, we can refer to the previous state’s maximum product of cutting with the given length of the left rope. Note that the maximum product of the left part of the rope can be smaller than not cutting at all.&lt;/p&gt;
+              &lt;/li&gt;
+              &lt;li&gt;
+                &lt;p&gt;For the right part of the rope, we simply multiply to get the product. In the end, the max product at the current rope length is recorded in the dp array.&lt;/p&gt;
+
+                &lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;dp[i] = Max(j, dp[j]) * (i - j)&lt;/code&gt;&lt;/p&gt;
+              &lt;/li&gt;
+            &lt;/ul&gt;
+          &lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;Return the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;dp[n]&lt;/code&gt;, which means the max product of cutting rope with rope length = n&lt;/p&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Detail Level Implementation&lt;/p&gt;
+
+    &lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;maxProduct&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;length&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dp&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;length&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;];&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;// base case&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;dp&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;dp&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;// induction - increment rope length&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;length&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// all possible cutting position&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;max&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;j&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;j&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;currentCutMaxProduct&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Math&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;max&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dp&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;])&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;max&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Math&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;max&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;max&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;currentCutMaxProduct&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;dp&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;max&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dp&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;length&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;];&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Time and Space Complexity&lt;/p&gt;
+    &lt;ul&gt;
+      &lt;li&gt;TC: O(n^2)&lt;/li&gt;
+      &lt;li&gt;SC: O(n)&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        <pubDate>Wed, 02 Aug 2023 00:00:00 -0400</pubDate>
+        <link>http://localhost:4000/2023/08/02/dynamic-programming/</link>
+        <guid isPermaLink="true">http://localhost:4000/2023/08/02/dynamic-programming/</guid>
+        
+        <category>Algorithm</category>
+        
+        <category>Dynamic Programming</category>
+        
+        
+      </item>
     
       <item>
         <title>Android Cuttlefish Virtual Device Launch Automation: A Step by Step Guide</title>

@@ -1,0 +1,1424 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="theme-color" content="#000000">
+
+    <!-- Open Graph -->
+    <meta property="og:title"
+        content="CamFlow Android Provenance System - Sphere | Xi">
+    
+    <meta property="og:type" content="article">
+    <meta property="og:description" content="CamFlow uses Linux Security Module (LSM) to capture data provenance for whole-system auditing purposes. The provenance capture mechanism is highly configurable. The CamFlow Android Provenance proje...">
+    
+    <meta property="article:published_time" content=" 2023-08-04T00:00:00Z">
+    
+    
+    <meta property="article:author" content="Michael Xi">
+    
+    
+    <meta property="article:tag" content="Android">
+    
+    <meta property="article:tag" content="Android Cuttlefish">
+    
+    <meta property="article:tag" content="System">
+    
+    <meta property="article:tag" content="Provenance">
+    
+    <meta property="article:tag" content="Linux">
+    
+    <meta property="article:tag" content="Kernel">
+    
+    
+    <meta property="og:image" content="http://localhost:4000">
+    <meta property="og:url" content="http://localhost:4000/2023/08/04/CamFlow-Android-Provenance-System/">
+    <meta property="og:site_name" content="Sphere | Xi">
+
+    <title>CamFlow Android Provenance System - Sphere | Xi</title>
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/pwa/manifest.json">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="http://localhost:4000/2023/08/04/CamFlow-Android-Provenance-System/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href=" /css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href=" /css/hux-blog.min.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet"
+        type="text/css">
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+
+    <!-- Google AdSense -->
+    <script data-ad-client="ca-pub-6487568398225121" async
+        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">Sphere</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div id="huxblog_navbar">
+                <div class="navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="/">Home</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                        
+                        
+                        <li>
+                            <a href="/archive/">Archive</a>
+                        </li>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <li class="search-icon">
+                            <a href="javascript:void(0)">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <script>
+        // Drop Bootstarp low-performance Navbar
+        // Use customize navbar with high-quality material design animation
+        // in high-perf jank-free CSS3 implementation
+        var $body = document.body;
+        var $toggle = document.querySelector('.navbar-toggle');
+        var $navbar = document.querySelector('#huxblog_navbar');
+        var $collapse = document.querySelector('.navbar-collapse');
+
+        var __HuxNav__ = {
+            close: function () {
+                $navbar.className = " ";
+                // wait until animation end.
+                setTimeout(function () {
+                    // prevent frequently toggle
+                    if ($navbar.className.indexOf('in') < 0) {
+                        $collapse.style.height = "0px"
+                    }
+                }, 400)
+            },
+            open: function () {
+                $collapse.style.height = "auto"
+                $navbar.className += " in";
+            }
+        }
+
+        // Bind Event
+        $toggle.addEventListener('click', function (e) {
+            if ($navbar.className.indexOf('in') > 0) {
+                __HuxNav__.close()
+            } else {
+                __HuxNav__.open()
+            }
+        })
+
+        /**
+         * Since Fastclick is used to delegate 'touchstart' globally
+         * to hack 300ms delay in iOS by performing a fake 'click',
+         * Using 'e.stopPropagation' to stop 'touchstart' event from 
+         * $toggle/$collapse will break global delegation.
+         * 
+         * Instead, we use a 'e.target' filter to prevent handler
+         * added to document close HuxNav.  
+         *
+         * Also, we use 'click' instead of 'touchstart' as compromise
+         */
+        document.addEventListener('click', function (e) {
+            if (e.target == $toggle) return;
+            if (e.target.className == 'icon-bar') return;
+            __HuxNav__.close();
+        })
+    </script>
+    <!-- Search -->
+<div class="search-page">
+  <div class="search-icon-close-container">
+    <span class="search-icon-close">
+      <i class="fa fa-chevron-down"></i>
+    </span>
+  </div>
+  <div class="search-main container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <form></form>
+        <input type="text" id="search-input" placeholder="$ grep...">
+        </form>
+        <div id="search-results" class="mini-post-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/Android1.jpeg" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/Android1.jpeg');
+        background: ;
+    }
+
+    
+</style>
+
+
+
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/archive/?tag=Android" title="Android">Android</a>
+                        
+                        <a class="tag" href="/archive/?tag=Android+Cuttlefish" title="Android Cuttlefish">Android Cuttlefish</a>
+                        
+                        <a class="tag" href="/archive/?tag=System" title="System">System</a>
+                        
+                        <a class="tag" href="/archive/?tag=Provenance" title="Provenance">Provenance</a>
+                        
+                        <a class="tag" href="/archive/?tag=Linux" title="Linux">Linux</a>
+                        
+                        <a class="tag" href="/archive/?tag=Kernel" title="Kernel">Kernel</a>
+                        
+                    </div>
+                    <h1>CamFlow Android Provenance System</h1>
+                    
+                    <h2 class="subheading">Whole-system provenance capture on AOSP</h2>
+                    <span class="meta">Posted by Michael Xi on August 4, 2023</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <!-- Multi-Lingual -->
+                
+
+				<p><a href="https://camflow.org/">CamFlow</a> uses <a href="https://en.wikipedia.org/wiki/Linux_Security_Modules">Linux Security Module (LSM)</a> to capture data provenance for whole-system auditing purposes. The provenance capture mechanism is highly configurable. The CamFlow Android Provenance project is a transplant of CamFlow to Android, applying the whole-system provenance concept to AOSP and capturing system-level activities. For the project source code, see: <a href="https://github.com/MichaelXi3/camflow-android-provenance">https://github.com/MichaelXi3/camflow-android-provenance</a></p>
+
+<h2 id="getting-started">Getting Started</h2>
+
+<p>These instructions will guide you through building and installing CamFlow in an Android environment, specifically the Android Cuttlefish virtual device.</p>
+
+<h3 id="prerequisites">Prerequisites</h3>
+
+<ul>
+  <li><a href="https://old-releases.ubuntu.com/releases/22.04.1/">Ubuntu 22.04.1</a>: we use this Ubuntu distribution as our development environment.</li>
+  <li><a href="https://source.android.com/docs/setup/create/cuttlefish">Android Cuttlefish Virtual Device</a>: a configurable virtual Android device that replicates the framework-based behavior of a real device.</li>
+  <li><a href="https://source.android.com/docs/setup/build/building-kernels">Android Kernel</a>: build Android Kernel with the CamFlow patch. We will install the kernel part of CamFlow in the Android kernel. We use the Android kernel branch <code class="language-plaintext highlighter-rouge">common-android13-5.15-lts</code>.</li>
+  <li><a href="https://developer.android.com/studio">Android Studio</a>: CamFlow user-space daemons are compiled and built in Android Studio.</li>
+  <li><a href="https://github.com/CamFlow/camflow-dev/releases/tag/v0.8.0">CamFlow</a>: the CamFlow kernel patch used in Android is <strong>v0.8.0</strong>. The modified userspace CamFlow deamons are included in this repo and should be built in Android studio using <code class="language-plaintext highlighter-rouge">android-ndk-r23b</code>.</li>
+</ul>
+
+<h3 id="installing">Installing</h3>
+
+<p>A step by step guide of setting up CamFlow Android Provenance System on Android virtual device.</p>
+
+<hr />
+<h4 id="set-up-android-cuttlefish---automation">Set Up Android Cuttlefish - Automation</h4>
+
+<h5 id="step-1-on-the-linux-desktop-clone-this-repository-and-navigate-to-the-android-cuttlefish-automation-folder-then-run-the-shell-script">Step 1: On the Linux desktop, clone this repository and navigate to the <code class="language-plaintext highlighter-rouge">android-cuttlefish-automation</code> folder. Then, run the shell script.</h5>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre><span class="nb">source</span> ./create-android-cuttlefish.sh
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>:warning: During this process, your laptop will <strong>reboot</strong>. Once the reboot is complete, simply execute the shell script again. The progress will be tracked, and previously completed commands will not be re-run. The reason for the reboot is to trigger the installation of additional kernel modules and update udev rules.</p>
+
+<h5 id="step-2-interact-with-android-cuttlefish-using-makefile">Step 2: Interact with Android Cuttlefish using Makefile</h5>
+
+<p>After executing the shell script, you should be located in the <code class="language-plaintext highlighter-rouge">~android-cuttlefish/cf</code> directory. The script also copied a Makefile to this directory to help you interact with the Android Cuttlefish virtual device. Here are the commands you can run to interact with the Android virtual device:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="rouge-code"><pre>make root                   <span class="c"># running as root in the shell</span>
+make shell                  <span class="c"># enter the shell of Android Cuttlefish</span>
+make stop                   <span class="c"># stop the cuttlefish device</span>
+<span class="nv">HOME</span><span class="o">=</span><span class="nv">$PWD</span> ./bin/launch_cvd <span class="nt">-daemon</span> <span class="c"># launch a new cuttlefish virtual device after the previous one is stopped</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+<hr />
+<h4 id="set-up-android-cuttlefish---manual">Set Up Android Cuttlefish - Manual</h4>
+
+<blockquote>
+  <p>:warning: <strong>If you used “<em>Set Up Android Cuttlefish - Automation</em>”, you can skip this part.</strong> For the lastest manual launch instructions, check: https://android.googlesource.com/device/google/cuttlefish/</p>
+</blockquote>
+
+<h5 id="step-1-in-the-linux-desktop-or-virtual-machine-make-sure-virtualization-with-kvm-is-available">Step 1: In the Linux desktop or virtual machine, make sure virtualization with KVM is available</h5>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre><span class="nb">grep</span> <span class="nt">-c</span> <span class="nt">-w</span> <span class="s2">"vmx</span><span class="se">\|</span><span class="s2">svm"</span> /proc/cpuinfo
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p>This should return a non-zero value. If running on a cloud machine, this may take cloud-vendor-specific steps to enable.</p>
+
+<h5 id="step-2-download-build-and-install-the-cuttlefish-host-debian-packages">Step 2: Download, build, and install the Cuttlefish host debian packages</h5>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+</pre></td><td class="rouge-code"><pre><span class="nb">sudo </span>apt <span class="nb">install</span> <span class="nt">-y</span> git devscripts config-package-dev debhelper-compat golang curl
+git clone https://github.com/google/android-cuttlefish
+<span class="nb">cd </span>android-cuttlefish
+<span class="k">for </span><span class="nb">dir </span><span class="k">in </span>base frontend<span class="p">;</span> <span class="k">do
+  </span><span class="nb">cd</span> <span class="nv">$dir</span>
+  debuild <span class="nt">-i</span> <span class="nt">-us</span> <span class="nt">-uc</span> <span class="nt">-b</span> <span class="nt">-d</span>
+  <span class="nb">cd</span> ..
+<span class="k">done
+</span><span class="nb">sudo </span>dpkg <span class="nt">-i</span> ./cuttlefish-base_<span class="k">*</span>_<span class="k">*</span>64.deb <span class="o">||</span> <span class="nb">sudo </span>apt-get <span class="nb">install</span> <span class="nt">-f</span>
+<span class="nb">sudo </span>dpkg <span class="nt">-i</span> ./cuttlefish-user_<span class="k">*</span>_<span class="k">*</span>64.deb <span class="o">||</span> <span class="nb">sudo </span>apt-get <span class="nb">install</span> <span class="nt">-f</span>
+<span class="nb">sudo </span>usermod <span class="nt">-aG</span> kvm,cvdnetwork,render <span class="nv">$USER</span>
+<span class="nb">sudo </span>reboot
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p>This script installs the Android Cuttlefish environment on a Linux-based system.</p>
+
+<h5 id="step-3-download-ota-images-and-host-package-of-android-cuttlefish">Step 3: Download OTA images and host package of Android Cuttlefish</h5>
+
+<ul>
+  <li><strong>OTA</strong> (Over-The-Air) image:  this file is a system image for the Cuttlefish Virtual Device (CVD), which is a part of AOSP.</li>
+  <li><strong>Host package</strong>: this file is a host package for Cuttlefish. It includes binaries and scripts that need to be run on the host machine to set up and run the Cuttlefish virtual device.</li>
+</ul>
+
+<ol>
+  <li>Go to <a href="http://ci.android.com/">http://ci.android.com/</a></li>
+  <li>Enter a branch name. Start with <code class="language-plaintext highlighter-rouge">aosp-master</code> if you don‘t know what you’re looking for</li>
+  <li>Navigate to <code class="language-plaintext highlighter-rouge">aosp_cf_x86_64_phone</code> and click on <code class="language-plaintext highlighter-rouge">userdebug</code> for the latest build</li>
+  <li>Click on <code class="language-plaintext highlighter-rouge">Artifacts</code></li>
+  <li>Scroll down to the <strong>OTA</strong> images. These packages look like <code class="language-plaintext highlighter-rouge">aosp_cf_x86_64_phone-img-xxxxxx.zip</code> – it will always have <code class="language-plaintext highlighter-rouge">img</code> in the name. Download this file</li>
+  <li>Scroll down to <code class="language-plaintext highlighter-rouge">cvd-host_package.tar.gz</code>. You should always download a <strong>host package</strong> from the same build as your images</li>
+  <li>
+    <p>On your local system, <code class="language-plaintext highlighter-rouge">cd /path/to/android-cuttlefish</code>, combine the packages with following code</p>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="rouge-code"><pre> <span class="nb">mkdir </span>cf
+ <span class="nb">cd </span>cf
+ <span class="nb">tar </span>xvf /path/to/cvd-host_package.tar.gz
+ unzip /path/to/aosp_cf_x86_64_phone-img-xxxxxx.zip
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+  </li>
+</ol>
+
+<h5 id="step-4-launch-cuttlefish-and-other-useful-cuttlefish-commands">Step 4: Launch cuttlefish and other useful cuttlefish commands</h5>
+
+<ol>
+  <li>Launch cuttlefish virtual machine
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre> <span class="nv">HOME</span><span class="o">=</span><span class="nv">$PWD</span> ./bin/launch_cvd <span class="nt">-daemon</span>
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+  </li>
+  <li>Enable cuttlefish root
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre> ./bin/adb root
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Launch cuttlefish shell</p>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre> ./bin/adb shell
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+  </li>
+  <li>Stop cuttlefish virtual machine
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre> pkill run_cvd
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+    <hr />
+    <h4 id="build-android-kernel-with-camflow-patch-applied">Build Android Kernel with CamFlow Patch Applied</h4>
+  </li>
+</ol>
+
+<h5 id="step-1-install-the--repo-command-to-download-android-kernel-source-code-and-create-a-directory-for-android-kernel-build">Step 1: Install the  <code class="language-plaintext highlighter-rouge">Repo</code> command to download Android Kernel source code and create a directory for Android kernel build</h5>
+
+<blockquote>
+  <p><code class="language-plaintext highlighter-rouge">Repo</code> command page: https://gerrit.googlesource.com/git-repo/+/refs/heads/main/README.md</p>
+</blockquote>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="rouge-code"><pre><span class="c"># Debian/Ubuntu</span>
+<span class="nv">$ </span><span class="nb">sudo </span>apt-get <span class="nb">install </span>repo
+
+<span class="c"># Gentoo</span>
+<span class="nv">$ </span><span class="nb">sudo </span>emerge dev-vcs/repo
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p>Or install <code class="language-plaintext highlighter-rouge">repo</code> manually using the following commands:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="rouge-code"><pre><span class="nv">$ </span><span class="nb">mkdir</span> <span class="nt">-p</span> ~/.bin
+<span class="nv">$ PATH</span><span class="o">=</span><span class="s2">"</span><span class="k">${</span><span class="nv">HOME</span><span class="k">}</span><span class="s2">/.bin:</span><span class="k">${</span><span class="nv">PATH</span><span class="k">}</span><span class="s2">"</span>
+<span class="nv">$ </span>curl https://storage.googleapis.com/git-repo-downloads/repo <span class="o">&gt;</span> ~/.bin/repo
+<span class="nv">$ </span><span class="nb">chmod </span>a+rx ~/.bin/repo
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p>Then at your home directory, create a directory for Android Kernel: (this directory <strong>MUST</strong> be separated from Android cuttlefish directory!)</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre><span class="nv">$ </span><span class="nb">cd</span>
+<span class="nv">$ </span><span class="nb">mkdir </span>android-kernel-5.15 <span class="o">&amp;&amp;</span> <span class="nb">cd </span>android-kernel-5.15
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h5 id="step-2-download-android-kernel-source-code">Step 2: Download Android Kernel source code</h5>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre><span class="c"># Branch android13-5.15-LTS as an example</span>
+repo init <span class="nt">-u</span> https://android.googlesource.com/kernel/manifest <span class="nt">-b</span> common-android13-5.15-lts
+repo <span class="nb">sync</span> <span class="nt">-j12</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>The option <code class="language-plaintext highlighter-rouge">j12</code> means that the sync operation will use 12 parallel threads or jobs. If an error occurs during the sync process, you can try reducing the number of threads by lowering the number that follows the <code class="language-plaintext highlighter-rouge">j</code> option first.</p>
+
+<h5 id="step-3-apply-the-kernel-patches-to-android-kernel-source-code-for-customization">Step 3: Apply the kernel patches to Android Kernel source code for customization</h5>
+
+<ol>
+  <li>Download CamFlow kernel patch from the CamFlow repository
+    <ul>
+      <li>CamFlow is a major LSM for Linux kernel provenance</li>
+      <li>Download one of the releases of CamFlow from the link below. In this example, we use <code class="language-plaintext highlighter-rouge">Camflow v0.8.0</code> since it’s compatible with the Android Kernel branch <code class="language-plaintext highlighter-rouge">android13-5.15-LTS</code></li>
+      <li>The link of <code class="language-plaintext highlighter-rouge">Camflow v0.8.0</code> patch releases is: <a href="https://github.com/CamFlow/camflow-dev/releases/tag/v0.8.0">Link</a></li>
+    </ul>
+  </li>
+  <li>Install CamFlow kernel patch to kernel source code before building it
+    <ul>
+      <li>Apply the two CamFlow patches to the <code class="language-plaintext highlighter-rouge">common</code> kernel source code directory
+        <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre> <span class="nb">cd  </span>android-kernel-5.15/common
+ git apply path/to/0001-information-flow.patch
+ git apply path/to/0002-camflow.patch
+</pre></td></tr></tbody></table></code></pre></div>        </div>
+      </li>
+    </ul>
+  </li>
+  <li>Configure the kernel configuration to ensure the camflow provenance LSM is properly loaded and is processed last
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre> <span class="nb">cd  </span>android-kernel-5.15/common
+ make menuconfig
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+    <p><img src="https://s2.loli.net/2023/07/29/uol1rChpDmw2Ls9.png" alt="camflow-config1" />
+ <img src="https://s2.loli.net/2023/07/29/MaABjHfgT9mzusN.png" alt="camflow-config2" />
+ <img src="https://s2.loli.net/2023/07/29/tLJuprdmaMlGkE6.png" alt="camflow-config3" /></p>
+    <ul>
+      <li>Make sure the “provenance” is added at the end of enabled LSMs list</li>
+    </ul>
+  </li>
+  <li>Download and run this shell script to modify the <code class="language-plaintext highlighter-rouge">gki_defconfig</code> to <strong>avoid the savedefconfig mismatch error</strong>
+    <blockquote>
+      <p>If the <code class="language-plaintext highlighter-rouge">gdown</code> command is not working, you can obtain this shell script from the <code class="language-plaintext highlighter-rouge">kernel-config-setting-shell</code> directory at the root level of this repository.</p>
+    </blockquote>
+  </li>
+</ol>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre>  <span class="nb">cd</span> ..   <span class="c"># go to android-kernel-5.15</span>
+  gdown <span class="nt">--id</span> 1x2fLFHlr_UtoCa0_MmHSWHLkiDBnZrNe
+  <span class="nb">source</span> ./modify-build-configs.sh
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h5 id="step-4-build-the-android-kernel">Step 4: Build the Android Kernel</h5>
+<blockquote>
+  <p>Since Android 10, Android has introduced a new <strong><a href="https://source.android.com/devices/architecture/kernel/generic-kernel-image">Generic Kernel Image(GKI)</a></strong> in kernel 4.19 and above. This means that the kernel building process has been divided into two parts: <code class="language-plaintext highlighter-rouge">Generic Kernel</code> and <code class="language-plaintext highlighter-rouge">Vendor Modules</code>. We have to build these two parts separately.</p>
+
+  <p><img src="https://s2.loli.net/2023/05/09/4iUwsP7QLefFHTx.png" alt="kernel.png" /></p>
+  <ul>
+    <li><strong>GKI modules</strong>: Kernel modules built by Google that can be dynamically loaded on devices where applicable. These modules are built as artifacts of the GKI kernel and are delivered alongside GKI as the <code class="language-plaintext highlighter-rouge">system_dlkm_staging_archive.tar.gz</code> archive.</li>
+    <li><strong>Vendor module</strong>: A hardware-specific module developed by a partner and that contains system on a chip (SoC) and device-specific functionality. A vendor module is a type of dynamically loadable kernel module.</li>
+  </ul>
+</blockquote>
+
+<ol>
+  <li><strong>Build Generic Kernel</strong>
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre> <span class="c"># bazel build</span>
+ tools/bazel build //common:kernel_x86_64_dist
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+    <p>Successful build should output the following message:</p>
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre></td><td class="rouge-code"><pre> INFO: From Building GKI artifacts //common:kernel_x86_64_gki_artifacts:
+ Creating boot-img.tar.gz for gki-info.txt boot.img
+ INFO: From Building system_dlkm //common:kernel_x86_64_images_system_dlkm_image:
+ ========================================================
+ Creating system_dlkm image
+ Target //common:kernel_x86_64_dist up-to-date:
+ bazel-bin/common/kernel_x86_64_dist
+ INFO: Elapsed time: 1377.103s, Critical Path: 1356.84s
+ INFO: 253 processes: 239 internal, 14 linux-sandbox.
+ INFO: Build completed successfully, 253 total actions
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre> <span class="c"># create output distribution</span>
+ tools/bazel run //common:kernel_x86_64_dist <span class="nt">--</span> <span class="nt">--dist_dir</span><span class="o">=</span>/absolute/path/to/android-kernel-5.15/vendor-build-output-x86
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+
+    <p>After you run the command above, you should see a directory named <code class="language-plaintext highlighter-rouge">vendor-build-output-x86</code> and a file named <code class="language-plaintext highlighter-rouge">bzImage</code>.</p>
+  </li>
+  <li><strong>Build Vendor Modules for the Virtual Device</strong>
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre> <span class="c"># bazel build</span>
+ tools/bazel build //common-modules/virtual-device:virtual_device_x86_64_dist
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+
+    <p>Successful build should output the following message:</p>
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="rouge-code"><pre> Target //common-modules/virtual-device:virtual_device_x86_64_dist up-to-date:
+ bazel-bin/common-modules/virtual-device/virtual_device_x86_64_dist
+ INFO: Elapsed time: 185.179s, Critical Path: 183.47s
+ INFO: 24 processes: 13 internal, 11 linux-sandbox.
+ INFO: Build completed successfully, 24 total actions
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre> <span class="c"># create output distribution</span>
+ tools/bazel run //common-modules/virtual-device:virtual_device_x86_64_dist <span class="nt">--</span> <span class="nt">--dist_dir</span><span class="o">=</span>/absolute/path/to/android-kernel-5.15/vendor-build-output-x86
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+    <p>Upon successful completion of the build, <code class="language-plaintext highlighter-rouge">initramfs.img</code> should be located at <code class="language-plaintext highlighter-rouge">/path/to/android-kernel-5.15/vendor-build-output-x86</code>. You can now proceed to swap this kernel into your Cuttlefish Android Virtual Device.</p>
+
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">initramfs.img</code>: the initial RAM filesystem is a temporary in-memory file system that contains essential files and utilities required for mounting the root file system. It is compressed and stored as an image file with the name: <code class="language-plaintext highlighter-rouge">initramfs.img</code>.</li>
+      <li><code class="language-plaintext highlighter-rouge">bzImage</code>: the <code class="language-plaintext highlighter-rouge">bzImage</code> is a compressed Linux kernel image created during the kernel compilation process. It is designed to be small enough to fit within limited memory space during the boot process. The <code class="language-plaintext highlighter-rouge">bzImage</code> is loaded by the bootloader, decompressed, and executed to initialize the system hardware and kernel before transitioning to the root file system.</li>
+    </ul>
+  </li>
+</ol>
+
+<hr />
+<h4 id="swap-the-customized-android-kernel-into-android-cuttlefish-virtual-device">Swap the Customized Android Kernel into Android Cuttlefish Virtual Device</h4>
+
+<ol>
+  <li>
+    <p>In <code class="language-plaintext highlighter-rouge">~/android-cuttlefish/cf</code> directory, set the environment variable <code class="language-plaintext highlighter-rouge">DIST_FOLDER</code> as the folder that contains <code class="language-plaintext highlighter-rouge">initramfs.img</code> and <code class="language-plaintext highlighter-rouge">bzImage</code></p>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre> <span class="nv">DIST_FOLDER</span><span class="o">=</span><span class="si">$(</span><span class="nb">readlink</span> <span class="nt">-f</span> /absolute/path/to/android-kernel-5.15/vendor-build-output-x86<span class="si">)</span>
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+  </li>
+  <li>Navigate to <code class="language-plaintext highlighter-rouge">android-cuttlefish/cf</code>, and then use the following command to launch Cuttlefish using the kernel we just built.
+    <blockquote>
+      <p>If the launch of cuttlefish failed, try to stop previously launched cuttlefish first by <code class="language-plaintext highlighter-rouge">pkill run_cvd</code></p>
+    </blockquote>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre><span class="c"># This command launches a Cuttlefish Virtual Device (CVD) in daemon mode. It's configured with 27GB of RAM, always creates a new data policy, includes a blank data image of 30GB, and use a single CPU core</span>
+   
+<span class="nv">HOME</span><span class="o">=</span><span class="k">${</span><span class="nv">PWD</span><span class="k">}</span> ./bin/launch_cvd <span class="nt">-daemon</span> <span class="nt">-initramfs_path</span> <span class="s2">"</span><span class="k">${</span><span class="nv">DIST_FOLDER</span><span class="k">}</span><span class="s2">"</span>/initramfs.img <span class="nt">-kernel_path</span> <span class="s2">"</span><span class="k">${</span><span class="nv">DIST_FOLDER</span><span class="k">}</span><span class="s2">"</span>/bzImage <span class="nt">-memory_mb</span> 27000 <span class="nt">-data_policy</span> always_create <span class="nt">-blank_data_image_mb</span> 30000 <span class="nt">-cpus</span> 1
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Launch the shell of cuttlefish and check the kernel version to verify that kernel is swapped successfully</p>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre> ./bin/adb shell  <span class="c"># alternatively, make shell</span>
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre> <span class="c"># run cat version before and after the kernel swap, the output should be different</span>
+ vsoc_x86_64:/ <span class="nv">$ </span><span class="nb">cd </span>proc <span class="o">&amp;&amp;</span> <span class="nb">cat </span>version
+ Linux version 5.15.120-maybe-dirty <span class="o">(</span>build-user@build-host<span class="o">)</span> <span class="o">(</span>Android <span class="o">(</span>8508608, based on r450784e<span class="o">)</span> clang version 14.0.7 <span class="o">(</span>https://android.googlesource.com/toolchain/llvm-project 4c603efb0cca074e9238af8b4106c30add4418f6<span class="o">)</span>, LLD 14.0.7<span class="o">)</span> <span class="c">#1 SMP PREEMPT Thu Jan 1 00:00:00 UTC 1970</span>
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+  </li>
+</ol>
+
+<hr />
+<h4 id="set-up-camflow-android-user-space-daemons">Set Up Camflow Android User-Space Daemons</h4>
+
+<blockquote>
+  <p>CamFlow provenance system consists of kernel space capture mechanism and user space daemons. The architecture is described below. For more information, check <a href="https://camflow.org/#overview">camflow.org</a>.</p>
+
+  <p><img src="https://s2.loli.net/2023/07/29/qeCQIR7WEL1TfGn.png" alt="camflow.png" /></p>
+  <ul>
+    <li><strong>camflowd</strong>: is a daemon responsible for recording the provenance captured in the kernel by CamFlow. Provenance records are published by CamFlow to pseudo-files in relayfs. The daemon retrieves these records, serializes them to a format specified in the configuration, and writes them to an output specified in the configuration.</li>
+    <li><strong>camconfd</strong>: camconfd is a daemon charged with configuring the in-kernel capture mechanism. The configuration daemon reads from <code class="language-plaintext highlighter-rouge">camflow.ini</code> and loads the specified configuration into the kernel via a securityfs interface.</li>
+    <li><strong>libprovenance</strong>: a C library implementing userspace utility functions to interact with CamFlow relayfs and securityfs interfaces.</li>
+    <li><strong>camflow-cli</strong>: CLI that allows the user to dynamically modify the capture configuration through the command line.</li>
+    <li><strong>camflow.ini</strong>: captures configuration file read during the boot process by the camconfd service, and is used to set the capture policy.</li>
+    <li><strong>camflowd.ini</strong>: output configuration file that specifies what and where the provenance information is published. (Currently only support log output in <strong>SPADE JSON</strong> format )</li>
+  </ul>
+</blockquote>
+
+<h5 id="step-1a--using-prebuilt-camflow-android-user-space-daemons">Step 1a:  Using Prebuilt Camflow Android User-Space Daemons</h5>
+
+<p>First, move all prebuilt daemons, shared library, and config files to the <code class="language-plaintext highlighter-rouge">Downloads</code> directory using the command below. You should execute the following command in the <code class="language-plaintext highlighter-rouge">camflow-android-provenance</code> directory.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre><span class="c"># copy prebuilts to Downloads directory</span>
+<span class="nb">cd </span>prebuilt-userspace-daemons <span class="o">&amp;&amp;</span> <span class="nb">cp</span> <span class="k">*</span> ~/Downloads <span class="o">&amp;&amp;</span> <span class="nb">cd</span> .. <span class="o">&amp;&amp;</span> <span class="nb">cd </span>camflow-config-files <span class="o">&amp;&amp;</span> <span class="nb">cp</span> <span class="k">*</span> ~/Downloads <span class="o">&amp;&amp;</span> <span class="nb">cd</span> ..
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h5 id="step-1b-build-camflow-android-user-space-daemons-in-android-studio-from-source">Step 1b: Build Camflow Android User-Space Daemons in Android Studio from Source</h5>
+
+<blockquote>
+  <p>:warning: <strong>If you followed  “Step 1a:  Using Prebuilt Camflow Android User-Space Daemons”, you can skip this part.</strong></p>
+</blockquote>
+
+<blockquote>
+  <p>Assuming we build the user-space daemons in Android Studio on a Mac, and Android Cuttlefish runs on a Linux desktop.</p>
+</blockquote>
+
+<ol>
+  <li>On Mac desktop, <code class="language-plaintext highlighter-rouge">git clone</code> this repo to Desktop and open this folder in Android Studio (Proceed to the next step if you have already cloned the repository)
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>git clone https://github.com/MichaelXi3/camflow-android-provenance.git
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Click the green hammer <code class="language-plaintext highlighter-rouge">Build</code> button <strong>twice</strong> on the top right corner of Android Studio</p>
+
+    <blockquote>
+      <p>Clicking once builds only x86 executables. Building it again will generate x86_64 executables. We want x86_64.</p>
+      <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre>BUILD SUCCESSFUL in 13s
+43 actionable tasks: 43 executed
+</pre></td></tr></tbody></table></code></pre></div>      </div>
+      <p>All the executables should be located at:</p>
+      <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>/Desktop/camflow-android-provenance/app/build/intermediates/cxx/Debug/k4r535v6/obj/x86_64
+</pre></td></tr></tbody></table></code></pre></div>      </div>
+      <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre><span class="nb">cd </span>app/build/intermediates/cxx/Debug/k4r535v6/obj/x86_64
+</pre></td></tr></tbody></table></code></pre></div>      </div>
+      <p>The executable and shared library list should include:</p>
+      <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>camconfd     camflow-cli     camflowd     camflowexample     libprovenance.so
+</pre></td></tr></tbody></table></code></pre></div>      </div>
+    </blockquote>
+  </li>
+  <li>Move the userspace daemons and shared library to the Linux Desktop from Mac, assume all these five files are now moved to <code class="language-plaintext highlighter-rouge">/Downloads</code> folder on Linux Desktop</li>
+  <li>Move the configuration files <code class="language-plaintext highlighter-rouge">camflow.ini</code> and <code class="language-plaintext highlighter-rouge">camflowd.ini</code> located at <code class="language-plaintext highlighter-rouge">camflow-config-files</code> folder in this repo to  <code class="language-plaintext highlighter-rouge">/Downloads</code> folder on Linux Desktop as well</li>
+</ol>
+
+<h5 id="step-2-install-these-executables-and-shared-library-to-android-cuttlefish">Step 2: Install these executables and shared library to Android Cuttlefish</h5>
+
+<ol>
+  <li>Navigate to <code class="language-plaintext highlighter-rouge">android-cuttlefish/cf</code>, enter the following commands to launch the Android virtual device with specified configurations (skip these commands is the Android virtual device is already running)
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre> <span class="c"># stop the previous launched Android virtual device if there is any</span>
+ pkill run_cvd
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre> <span class="c"># set DIST_FOLDER to the directory that contains bzImage and initramfs.img</span>
+ <span class="nv">DIST_FOLDER</span><span class="o">=</span><span class="si">$(</span><span class="nb">readlink</span> <span class="nt">-f</span> /path/to/android-kernel-5.15/vendor-build-output-x86<span class="si">)</span>
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre> <span class="c"># Launch Android cuttlefish with RAM 27GB, Disk Space 30GB, 1 CPU</span>
+ <span class="nv">HOME</span><span class="o">=</span><span class="k">${</span><span class="nv">PWD</span><span class="k">}</span> ./bin/launch_cvd <span class="nt">-daemon</span> <span class="nt">-memory_mb</span> 27000 <span class="nt">-data_policy</span> always_create <span class="nt">-blank_data_image_mb</span> 30000 <span class="nt">-cpus</span> 1 <span class="nt">-initramfs_path</span> <span class="s2">"</span><span class="k">${</span><span class="nv">DIST_FOLDER</span><span class="k">}</span><span class="s2">"</span>/initramfs.img <span class="nt">-kernel_path</span> <span class="s2">"</span><span class="k">${</span><span class="nv">DIST_FOLDER</span><span class="k">}</span><span class="s2">"</span>/bzImage
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+  </li>
+  <li>Install the shared library and user-space daemons to Android Cuttlefish
+    <blockquote>
+      <p><strong>Using Makefile commands to automate is recommended</strong>. A Makefile has been placed at <code class="language-plaintext highlighter-rouge">android-cuttlefish/cf</code> directory, you can use it right away or modify it to your needs.</p>
+    </blockquote>
+
+    <p><strong>First:  <code class="language-plaintext highlighter-rouge">make remount-all</code></strong>, or use following commands</p>
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+</pre></td><td class="rouge-code"><pre> <span class="c"># remount Android cuttlefish device - need to install shared library</span>
+ ./bin/adb root
+ ./bin/adb remount
+ ./bin/adb reboot
+   
+ <span class="c"># mount several filesystem in Android cuttlefish device</span>
+ <span class="c"># if encounter 'Device or resource busy' error, wait a minute and try again</span>
+ ./bin/adb root
+ ./bin/adb shell mount <span class="nt">-t</span> securityfs /sys/kernel/security
+ ./bin/adb shell mount <span class="nt">-t</span> debugfs /sys/kernel/debugfs
+ ./bin/adb shell mount <span class="nt">-o</span> rw,remount /system
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+
+    <p><strong>Second:  <code class="language-plaintext highlighter-rouge">make prepare</code></strong>, assume everything is located at <code class="language-plaintext highlighter-rouge">/Downloads</code> directory</p>
+    <blockquote>
+      <p>Checklist of what you need in <code class="language-plaintext highlighter-rouge">/Downloads</code> directory: <code class="language-plaintext highlighter-rouge">camconfd</code>, <code class="language-plaintext highlighter-rouge">camflow-cli</code>, <code class="language-plaintext highlighter-rouge">camflowd</code>, <code class="language-plaintext highlighter-rouge">1ibprovenance.so</code>, <code class="language-plaintext highlighter-rouge">camflowexample</code>, <code class="language-plaintext highlighter-rouge">camflow.ini</code>, <code class="language-plaintext highlighter-rouge">camflowd.ini</code></p>
+    </blockquote>
+
+    <p>You can execute the following commands if the files are not in the <code class="language-plaintext highlighter-rouge">/Downloads</code>, but they perform the same actions as <code class="language-plaintext highlighter-rouge">make prepare</code>.</p>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="rouge-code"><pre> <span class="c"># install user-space daemons to android cuttlefish /data/local/tmp</span>
+ ./bin/adb push /path/to/camflowd /data/local/tmp
+ ./bin/adb push /path/to/camflowexample /data/local/tmp
+ ./bin/adb push /path/to/camconfd /data/local/tmp
+ ./bin/adb shell <span class="s2">"cd /data/local/tmp &amp;&amp; chmod 755 camflowd &amp;&amp; chmod 755 camconfd &amp;&amp; chmod 755 camflowexample"</span>
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre> <span class="c"># install camflow-cli to android cuttlefish</span>
+ ./bin/adb push /path/to/camflow-cli /system/bin
+ ./bin/adb shell <span class="s2">"cd /system/bin &amp;&amp; mv camflow-cli camflow &amp;&amp; chmod 755 /system/bin/camflow"</span>
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre> <span class="c"># install libprovenance.so shared library to android cuttlefish</span>
+ ./bin/adb push /path/to/libprovenance.so /system/lib64
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre> <span class="c"># install the camflow and camflowd configuration files</span>
+ ./bin/adb push /path/to/camflow.ini /data/local/tmp
+ ./bin/adb push /path/to/camflowd.ini /data/local/tmp
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+  </li>
+</ol>
+
+<h5 id="step-3-run-user-space-daemons-to-capture-provenance-of-android-system">Step 3: Run User-Space Daemons to Capture Provenance of Android System</h5>
+<ol>
+  <li>Run the <code class="language-plaintext highlighter-rouge">camconfd</code> daemon to set the capture configuration. Note that in the default <code class="language-plaintext highlighter-rouge">camflow.ini</code>, the capture-all provenance is set to false since there will be massive provenance data generated if capture-all is set to true. You can fine-tune the capture policy later by modifying the configurations listed in <code class="language-plaintext highlighter-rouge">camflow.ini</code>.
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre> <span class="c"># or, make run-camconfd</span>
+ ./bin/adb shell /data/local/tmp/camconfd &amp;
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+  </li>
+  <li>Run the <code class="language-plaintext highlighter-rouge">camflowd</code> daemon to record the provenance captured in the kernel and serialize them to SPADE JSON format log in <code class="language-plaintext highlighter-rouge">/data/local/tmp/audit.log</code> file.
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre> <span class="c"># or, make run-camflowd</span>
+ ./bin/adb shell /data/local/tmp/camflowd &amp;
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+  </li>
+  <li>Now there should be a file called <code class="language-plaintext highlighter-rouge">audit.log</code> located at <code class="language-plaintext highlighter-rouge">/data/local/tmp/</code> that contains provenance log entries. Note that the log may be empty if your capture configuration is set to not capture anything, as defined in the default <code class="language-plaintext highlighter-rouge">camflow.ini</code>.
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="rouge-code"><pre> <span class="c"># enter android cuttlefish shell as root</span>
+ make root <span class="o">&amp;&amp;</span> make shell
+ <span class="nb">cd</span> /data/local/tmp
+ vi audit.log
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre> <span class="c"># the provenance log should be something similar to the following</span>
+ <span class="o">{</span><span class="s2">"type"</span>:<span class="s2">"Entity"</span>,<span class="s2">"id"</span>:<span class="s2">"EAAAAAAAABQFFQAAAAAAAAAAAAAAAAAAAQAAAAAAAAA="</span>,<span class="s2">"annotations"</span>: <span class="o">{</span><span class="s2">"object_id"</span>:<span class="s2">"5381"</span>,<span class="s2">"object_type"</span>:<span class="s2">"machine"</span>,<span class="s2">"boot_id"</span>:0,<span class="s2">"cf:machine_id"</span>:<span class="s2">"cf:0"</span>,<span class="s2">"version"</span>:1,<span class="s2">"cf:date"</span>:<span class="s2">"2023:07:24T15:23:35"</span>,<span class="s2">"cf:taint"</span>:<span class="s2">"0"</span>,<span class="s2">"cf:jiffies"</span>:<span class="s2">"0"</span>,<span class="s2">"cf:epoch"</span>:0,<span class="s2">"u_sysname"</span>:<span class="s2">"Linux"</span>,<span class="s2">"u_nodename"</span>:<span class="s2">"(none)"</span>,<span class="s2">"u_release"</span>:<span class="s2">"5.15.104-maybe-dirty"</span>,<span class="s2">"u_version"</span>:<span class="s2">"#1 SMP PREEMPT Thu Jan 1 00:00:00 UTC 1970"</span>,<span class="s2">"u_machine"</span>:<span class="s2">"x86_64"</span>,<span class="s2">"u_domainname"</span>:<span class="s2">"(none)"</span>,<span class="s2">"k_version"</span>:<span class="s2">"0.8.0"</span>,<span class="s2">"l_version"</span>:<span class="s2">"v0.5.5"</span><span class="o">}}</span>
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre> <span class="c"># to copy the provenance log file to /Documents directory</span>
+ <span class="nb">exit</span>         <span class="c"># exit android cuttlefish shell, now you should at ~/android-cuttlefish/cf</span>
+ make pull    <span class="c"># pull audit.log from cuttlefish to local machine</span>
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+  </li>
+</ol>
+
+<h2 id="running-tests">Running Tests</h2>
+
+<p>This section provides a walk-through of the Camflow Android Provenance System test, assuming that the user has already completed the instructions described above. Specifically, user should have already launched Android cuttlefish successfully, installed all user space daemons, shared library, and executed camconfd and camflowd to apply capture configurations and to generate provenance.</p>
+
+<h3 id="test-1-get-the-provenance-graph-of-an-executable-that-opens-and-writes-a-file">Test 1: Get the provenance graph of an executable that opens and writes a file</h3>
+
+<ol>
+  <li>Run <code class="language-plaintext highlighter-rouge">camflowexample</code> located at <code class="language-plaintext highlighter-rouge">/data/loca/tmp</code> installed in the previous steps
+    <ul>
+      <li>In the <code class="language-plaintext highlighter-rouge">camflowexample</code> executable (the source code is located at <code class="language-plaintext highlighter-rouge">CamFlow-Android-Provenance/app/src/main/cpp/example</code>), it turns on the <code class="language-plaintext highlighter-rouge">track-me</code> bit, so that this process can be tracked.
+        <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre> <span class="c"># execute this command at /android-cuttlefish/cf</span>
+ ./bin/adb shell /data/local/tmp/camflowexample    <span class="c"># or, make run-example</span>
+</pre></td></tr></tbody></table></code></pre></div>        </div>
+      </li>
+    </ul>
+  </li>
+  <li>Check out the provenance log generated in <code class="language-plaintext highlighter-rouge">audit.log</code>
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="rouge-code"><pre> <span class="c"># enter the android cuttlefish commandline interface</span>
+ ./bin/adb shell      <span class="c"># or, make shell</span>
+ <span class="nb">cd</span> /data/local/tmp
+ vi audit.log
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+  </li>
+  <li>Using Camflow Android Log Parser to parse and visualize the generated log
+    <ul>
+      <li><strong>Camflow Log Parser Github Link</strong>: <a href="https://github.com/MichaelXi3/android-provenance-parser">https://github.com/MichaelXi3/android-provenance-parser</a></li>
+    </ul>
+
+    <p><img src="https://s2.loli.net/2023/08/05/zvKIZy8RkjopD15.png" alt="provG.jpg" /></p>
+  </li>
+</ol>
+
+<h2 id="built-with">Built With</h2>
+
+<ul>
+  <li><a href="https://bazel.build/">Bazel</a> - The build and test tool developed by Google to automate build processes for large-scale software such as Android Kernel and Modules</li>
+  <li><a href="https://www.jetbrains.com/help/clion/cmakelists-txt-file.html">CMake</a> - The build system used for building Camflow Android user space daemons and shared library</li>
+  <li><a href="https://rometools.github.io/rome/">AndroidNDK</a> - A cross-compiling tool for compiling code written in C/C++ for Android</li>
+</ul>
+
+<h2 id="project-structure">Project Structure</h2>
+
+<p>At the root directory of the project, there’re a few important directories:</p>
+<ol>
+  <li><code class="language-plaintext highlighter-rouge">camflow-config-files</code>: stores <code class="language-plaintext highlighter-rouge">camflow.ini</code> and <code class="language-plaintext highlighter-rouge">camflowd.ini</code> for capture and output configurations</li>
+  <li><code class="language-plaintext highlighter-rouge">camflow-makefile-example</code>: provides a sample makefile for android-cuttlefish commands</li>
+  <li><code class="language-plaintext highlighter-rouge">prebuilt-userspace-daemons</code>: provides prebuilt daemons that can be used right away</li>
+  <li><code class="language-plaintext highlighter-rouge">android-cuttlefish-automation</code>: provides the shell script that automates the android cuttlefish launch</li>
+  <li><code class="language-plaintext highlighter-rouge">kernel-config-setting-shell</code>: provides a shell script that modifies Android kernel build configs, for backup purposes</li>
+  <li><code class="language-plaintext highlighter-rouge">app</code>: is the directory that contains all source codes, specifically, the path is <code class="language-plaintext highlighter-rouge">AndroidStudioProjects/camflow-android-provenance/app/src/main/cpp</code>
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+</pre></td><td class="rouge-code"><pre>    .
+├── CMakeLists.txt
+├── camconfd
+│   ├── CMakeLists.txt
+│   ├── camconf.h
+│   ├── config.c
+│   └── ini
+├── camflow-cli
+│   ├── CMakeLists.txt
+│   └── camflow.c
+├── camflowdd
+│   ├── CMakeLists.txt
+│   ├── camflowd-include
+│   │   ├── service-config.h
+│   │   └── service-log.h
+│   ├── ini
+│   └── main.c
+├── example
+│   ├── CMakeLists.txt
+│   ├── cp.c
+│   ├── printf.c
+│   └── write.c
+└── provenancelib
+ ├── CMakeLists.txt
+ ├── camflow-dev-include
+ │   ├── provenance_fs.h
+ │   ├── provenance_types.h
+ │   └── provenanceh.h
+ ├── libprovenance-include
+ │   ├── provenance.h
+ │   ├── provenanceSPADEJSON.h
+ │   ├── provenanceW3CJSON.h
+ │   ├── provenance_utils.h
+ │   └── provenancefilter.h
+ ├── libprovenance.c
+ ├── provenanceJSONcommon.h
+ ├── provenanceSPADEJSON.c
+ ├── provenanceW3CJSON.c
+ ├── provenancefilter.c
+ ├── provenanceutils.c
+ ├── relay.c
+ ├── threadpool
+ │   ├── CMakeLists.txt
+ │   ├── thpool.c
+ │   └── thpool.h
+ └── uthash.h
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+  </li>
+</ol>
+
+
+                <hr style="visibility: hidden;">
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2023/08/02/dynamic-programming/" data-toggle="tooltip" data-placement="top" title="Dynamic Programming">
+                        Previous<br>
+                        <span>Dynamic Programming</span>
+                        </a>
+                    </li>
+                    
+                    
+                </ul>
+                <hr style="visibility: hidden;">
+
+                
+                <!-- disqus 评论框 start -->
+                <div class="comment">
+                    <div id="disqus_thread" class="disqus-thread"></div>
+                </div>
+                <!-- disqus 评论框 end -->
+                
+
+                
+            </div>  
+
+    <!-- Side Catalog Container -->
+        
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+        
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+
+
+<section>
+    
+        <hr class="hidden-sm hidden-xs">
+    
+    <h5><a href="/archive/">FEATURED TAGS</a></h5>
+    <div class="tags">
+        
+        
+        
+        
+        
+        
+                <a data-sort="0005" 
+                    href="/archive/?tag=Firebase"
+                    title="Firebase"
+                    rel="2">Firebase</a>
+        
+                <a data-sort="0005" 
+                    href="/archive/?tag=Android"
+                    title="Android"
+                    rel="2">Android</a>
+        
+                <a data-sort="0005" 
+                    href="/archive/?tag=Android+Cuttlefish"
+                    title="Android Cuttlefish"
+                    rel="2">Android Cuttlefish</a>
+        
+                <a data-sort="0005" 
+                    href="/archive/?tag=System"
+                    title="System"
+                    rel="2">System</a>
+    </div>
+</section>
+
+
+                <!-- Friends Blog -->
+                
+<hr>
+<h5>FRIENDS</h5>
+<ul class="list-inline">
+  
+  <li><a href="http://michaelxi.com/">Michael Xi</a></li>
+  
+</ul>
+
+            </div>
+        </div>
+    </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+
+
+
+
+
+
+<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = "https-michaelxi3-github-io";
+    var disqus_identifier = "/2023/08/04/CamFlow-Android- Provenance- System";
+    var disqus_url = "http://localhost:4000/2023/08/04/CamFlow-Android-Provenance-System/";
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<!-- disqus 公共JS代码 end -->
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'hover',
+          placement: 'right',
+          // icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  
+  
+  
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/MichaelXi3">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="https://www.linkedin.com/in/yukun-xi">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; Sphere 2023
+                    <br>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Simple Jekyll Search -->
+<script src="/js/simple-jekyll-search.min.js"></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog(selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector), a, n, t, l, i, c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#" + $(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="' + i + '" rel="nofollow">' + t + '</a>');
+            l = $('<li class="' + n + '_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function (e) {
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+<!-- Simple Jekyll Search -->
+<script>
+    // https://stackoverflow.com/questions/1912501/unescape-html-entities-in-javascript
+    function htmlDecode(input) {
+        var e = document.createElement('textarea');
+        e.innerHTML = input;
+        // handle case of empty input
+        return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+    }
+
+    SimpleJekyllSearch({
+        searchInput: document.getElementById('search-input'),
+        resultsContainer: document.getElementById('search-results'),
+        json: '/search.json',
+        searchResultTemplate: '<div class="post-preview item"><a href="{url}"><h2 class="post-title">{title}</h2><h3 class="post-subtitle">{subtitle}</h3><hr></a></div>',
+        noResultsText: 'No results',
+        limit: 50,
+        fuzzy: false,
+        // a hack to get escaped subtitle unescaped. for some reason, 
+        // post.subtitle w/o escape filter nuke entire search.
+        templateMiddleware: function (prop, value, template) {
+            if (prop === 'subtitle' || prop === 'title') {
+                if (value.indexOf("code")) {
+                    return htmlDecode(value);
+                } else {
+                    return value;
+                }
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        var $searchPage = $('.search-page');
+        var $searchOpen = $('.search-icon');
+        var $searchClose = $('.search-icon-close');
+        var $searchInput = $('#search-input');
+        var $body = $('body');
+
+        $searchOpen.on('click', function (e) {
+            e.preventDefault();
+            $searchPage.toggleClass('search-active');
+            var prevClasses = $body.attr('class') || '';
+            setTimeout(function () {
+                $body.addClass('no-scroll');
+            }, 400)
+
+            if ($searchPage.hasClass('search-active')) {
+                $searchClose.on('click', function (e) {
+                    e.preventDefault();
+                    $searchPage.removeClass('search-active');
+                    $body.attr('class', prevClasses);  // from closure 
+                });
+                $searchInput.focus();
+            }
+        });
+    });
+</script>
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>
