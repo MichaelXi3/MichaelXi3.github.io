@@ -5,13 +5,13 @@
 2. Installed dependencies in the `Gemfile`:
 
 ```sh
-$ bundle install 
+bundle install 
 ```
 
 3. Serve the website (`localhost:4000` by default):
 
 ```sh
-$ bundle exec jekyll serve  # alternatively, npm start
+bundle exec jekyll serve  # alternatively, npm start
 ```
 
 ---

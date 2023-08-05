@@ -5,9 +5,930 @@
     <description></description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Fri, 04 Aug 2023 16:18:32 -0400</pubDate>
-    <lastBuildDate>Fri, 04 Aug 2023 16:18:32 -0400</lastBuildDate>
+    <pubDate>Sat, 05 Aug 2023 15:23:25 -0400</pubDate>
+    <lastBuildDate>Sat, 05 Aug 2023 15:23:25 -0400</lastBuildDate>
     <generator>Jekyll v4.3.2</generator>
+    
+      <item>
+        <title>Unix Security</title>
+        <description>&lt;h1 id=&quot;unix-introduction&quot;&gt;UNIX Introduction&lt;/h1&gt;
+
+&lt;h3 id=&quot;operating-systems-and-security&quot;&gt;Operating Systems and Security&lt;/h3&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;OS security typically consists of the following &lt;strong&gt;four&lt;/strong&gt; items&lt;/p&gt;
+
+&lt;/blockquote&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;&lt;strong&gt;Login and user accounts&lt;/strong&gt;
+    &lt;ul&gt;
+      &lt;li&gt;Info about users is stored in accounts&lt;/li&gt;
+      &lt;li&gt;This includes &lt;em&gt;privileges&lt;/em&gt; granted to a user&lt;/li&gt;
+      &lt;li&gt;&lt;em&gt;Identification&lt;/em&gt; and &lt;em&gt;authentication&lt;/em&gt; identify a user&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Access control&lt;/strong&gt;
+    &lt;ul&gt;
+      &lt;li&gt;&lt;em&gt;Permissions&lt;/em&gt; on resources can be set by the admin&lt;/li&gt;
+      &lt;li&gt;Permissions will depend on the user’s identity&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Audits&lt;/strong&gt;
+    &lt;ul&gt;
+      &lt;li&gt;Security involves the &lt;em&gt;prevention&lt;/em&gt; and &lt;em&gt;detection&lt;/em&gt;&lt;/li&gt;
+      &lt;li&gt;Mechanisms are needed to determine security violations&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Configuration management&lt;/strong&gt;
+    &lt;ul&gt;
+      &lt;li&gt;Updating OS based on security needs&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&quot;unix-background&quot;&gt;UNIX Background&lt;/h3&gt;
+
+&lt;p&gt;UNIX is originally intended for one computer with multiple users&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;So that user mistakes can be isolated&lt;/li&gt;
+  &lt;li&gt;The initial UNIX design didn’t have security in mind, the trust association is: If you connect to the mainframe, then I must trust you&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h1 id=&quot;unix-system--security&quot;&gt;UNIX System &amp;amp; Security&lt;/h1&gt;
+
+&lt;h3 id=&quot;unix-mechanisms&quot;&gt;UNIX Mechanisms&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://s2.loli.net/2023/08/05/P4bFwjroKt8iGHn.png&quot; alt=&quot;截屏2023-08-04 下午9.47.39.png&quot; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;UNIX program runs as either &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;kernel&lt;/code&gt; or &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;user&lt;/code&gt;,  which corresponds to complete or limited control of all resources&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;runlevel&quot;&gt;Runlevel&lt;/h3&gt;
+
+&lt;p&gt;&lt;strong&gt;Runlevel&lt;/strong&gt; is a state or mode state of the machine after boot. It defines what the computer does in a general sense.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;There are &lt;strong&gt;Seven&lt;/strong&gt; run levels
+  &lt;img src=&quot;https://s2.loli.net/2023/08/05/VoiCsIcNrbwSQDG.png&quot; alt=&quot;截屏2023-08-04 下午9.49.26.png&quot; /&gt;&lt;/p&gt;
+
+    &lt;blockquote&gt;
+      &lt;p&gt;For example, our AWS VM has a run level equal to 5, so we have a graphical user interface. To check the run level, use &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;runlevel&lt;/code&gt; in CLI.&lt;/p&gt;
+
+    &lt;/blockquote&gt;
+
+    &lt;p&gt;The system’s run level gives you an idea of the computer, e.g. whether it’s a single-user computer, a server, etc.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Consider UNIX system booting&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://s2.loli.net/2023/08/05/PCzlqFLayXfRDJn.png&quot; alt=&quot;截屏2023-08-04 下午9.51.58.png&quot; /&gt;&lt;/p&gt;
+
+    &lt;ol&gt;
+      &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;init&lt;/code&gt; process starts → kick off everything&lt;/li&gt;
+      &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;init&lt;/code&gt; determines the default run level (set by admin)&lt;/li&gt;
+      &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;init&lt;/code&gt; runs the scripts associated with the run level, which are located in the&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/etc&lt;/code&gt; directory with one directory per run level&lt;/li&gt;
+    &lt;/ol&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;login-and-user-accounts&quot;&gt;Login and User Accounts&lt;/h3&gt;
+
+&lt;h4 id=&quot;password&quot;&gt;Password&lt;/h4&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;In UNIX, users are identified by &lt;strong&gt;user names&lt;/strong&gt;
+    &lt;ul&gt;
+      &lt;li&gt;Authenticated by passwords&lt;/li&gt;
+      &lt;li&gt;Passwords are &lt;strong&gt;&lt;em&gt;encrypted&lt;/em&gt;&lt;/strong&gt; and stored in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/etc/passwd&lt;/code&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;In &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/etc/passwd&lt;/code&gt;, every user’s row looks like this:&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://s2.loli.net/2023/08/05/7zbVoFAfKcY8BXg.png&quot; alt=&quot;截屏2023-08-04 下午9.53.31.png&quot; /&gt;&lt;/p&gt;
+
+    &lt;p&gt;The root user always has &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;UID = 0&lt;/code&gt;, which provides the highest level of permissions in Unix&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;If the password is empty, the password is not required&lt;/li&gt;
+      &lt;li&gt;If the password starts with an &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;*&lt;/code&gt;, the user cannot log in&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/etc/passwd&lt;/code&gt; is readable by any user (in the good old days), but only root can write to this file&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;&lt;strong&gt;Security risk&lt;/strong&gt;: user can elevate privileges by &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;setuid&lt;/code&gt; and modify readonly files&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/etc/passwd&lt;/code&gt; and &lt;strong&gt;Shell&lt;/strong&gt;
+    &lt;ul&gt;
+      &lt;li&gt;
+        &lt;p&gt;Shell is the command line environment given to the account&lt;/p&gt;
+
+        &lt;p&gt;&lt;img src=&quot;https://s2.loli.net/2023/08/05/wPTpH8oyb3DLemv.png&quot; alt=&quot;截屏2023-08-04 下午9.56.01.png&quot; /&gt;&lt;/p&gt;
+      &lt;/li&gt;
+      &lt;li&gt;If the shell is &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/usr/sbin/nologin&lt;/code&gt; or &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/bin/false&lt;/code&gt; then &lt;strong&gt;Cannot&lt;/strong&gt; log in&lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;Why have an account you cannot log into?&lt;/p&gt;
+
+        &lt;blockquote&gt;
+          &lt;p&gt;Every process has to be run by an owner, so the admin may want to create a user to run certain processes. So that admin can kill these processes by killing the corresponding user.&lt;/p&gt;
+
+          &lt;ol&gt;
+            &lt;li&gt;Security: In some cases, a process or service may require access to certain system resources, such as files or network ports, but does not need a user shell or interactive login. By creating a dedicated system account for the process or service, system administrators can restrict access to the necessary resources while minimizing the risk of unauthorized access.&lt;/li&gt;
+            &lt;li&gt;Process isolation: Sometimes, it is necessary to create a user account to run a particular process, but it is not desirable to allow the user to log in interactively or run other programs. For example, a web server may need a dedicated user account to run its processes, but that user should not have shell access or be able to run other programs on the system.&lt;/li&gt;
+            &lt;li&gt;Backup purposes: Creating system accounts for backup purposes, such as for system-level backups, allows for a clean and organized environment. It also helps to ensure that no user or program can interfere with the backup process.&lt;/li&gt;
+          &lt;/ol&gt;
+        &lt;/blockquote&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Shadow Files&lt;/strong&gt;
+    &lt;ul&gt;
+      &lt;li&gt;There is a security risk with a readable password, so people create shadow files to store hashed passwords now&lt;/li&gt;
+      &lt;li&gt;If a shadow password file is used
+        &lt;ul&gt;
+          &lt;li&gt;
+            &lt;p&gt;An x is placed for the password in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/etc/passwd&lt;/code&gt;&lt;/p&gt;
+
+            &lt;p&gt;&lt;img src=&quot;https://s2.loli.net/2023/08/05/YMiTfOS4IJWeoym.png&quot; alt=&quot;截屏2023-08-04 下午9.57.31.png&quot; /&gt;&lt;/p&gt;
+          &lt;/li&gt;
+          &lt;li&gt;
+            &lt;p&gt;The actual encrypted password is located in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/etc/shadow&lt;/code&gt; and this file is readable only by the &lt;strong&gt;root&lt;/strong&gt;&lt;/p&gt;
+
+            &lt;p&gt;&lt;img src=&quot;https://s2.loli.net/2023/08/05/jQwfHRYKP6SOk7I.png&quot; alt=&quot;截屏2023-08-04 下午9.58.02.png&quot; /&gt;&lt;/p&gt;
+          &lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+      &lt;li&gt;To crack the password, you need to crack these two files and merge them. You also can use &lt;strong&gt;&lt;a href=&quot;https://github.com/openwall/john&quot;&gt;John the Ripper (JTR)&lt;/a&gt;&lt;/strong&gt; to do the cracking automatically.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;Interpret&lt;/strong&gt; &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/etc/shadow&lt;/code&gt; file meanings&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://s2.loli.net/2023/08/05/WZPlvX8Um61Mfn2.png&quot; alt=&quot;截屏2023-08-04 下午9.59.21.png&quot; /&gt;&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;user-types&quot;&gt;User Types&lt;/h4&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;User Types&lt;/strong&gt;
+    &lt;ul&gt;
+      &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Root&lt;/code&gt; is superuser that has complete control of the system
+        &lt;ul&gt;
+          &lt;li&gt;Root has &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;UID = 0&lt;/code&gt; and can do almost everything&lt;/li&gt;
+          &lt;li&gt;Root &lt;strong&gt;can&lt;/strong&gt; become any other user, change passwd file&lt;/li&gt;
+          &lt;li&gt;Root &lt;strong&gt;cannot&lt;/strong&gt; change system read-only file&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+      &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;Normal user&lt;/code&gt; can log in to the system with restricted access&lt;/li&gt;
+      &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;System user&lt;/code&gt; cannot log in, and their accounts are used for specific system purposes.&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;UNIX User UID and Group IDs&lt;/strong&gt;
+    &lt;ul&gt;
+      &lt;li&gt;
+        &lt;p&gt;UNIX represents users by a user name and a user ID. UID is linked to user name in the passwd file&lt;/p&gt;
+
+        &lt;p&gt;&lt;img src=&quot;https://s2.loli.net/2023/08/05/52XyVo8KgJLAeti.png&quot; alt=&quot;截屏2023-08-05 上午12.48.12.png&quot; /&gt;&lt;/p&gt;
+      &lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;&lt;strong&gt;Group ID&lt;/strong&gt;: Collecting users in groups for access control&lt;/p&gt;
+
+        &lt;p&gt;&lt;img src=&quot;https://s2.loli.net/2023/08/05/ipSVWMRvHk6rGaw.png&quot; alt=&quot;截屏2023-08-05 上午12.49.22.png&quot; /&gt;&lt;/p&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;discussion-about-root-privilege-control&quot;&gt;&lt;strong&gt;Discussion about Root Privilege Control&lt;/strong&gt;&lt;/h4&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;sudo&lt;/code&gt;, a more controlled method to share root. &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;sudo = superuser do&lt;/code&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;
+        &lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;sudo&lt;/code&gt; can specify the allowed privileged commands → prevent sudo - all or nothing (more granularity)&lt;/p&gt;
+
+        &lt;p&gt;&lt;img src=&quot;https://s2.loli.net/2023/08/05/81sOTAuWfxPNLSI.png&quot; alt=&quot;截屏2023-08-05 上午12.50.19.png&quot; /&gt;&lt;/p&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;sudoers.d&lt;/code&gt; is a directory containing files specifying the permissions per group or user&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;The file path is &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/etc/sudoers.d&lt;/code&gt;, and the idea is the same as &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;sudoers&lt;/code&gt;, we just place entries in separate files&lt;/li&gt;
+      &lt;li&gt;This change was done to prevent mistakes while updating &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;sudo&lt;/code&gt; permissions, The file &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;sudoers&lt;/code&gt; still exist even with this update&lt;/li&gt;
+    &lt;/ul&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://s2.loli.net/2023/08/05/1WdZaqhpo3F2ly4.png&quot; alt=&quot;截屏2023-08-05 上午12.54.10.png&quot; /&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;Controlled Invocation →&lt;/strong&gt; a more careful way of giving privilege than sudo&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;UNIX may occasionally need superuser privilege to perform certain tasks&lt;/li&gt;
+      &lt;li&gt;The solution is &lt;strong&gt;Set User ID&lt;/strong&gt; (&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SUID&lt;/code&gt;) and &lt;strong&gt;Set Group ID&lt;/strong&gt; (&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;SGID&lt;/code&gt;) &lt;strong&gt;programs&lt;/strong&gt;
+        &lt;ul&gt;
+          &lt;li&gt;&lt;strong&gt;Programs&lt;/strong&gt; that are SUID give a user a different status during their execution, then return to normal once complete&lt;/li&gt;
+          &lt;li&gt;
+            &lt;p&gt;The list of programs that has &lt;strong&gt;SUID&lt;/strong&gt; bit turned on is: (You can also write your own &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;setuid()&lt;/code&gt; program)&lt;/p&gt;
+
+            &lt;p&gt;&lt;img src=&quot;https://s2.loli.net/2023/08/05/zhmPWQygtoI86rX.png&quot; alt=&quot;截屏2023-08-05 上午12.56.05.png&quot; /&gt;&lt;/p&gt;
+
+            &lt;p&gt;In UNIX, the &lt;strong&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;perm -4000&lt;/code&gt;&lt;/strong&gt; option is used as the &lt;strong&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;find&lt;/code&gt;&lt;/strong&gt; command searches for files with the “&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;setuid&lt;/code&gt;” bit set. This special permission bit allows a program to be executed with the privileges of the file owner, rather than the user executing the program. It is used to give users temporary elevated privileges to perform certain tasks requiring special permissions.&lt;/p&gt;
+          &lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;A program that sets the UID looks like this:&lt;/p&gt;
+
+        &lt;p&gt;&lt;img src=&quot;https://s2.loli.net/2023/08/05/VqGQO471SYKAljy.png&quot; alt=&quot;截屏2023-08-05 上午12.57.24.png&quot; /&gt;&lt;/p&gt;
+
+        &lt;ul&gt;
+          &lt;li&gt;SUID program is very dangerous in terms of security, because people could hack you during the program is root, such as spawn a shell.&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;unix-file-structure&quot;&gt;UNIX File Structure&lt;/h3&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;UNIX arranges files in a &lt;strong&gt;tree&lt;/strong&gt; structure.
+    &lt;ul&gt;
+      &lt;li&gt;The base of the tree is called the root &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/&lt;/code&gt;&lt;/li&gt;
+      &lt;li&gt;The system consists of files and directories&lt;/li&gt;
+      &lt;li&gt;Every directory contains two files &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;.&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;..&lt;/code&gt;&lt;/li&gt;
+      &lt;li&gt;Every file has an owner and belongs to a group&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;For each file, the representation is:&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://s2.loli.net/2023/08/05/GybrlBWRQjoKtH4.png&quot; alt=&quot;截屏2023-08-05 上午1.00.51.png&quot; /&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;First character indicates if the file is a directory &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;d&lt;/code&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;rwx&lt;/code&gt; means read, write, and execute&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;If the file is a &lt;strong&gt;SUID&lt;/strong&gt; program, then the representation is:&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://s2.loli.net/2023/08/05/6zWtLcQJ14XlT9p.png&quot; alt=&quot;截屏2023-08-05 上午1.02.33.png&quot; /&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;The reason why &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;s&lt;/code&gt; is used in place of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;x&lt;/code&gt; when the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;setuid&lt;/code&gt; or &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;setgid&lt;/code&gt; bit is set on a file is to indicate that the execute bit is implicitly set along with the special bit&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;To change the permissions of a file, use the command &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;chmod&lt;/code&gt;
+    &lt;ul&gt;
+      &lt;li&gt;Add permission → &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;chmod who+perm fileName&lt;/code&gt;&lt;/li&gt;
+      &lt;li&gt;Remove permission → &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;chmod who-perm fileName&lt;/code&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Check detailed information about file via &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;stat&lt;/code&gt; command&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://s2.loli.net/2023/08/05/CtxXEsbv6T23UFf.png&quot; alt=&quot;截屏2023-08-05 上午1.05.45.png&quot; /&gt;&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;unix-command-shell&quot;&gt;UNIX Command Shell&lt;/h3&gt;
+
+&lt;h4 id=&quot;bash-environment&quot;&gt;Bash Environment&lt;/h4&gt;
+
+&lt;p&gt;Bash keeps track of settings and details through an area it maintains called the &lt;strong&gt;&lt;em&gt;environment&lt;/em&gt;&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Environment is an area that is built every time that a session is started&lt;/li&gt;
+  &lt;li&gt;Contains variables that define system properties&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;To display the variables, use the command &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;env&lt;/code&gt; or &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;printenv&lt;/code&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Every time a shell session started:
+    &lt;ul&gt;
+      &lt;li&gt;A process takes place to gather and compile information that should be available to the shell process and its child processes&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;environment-variable-and-shell-variable&quot;&gt;Environment Variable and Shell Variable&lt;/h4&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;What is &lt;strong&gt;Environment Variable&lt;/strong&gt;?&lt;/p&gt;
+
+    &lt;p&gt;Environment variables are named dynamic values (often set by OS)&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;Should be considered &lt;strong&gt;&lt;em&gt;hidden&lt;/em&gt;&lt;/strong&gt; &lt;strong&gt;input&lt;/strong&gt;, and it may affact program behavior&lt;/li&gt;
+      &lt;li&gt;Ignoring how they are set is dangerous&lt;/li&gt;
+      &lt;li&gt;When executed, a program may use these variables for system access
+        &lt;ul&gt;
+          &lt;li&gt;Such as &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;PATH&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;IFS&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;LD_LIBRARY_PATH&lt;/code&gt;, and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;LD_PRELOAD&lt;/code&gt;&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+
+  	&lt;img src=&quot;https://s2.loli.net/2023/08/05/vfinLQjZPFEm1Xu.png&quot; alt=&quot;截屏2023-08-05 上午1.08.32.png&quot; /&gt;
+
+  	To check current environment variables, use &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;printenv&lt;/code&gt; command.
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;How to create Environment Variable?&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;
+        &lt;p&gt;Environment variables can be created from local shell variables by &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;export&lt;/code&gt;&lt;/p&gt;
+
+        &lt;p&gt;&lt;img src=&quot;https://s2.loli.net/2023/08/05/4MmKeDCUAhrHxGb.png&quot; alt=&quot;截屏2023-08-05 上午1.10.06.png&quot; /&gt;&lt;/p&gt;
+      &lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;You can also create environment variable using &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;env&lt;/code&gt; command&lt;/p&gt;
+
+        &lt;p&gt;&lt;img src=&quot;https://s2.loli.net/2023/08/05/e43cTLzJuxw6WZy.png&quot; alt=&quot;截屏2023-08-05 上午1.10.36.png&quot; /&gt;&lt;/p&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;What is &lt;strong&gt;Bash Variable&lt;/strong&gt; or &lt;strong&gt;Shell Variable&lt;/strong&gt; (a more general term)?&lt;/p&gt;
+
+    &lt;p&gt;Bash is a command line interface for the OS, and is also a programming/scripting language. Bash allows using &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;=&lt;/code&gt; to declare variables&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;These variables are used to manage &lt;strong&gt;ephemeral&lt;/strong&gt; data, like current working directory&lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;They are contained within the shell in which they were set or defined&lt;/p&gt;
+
+        &lt;p&gt;&lt;img src=&quot;https://s2.loli.net/2023/08/05/uqJBbvkFLOIpcxS.png&quot; alt=&quot;截屏2023-08-05 上午1.12.20.png&quot; /&gt;&lt;/p&gt;
+      &lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;What is the &lt;strong&gt;difference&lt;/strong&gt; between &lt;strong&gt;Environmental variable and Bash variable&lt;/strong&gt;?&lt;/p&gt;
+
+        &lt;p&gt;&lt;strong&gt;Environment variables&lt;/strong&gt; are system-wide variables that are set and used by all programs running on a machine, while &lt;strong&gt;bash variables&lt;/strong&gt; are specific to the shell or command being executed.&lt;/p&gt;
+
+        &lt;p&gt;Environment variables can be set by the operating system or by users, and they provide information about the system and its configuration. Bash variables, on the other hand, are used to store information that is specific to a particular shell or command, such as the output of a command or a user-defined value. Bash variables are not accessible outside of the shell or command in which they are defined, while environment variables can be accessed by any program running on the machine.&lt;/p&gt;
+      &lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;What is the difference between &lt;strong&gt;Bash and Shell variable&lt;/strong&gt;?&lt;/p&gt;
+
+        &lt;p&gt;A shell variable and a bash variable are essentially the same thing, but they are often used in different contexts. “Shell variable” is a more general term that refers to a variable within any Unix-like shell (e.g., sh, bash, zsh, ksh, etc.), while “bash variable” specifically refers to a variable within the Bash (Bourne Again Shell) environment.&lt;/p&gt;
+
+        &lt;p&gt;Both types of variables are used to store and manipulate data in the shell environment, and they can be set, accessed, and modified using shell scripting. However, the distinction is mainly based on the context in which they are used.&lt;/p&gt;
+
+        &lt;ul&gt;
+          &lt;li&gt;Shell variable: A variable used within any Unix-like shell environment. It is a more general term.&lt;/li&gt;
+          &lt;li&gt;Bash variable: A variable specifically used within the Bash shell environment.&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;shell-shock&quot;&gt;Shell Shock&lt;/h4&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;Bash environment variables can also &lt;strong&gt;export function definitions&lt;/strong&gt;&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://s2.loli.net/2023/08/05/MxjNPvVZcgTGX3H.png&quot; alt=&quot;截屏2023-08-05 上午1.17.32.png&quot; /&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;If a variable string starts with &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;() {&lt;/code&gt;, then this is a function&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;The cases of shell shock&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://s2.loli.net/2023/08/05/YOiKl2JPudNkVq9.png&quot; alt=&quot;截屏2023-08-05 上午1.19.09.png&quot; /&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;For the third command, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;echo bar&lt;/code&gt; should not be executed at all&lt;/li&gt;
+      &lt;li&gt;Thus, this bash issue allows arbitrary command execution&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;path&quot;&gt;PATH&lt;/h4&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Users interact with the OS through a shell, such as &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;zsh&lt;/code&gt;, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;bash&lt;/code&gt;, etc.&lt;/li&gt;
+  &lt;li&gt;As a matter of convenience users can type run a program command without specifying the complete path. For example, to run &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ls&lt;/code&gt;, you don’t need to type &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/bin/ls&lt;/code&gt;.
+    &lt;ul&gt;
+      &lt;li&gt;The shell knows where to look using a PATH variable&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;The PATH environment variable lists the directories to search and it’s defined in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;.cshrc&lt;/code&gt; or &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;.bashrc&lt;/code&gt; file depending on the shell you use and located at the home directory.
+    &lt;ul&gt;
+      &lt;li&gt;
+        &lt;p&gt;The &lt;strong&gt;order matters&lt;/strong&gt;! It determines the commands look-up sequence of the shell.&lt;/p&gt;
+
+        &lt;p&gt;&lt;img src=&quot;https://s2.loli.net/2023/08/05/bEhpr8qR5GvWoHu.png&quot; alt=&quot;截屏2023-08-05 上午1.21.13.png&quot; /&gt;&lt;/p&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;strong&gt;Path Attack&lt;/strong&gt;&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Using path attack to trick system admin to get the root shell. Assume system admin has &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;.&lt;/code&gt; at the beginning of their PATH, so the shell is looking for commands at local first.&lt;/p&gt;
+
+&lt;/blockquote&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;Create a file called &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ls&lt;/code&gt; with the following content&lt;/p&gt;
+
+    &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+3
+4
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt; &lt;span class=&quot;nb&quot;&gt;cp&lt;/span&gt; /bin/sh ./Stuff/sume
+ &lt;span class=&quot;nb&quot;&gt;chmod &lt;/span&gt;4555 ./Stuff/sume
+ &lt;span class=&quot;nb&quot;&gt;rm&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-f&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$0&lt;/span&gt;
+ &lt;span class=&quot;nb&quot;&gt;exec&lt;/span&gt; /bin/ls &lt;span class=&quot;nv&quot;&gt;$1&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+
+    &lt;ol&gt;
+      &lt;li&gt;&lt;strong&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;cp /bin/sh ./Stuff/sume&lt;/code&gt;&lt;/strong&gt;: Copies the &lt;strong&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/bin/sh&lt;/code&gt;&lt;/strong&gt; file to &lt;strong&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;./Stuff/sume&lt;/code&gt;&lt;/strong&gt;.&lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;&lt;strong&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;chmod 4555 ./Stuff/sume&lt;/code&gt;&lt;/strong&gt;: Changes the permissions of the &lt;strong&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;./Stuff/sume&lt;/code&gt;&lt;/strong&gt; file to allow it to run with elevated privileges.&lt;/p&gt;
+
+        &lt;p&gt;&lt;img src=&quot;https://s2.loli.net/2023/08/05/EU3CeSMgZLuox8F.png&quot; alt=&quot;截屏2023-08-05 上午1.23.37.png&quot; /&gt;&lt;/p&gt;
+      &lt;/li&gt;
+      &lt;li&gt;&lt;strong&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;rm -f $0&lt;/code&gt;&lt;/strong&gt;: Deletes the script file after it has been run.&lt;/li&gt;
+      &lt;li&gt;&lt;strong&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;exec /bin/ls $1&lt;/code&gt;&lt;/strong&gt;: Runs the &lt;strong&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/bin/ls&lt;/code&gt;&lt;/strong&gt; command with the specified argument, if any.&lt;/li&gt;
+    &lt;/ol&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Create another unreadable file with whatever content&lt;/p&gt;
+
+    &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt; &lt;span class=&quot;c&quot;&gt;# create a file named -f, since admin may try rm -f&lt;/span&gt;
+ &lt;span class=&quot;nb&quot;&gt;chmod &lt;/span&gt;700 .&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;touch&lt;/span&gt; ./-f
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;You tell the admin you cannot erase one of your files (&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;-f&lt;/code&gt;)&lt;/li&gt;
+  &lt;li&gt;Admin becomes root moves to your directory and enters &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ls&lt;/code&gt;, then your customized version of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ls&lt;/code&gt; is executed&lt;/li&gt;
+  &lt;li&gt;You now have root for &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;sume&lt;/code&gt;, a root shell interpreter
+    &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; ./Stuff/sume
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;strong&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;LD_LIBRARY_PATH&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;LD_PRELOAD&lt;/code&gt;&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;LD_LIBRARY_PATH&lt;/code&gt;: this environment variable specifies a list of directories where the dynamic linker should look for dynamically linked library files (.so files in Unix/Linux), in addition to the standard locations (like /lib and /usr/lib).&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;
+        &lt;p&gt;If these libraries are exchanged with malware, attackers can place a fake libc.so to user’s machine and get executed everytime&lt;/p&gt;
+
+        &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt;  &lt;span class=&quot;c&quot;&gt;# /tmp will be searched first for libc.so&lt;/span&gt;
+  setenv LD_LIBRARY_PATH /tmp:&lt;span class=&quot;nv&quot;&gt;$LD_LIBRARY_PATH&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;        &lt;/div&gt;
+      &lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;Most C runtime libraries have fixed this issue by ignoring the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;LD_LIBRARY_PATH&lt;/code&gt; var when the EUID (Process ID) is not equal to the UID (User ID)&lt;/p&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;LD_PRELOAD&lt;/code&gt;: this variable is used to load a specific library (or libraries) before any others when starting a program, even if they are not explicitly requested by the program. This allows you to override functions in other shared libraries.&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;
+        &lt;p&gt;This allows the user to replace standard C library functions, such as the C interfaces to system calls&lt;/p&gt;
+
+        &lt;p&gt;&lt;img src=&quot;https://s2.loli.net/2023/08/06/nwqvFyJuaxdM5rf.png&quot; alt=&quot;截屏2023-08-05 下午2.41.28.png&quot; /&gt;&lt;/p&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;LD_LIBRARY_PATH&lt;/code&gt; changes where the system looks for libraries, while &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;LD_PRELOAD&lt;/code&gt; changes the order in which they are loaded.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;ifs-environment-variable&quot;&gt;IFS Environment Variable&lt;/h4&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;IFS stands for &lt;strong&gt;Internal Field Separators&lt;/strong&gt;, which identifies characters to be interpreted as whitespace&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;IFS malicious usage:&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://s2.loli.net/2023/08/06/KnhP65bOikAgwJS.png&quot; alt=&quot;截屏2023-08-05 下午2.47.39.png&quot; /&gt;&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;strong&gt;Vi + PATH _ IFS Attack&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://s2.loli.net/2023/08/06/O2UrpJ8W4c6u7Xq.png&quot; alt=&quot;截屏2023-08-05 下午2.48.15.png&quot; /&gt;&lt;/p&gt;
+
+&lt;h4 id=&quot;avoid-environment-variables&quot;&gt;Avoid Environment Variables&lt;/h4&gt;
+
+&lt;p&gt;In C and C++, the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;environ&lt;/code&gt; variable is an external pointer variable that is part of the standard library. It is used to access the environment of the current process, which includes a list of environment variables and their values.&lt;/p&gt;
+
+&lt;p&gt;It possible to avoid environment variables in the program by set external pointer variable &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;environ&lt;/code&gt; to zero (NULL).&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://s2.loli.net/2023/08/06/ukMPT4C9H2dsWt6.png&quot; alt=&quot;截屏2023-08-05 下午2.49.09.png&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;session-configuration-files&quot;&gt;Session Configuration Files&lt;/h3&gt;
+
+&lt;p&gt;Once a user logs in, a session starts.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Session is configured using a set of hidden files&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;These configuration files are located in the home directory&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://s2.loli.net/2023/08/06/jMAoWs9cptqIGUB.png&quot; alt=&quot;截屏2023-08-05 下午2.50.24.png&quot; /&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Shell environment is configured using &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;.bashrc&lt;/code&gt; and &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;.config&lt;/code&gt; files
+    &lt;ul&gt;
+      &lt;li&gt;File &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;.config&lt;/code&gt; executed per login&lt;/li&gt;
+      &lt;li&gt;File &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;.bashrc&lt;/code&gt; executed for each new terminal as new shell starts&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Let take a close look at &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;.bashrc&lt;/code&gt; file&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://s2.loli.net/2023/08/06/FqQcahNRwu9M3tA.png&quot; alt=&quot;截屏2023-08-05 下午2.51.28.png&quot; /&gt;&lt;/p&gt;
+
+    &lt;ul&gt;
+      &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;alias&lt;/code&gt; is a place to hide commands&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;root-processes&quot;&gt;Root Processes&lt;/h3&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Three Processes
+    &lt;ul&gt;
+      &lt;li&gt;&lt;strong&gt;Initial boot&lt;/strong&gt; uses scripts in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/etc/rc*.d&lt;/code&gt; depends on the system runlevel
+        &lt;ul&gt;
+          &lt;li&gt;In this boot script directory, for example, &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/etc/rc5.d&lt;/code&gt;, is a directory that contains symbolic links to scripts in the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/etc/init.d&lt;/code&gt; directory&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+      &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/etc/init.d&lt;/code&gt; is a directory that stores the &lt;strong&gt;init scripts&lt;/strong&gt; responsible for managing &lt;strong&gt;system services&lt;/strong&gt;. These scripts are typically executed by the system init processes.&lt;/li&gt;
+      &lt;li&gt;Network processes &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/etc/inetd.conf&lt;/code&gt; sets the list of network services started at boot&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Commands
+    &lt;ul&gt;
+      &lt;li&gt;
+        &lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ps&lt;/code&gt; or &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;top&lt;/code&gt;: show what is running&lt;/p&gt;
+
+        &lt;p&gt;&lt;img src=&quot;https://s2.loli.net/2023/08/06/9rWKGQjJTuh24Cg.png&quot; alt=&quot;截屏2023-08-05 下午2.53.10.png&quot; /&gt;&lt;/p&gt;
+      &lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ps -ef&lt;/code&gt; will list the Parent Process ID (&lt;strong&gt;PPID&lt;/strong&gt;)&lt;/p&gt;
+
+        &lt;p&gt;&lt;img src=&quot;https://s2.loli.net/2023/08/06/rSoHguxk4jeE9G1.png&quot; alt=&quot;截屏2023-08-05 下午2.53.23.png&quot; /&gt;&lt;/p&gt;
+      &lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;ps&lt;/code&gt; shows the current process running and we can determine if we started them&lt;/p&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;init&lt;/strong&gt; Services
+    &lt;ul&gt;
+      &lt;li&gt;
+        &lt;p&gt;Started automatically during the boot or runlevel change, it locates in &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/etc/init.d&lt;/code&gt; or &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/etc/rc.d/init/d&lt;/code&gt;&lt;/p&gt;
+
+        &lt;p&gt;&lt;img src=&quot;https://s2.loli.net/2023/08/06/EiJULxytp3ZArRa.png&quot; alt=&quot;截屏2023-08-05 下午2.55.48.png&quot; /&gt;&lt;/p&gt;
+      &lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;To start, restart, or stop a service, use following command&lt;/p&gt;
+
+        &lt;p&gt;&lt;img src=&quot;https://s2.loli.net/2023/08/06/3iPkoDQhpdJAHMg.png&quot; alt=&quot;截屏2023-08-05 下午2.56.08.png&quot; /&gt;&lt;/p&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;inetd&lt;/strong&gt; Services
+    &lt;ul&gt;
+      &lt;li&gt;This service is used for Internet based services and generally started via init scripts
+        &lt;ul&gt;
+          &lt;li&gt;
+            &lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;inetd.conf&lt;/code&gt; file contents&lt;/p&gt;
+
+            &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt;  seed@ip-10-4-149-82:/etc&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;cat &lt;/span&gt;inetd.conf 
+  &lt;span class=&quot;c&quot;&gt;# /etc/inetd.conf:  see inetd(8) for further informations.&lt;/span&gt;
+  &lt;span class=&quot;c&quot;&gt;#&lt;/span&gt;
+  &lt;span class=&quot;c&quot;&gt;# Internet superserver configuration database&lt;/span&gt;
+  &lt;span class=&quot;c&quot;&gt;#&lt;/span&gt;
+  &lt;span class=&quot;c&quot;&gt;# Lines starting with &quot;#:LABEL:&quot; or &quot;#&amp;lt;off&amp;gt;#&quot; should not&lt;/span&gt;
+  &lt;span class=&quot;c&quot;&gt;# be changed unless you know what you are doing!&lt;/span&gt;
+  &lt;span class=&quot;c&quot;&gt;#&lt;/span&gt;
+  &lt;span class=&quot;c&quot;&gt;# If you want to disable an entry so it isn&apos;t touched during&lt;/span&gt;
+  &lt;span class=&quot;c&quot;&gt;# package updates just comment it out with a single &apos;#&apos; character.&lt;/span&gt;
+  &lt;span class=&quot;c&quot;&gt;#&lt;/span&gt;
+  &lt;span class=&quot;c&quot;&gt;# Packages should modify this file by using update-inetd(8)&lt;/span&gt;
+  &lt;span class=&quot;c&quot;&gt;#&lt;/span&gt;
+  &lt;span class=&quot;c&quot;&gt;# &amp;lt;service_name&amp;gt; &amp;lt;sock_type&amp;gt; &amp;lt;proto&amp;gt; &amp;lt;flags&amp;gt; &amp;lt;user&amp;gt; &amp;lt;server_path&amp;gt; &amp;lt;args&amp;gt;&lt;/span&gt;
+  &lt;span class=&quot;c&quot;&gt;#&lt;/span&gt;
+  &lt;span class=&quot;c&quot;&gt;#:INTERNAL: Internal services&lt;/span&gt;
+  &lt;span class=&quot;c&quot;&gt;#discard		stream	tcp	nowait	root	internal&lt;/span&gt;
+  &lt;span class=&quot;c&quot;&gt;#discard		dgram	udp	wait	root	internal&lt;/span&gt;
+  &lt;span class=&quot;c&quot;&gt;#daytime		stream	tcp	nowait	root	internal&lt;/span&gt;
+  &lt;span class=&quot;c&quot;&gt;#time		stream	tcp	nowait	root	internal&lt;/span&gt;
+            
+  &lt;span class=&quot;c&quot;&gt;#:STANDARD: These are standard services.&lt;/span&gt;
+  telnet		stream	tcp	nowait	telnetd	/usr/sbin/tcpd	/usr/sbin/in.telnetd
+            
+  &lt;span class=&quot;c&quot;&gt;#:BSD: Shell, login, exec and talk are BSD protocols.&lt;/span&gt;
+            
+  &lt;span class=&quot;c&quot;&gt;#:MAIL: Mail, news and uucp services.&lt;/span&gt;
+            
+  &lt;span class=&quot;c&quot;&gt;#:INFO: Info services&lt;/span&gt;
+            
+  &lt;span class=&quot;c&quot;&gt;#:BOOT: TFTP service is provided primarily for booting.  Most sites&lt;/span&gt;
+  &lt;span class=&quot;c&quot;&gt;#       run this only on machines acting as &quot;boot servers.&quot;&lt;/span&gt;
+            
+  &lt;span class=&quot;c&quot;&gt;#:RPC: RPC based services&lt;/span&gt;
+            
+  &lt;span class=&quot;c&quot;&gt;#:HAM-RADIO: amateur-radio services&lt;/span&gt;
+            
+  &lt;span class=&quot;c&quot;&gt;#:OTHER: Other services&lt;/span&gt;
+  &lt;span class=&quot;c&quot;&gt;#&amp;lt;off&amp;gt;# sane-port	stream	tcp	nowait	saned:saned	/usr/sbin/saned saned&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;            &lt;/div&gt;
+          &lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;netstat&lt;/code&gt; command: stands for network statistics. It displays information about active network connections, including the local and remote addresses, the protocol used (TCP or UDP), the state of the connection (e.g. established, listening, etc.), and the process ID (PID) of the application or service that is associated with the connection.&lt;/p&gt;
+
+        &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt;  &lt;span class=&quot;c&quot;&gt;# shows all active TCP connections &lt;/span&gt;
+  netstat &lt;span class=&quot;nt&quot;&gt;-atn&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;        &lt;/div&gt;
+      &lt;/li&gt;
+      &lt;li&gt;Common &lt;strong&gt;options&lt;/strong&gt; for the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;netstat&lt;/code&gt; command include:
+        &lt;ul&gt;
+          &lt;li&gt;&lt;strong&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;a&lt;/code&gt;&lt;/strong&gt; : displays all active connections, including listening ports&lt;/li&gt;
+          &lt;li&gt;&lt;strong&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;n&lt;/code&gt;&lt;/strong&gt; : displays network addresses as numeric values rather than resolving them to host and domain names&lt;/li&gt;
+          &lt;li&gt;&lt;strong&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;p&lt;/code&gt;&lt;/strong&gt; : displays the process ID and name of the program that is associated with each connection&lt;/li&gt;
+          &lt;li&gt;&lt;strong&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;r&lt;/code&gt;&lt;/strong&gt; : displays the system’s routing table&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;cron-job&quot;&gt;Cron Job&lt;/h3&gt;
+
+&lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;cron&lt;/code&gt; is a program that allows Unix users to automatically execute commands or scripts (a cron job) at specific dates and times. Examples of cron jobs include deleting temporary files every hour, restarting ssh, or backing up files every day.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;cron&lt;/code&gt; is a daemon process, so it’s dormant until it’s required&lt;/p&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://s2.loli.net/2023/08/06/7quvTpdcarIBjkn.png&quot; alt=&quot;截屏2023-08-05 下午3.01.54.png&quot; /&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;How to control cron jobs?&lt;/strong&gt;&lt;/p&gt;
+    &lt;ul&gt;
+      &lt;li&gt;
+        &lt;p&gt;Go to directory &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/etc&lt;/code&gt;, it contains &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;cron&lt;/code&gt; sub-directories&lt;/p&gt;
+
+        &lt;p&gt;&lt;img src=&quot;https://s2.loli.net/2023/08/06/4u2oYC9xiOnJUM3.png&quot; alt=&quot;截屏2023-08-05 下午3.02.37.png&quot; /&gt;&lt;/p&gt;
+
+        &lt;ul&gt;
+          &lt;li&gt;Each sub-dir has a repeat time associated with it&lt;/li&gt;
+          &lt;li&gt;You can place a script in the sub-dir you want&lt;/li&gt;
+          &lt;li&gt;
+            &lt;p&gt;An &lt;strong&gt;Example&lt;/strong&gt; of daily script&lt;/p&gt;
+
+            &lt;p&gt;&lt;img src=&quot;https://s2.loli.net/2023/08/06/IGkEKZ2rTV8QjyS.png&quot; alt=&quot;截屏2023-08-05 下午3.02.48.png&quot; /&gt;&lt;/p&gt;
+          &lt;/li&gt;
+          &lt;li&gt;
+            &lt;p&gt;More script time flexibility is provided in the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/etc/crontab&lt;/code&gt; file&lt;/p&gt;
+
+            &lt;p&gt;&lt;img src=&quot;https://s2.loli.net/2023/08/06/Tx1UKH2pnkXb4mc.png&quot; alt=&quot;截屏2023-08-05 下午3.02.58.png&quot; /&gt;&lt;/p&gt;
+          &lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;what-is-running&quot;&gt;What is Running?&lt;/h3&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;&lt;strong&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;systemctl&lt;/code&gt;&lt;/strong&gt; is a command-line tool used to manage and control the &lt;strong&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;systemd&lt;/code&gt;&lt;/strong&gt; system and service manager in modern Linux distributions.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;systemctl start service-name&lt;/code&gt;: Starts a specific service.&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;systemctl stop service-name&lt;/code&gt;: Stops a specific service.&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;systemctl restart service-name&lt;/code&gt;: Restarts a specific service.&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;systemctl enable service-name&lt;/code&gt;: Enables a specific service to start at boot time.&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;systemctl disable service-name&lt;/code&gt;: Disables a specific service from starting at boot time.&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;systemctl status service-name&lt;/code&gt;: Displays the status of a specific service.&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;systemctl list-units&lt;/code&gt;: Lists all active units (services, targets, sockets, etc.) on the system.&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;systemctl list-unit-files&lt;/code&gt;: Lists all unit files (configuration files) installed on the system.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;c&quot;&gt;# List all active system services&lt;/span&gt;
+systemctl list-units &lt;span class=&quot;nt&quot;&gt;--type&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;service &lt;span class=&quot;nt&quot;&gt;--state&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;running
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://s2.loli.net/2023/08/06/EbCh5n2lT1PQag4.png&quot; alt=&quot;截屏2023-08-05 下午3.04.48.png&quot; /&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;&lt;strong&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;pstree&lt;/code&gt;&lt;/strong&gt; displays the running processes in tree format.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://s2.loli.net/2023/08/06/15okvlqJnrfShCI.png&quot; alt=&quot;截屏2023-08-05 下午3.11.23.png&quot; /&gt;&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;&lt;strong&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;netstat -a&lt;/code&gt;&lt;/strong&gt; inspects network connectivity.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;&lt;img src=&quot;https://s2.loli.net/2023/08/06/6WdzHS1NIqrhimv.png&quot; alt=&quot;截屏2023-08-05 下午3.12.37.png&quot; /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Unix domain sockets are &lt;strong&gt;interprocess&lt;/strong&gt; communication&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;audit-trails&quot;&gt;Audit Trails&lt;/h3&gt;
+
+&lt;p&gt;Linux keeps a good audit trail of happening on the system.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;Things are logged&lt;/strong&gt;: crashes, login/logout, su, login failures, dialouts printer use/errors, mail/www, firewall exceptions&lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;Things are not logged&lt;/strong&gt;: failed file access, some network access (rcp), file changes, password changes, www access failures, and superuser actions&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;syslog()&lt;/code&gt;&lt;/strong&gt;
+    &lt;ul&gt;
+      &lt;li&gt;Logging is done by &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;syslogd&lt;/code&gt; &lt;strong&gt;daemon&lt;/strong&gt;, and it has UDP support&lt;/li&gt;
+      &lt;li&gt;
+        &lt;p&gt;The file &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/etc/rsyslog.conf&lt;/code&gt; indicates log locations&lt;/p&gt;
+
+        &lt;blockquote&gt;
+          &lt;p&gt;&lt;em&gt;selector + action&lt;/em&gt;&lt;/p&gt;
+
+          &lt;p&gt;&lt;img src=&quot;https://s2.loli.net/2023/08/06/pIcAv8Q6wHNY7PK.png&quot; alt=&quot;截屏2023-08-05 下午3.14.53.png&quot; /&gt;&lt;/p&gt;
+
+        &lt;/blockquote&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;intrusion-detection-system&quot;&gt;Intrusion Detection System&lt;/h4&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;To check all authentication attempts&lt;/p&gt;
+
+    &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt;  &lt;span class=&quot;nb&quot;&gt;sudo grep&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;sshd&quot;&lt;/span&gt; /var/log/auth.log
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+
+    &lt;p&gt;&lt;img src=&quot;https://s2.loli.net/2023/08/06/tN2wld4XeRChOEx.png&quot; alt=&quot;截屏2023-08-05 下午3.16.59.png&quot; /&gt;&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;make-unixlinux-more-secure&quot;&gt;Make Unix/Linux More Secure&lt;/h3&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;Set a password to disallow booting from USB, DVD, etc…&lt;/p&gt;
+
+    &lt;blockquote&gt;
+      &lt;p&gt;This is done by setting a BIOS or UEFI password, which requires a password to be entered before the system can boot from removable media such as USB drives or DVDs. This helps prevent unauthorized access to the system or the installation of malware from external sources.&lt;/p&gt;
+
+    &lt;/blockquote&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Disable special and default accounts&lt;/p&gt;
+
+    &lt;blockquote&gt;
+      &lt;p&gt;Unix/Linux systems come with several default accounts, including &lt;strong&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;lp&lt;/code&gt;&lt;/strong&gt;, &lt;strong&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;sync&lt;/code&gt;&lt;/strong&gt;, &lt;strong&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;shutdown&lt;/code&gt;&lt;/strong&gt;, &lt;strong&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;operator&lt;/code&gt;&lt;/strong&gt;, and others. These accounts are typically used for system processes and are not intended for general user access. It is recommended to disable these accounts or change their passwords to prevent unauthorized access.&lt;/p&gt;
+
+      &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;c&quot;&gt;# Locks the lp account, preventing anyone from logging in that account.&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;usermod &lt;span class=&quot;nt&quot;&gt;-L&lt;/span&gt; lp
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;      &lt;/div&gt;
+
+    &lt;/blockquote&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Set a timeout (TMOUT=) in the profile file (users and root)&lt;/li&gt;
+  &lt;li&gt;Disable console-equivalent user access to reboot, shutdown&lt;/li&gt;
+  &lt;li&gt;Disable unnecessary network services (with caution)
+    &lt;ol&gt;
+      &lt;li&gt;Edit the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/etc/inetd.conf&lt;/code&gt; file&lt;/li&gt;
+      &lt;li&gt;make certain root is the owner of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/etc.inetd.conf&lt;/code&gt;&lt;/li&gt;
+      &lt;li&gt;Change permission of &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/etc/inetd.conf&lt;/code&gt; to 600 (read and write permissions for the owner of the file and no permissions for the group and others.)&lt;/li&gt;
+    &lt;/ol&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Use &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;TCP_WRAPPERS&lt;/code&gt; and/or firewall to control access&lt;/li&gt;
+  &lt;li&gt;Do not display the system issue information at log in&lt;/li&gt;
+  &lt;li&gt;Review the &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/etc/host.conf&lt;/code&gt; file
+    &lt;ol&gt;
+      &lt;li&gt;This file resolves IP names to addresses&lt;/li&gt;
+      &lt;li&gt;You can make it ask DNS first or have the file resolve&lt;/li&gt;
+    &lt;/ol&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Immunize &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/etc/services&lt;/code&gt; file, the file that maps ports to applications
+    &lt;ol&gt;
+      &lt;li&gt;Prevent unauthorized deletion or addition of services&lt;/li&gt;
+      &lt;li&gt;Use the command &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;chattr +i /etc/services&lt;/code&gt;&lt;/li&gt;
+    &lt;/ol&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Make signatures of any setuid programs, such as MD5 signature&lt;/li&gt;
+  &lt;li&gt;Prevent users from &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;su&lt;/code&gt; , should do &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;sudo&lt;/code&gt; instead&lt;/li&gt;
+  &lt;li&gt;Have the shell erase the command history of a user at log out, can be done with &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/bash_logout&lt;/code&gt; file&lt;/li&gt;
+  &lt;li&gt;Disable the Control-Alt-Delete keyboard shutdown command&lt;/li&gt;
+  &lt;li&gt;Fix permissions under &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;/etc/rc.d/init.d&lt;/code&gt; direcotry for script files
+    &lt;ol&gt;
+      &lt;li&gt;Use the command &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;chmod -R 700 /etc/rc.d/init.d/*&lt;/code&gt;&lt;/li&gt;
+    &lt;/ol&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Turn off the machine and don’t turn it on ever&lt;/li&gt;
+&lt;/ol&gt;
+</description>
+        <pubDate>Fri, 04 Aug 2023 00:00:00 -0400</pubDate>
+        <link>http://localhost:4000/2023/08/04/unix-security/</link>
+        <guid isPermaLink="true">http://localhost:4000/2023/08/04/unix-security/</guid>
+        
+        <category>Unix</category>
+        
+        <category>Linux</category>
+        
+        <category>Security</category>
+        
+        <category>System</category>
+        
+        
+      </item>
     
       <item>
         <title>CamFlow Android Provenance System</title>
@@ -731,8 +1652,8 @@ repo &lt;span class=&quot;nb&quot;&gt;sync&lt;/span&gt; &lt;span class=&quot;nt&
 &lt;/ol&gt;
 </description>
         <pubDate>Fri, 04 Aug 2023 00:00:00 -0400</pubDate>
-        <link>http://localhost:4000/2023/08/04/CamFlow-Android-Provenance-System/</link>
-        <guid isPermaLink="true">http://localhost:4000/2023/08/04/CamFlow-Android-Provenance-System/</guid>
+        <link>http://localhost:4000/2023/08/04/CamFlow-Android-Provenance-System.md/</link>
+        <guid isPermaLink="true">http://localhost:4000/2023/08/04/CamFlow-Android-Provenance-System.md/</guid>
         
         <category>Android</category>
         

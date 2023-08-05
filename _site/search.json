@@ -1,10 +1,18 @@
 [
   
     {
+      "title"    : "Unix Security",
+      "subtitle" : "A comprehensive introduction to Unix security",
+      "tags"     : "Unix, Linux, Security, System",
+      "url"      : "/2023/08/04/unix-security/",
+      "date"     : "2023-08-04 00:00:00 -0400"
+    } ,
+  
+    {
       "title"    : "CamFlow Android Provenance System",
       "subtitle" : "Whole-system provenance capture on AOSP",
       "tags"     : "Android, Android Cuttlefish, System, Provenance, Linux, Kernel",
-      "url"      : "/2023/08/04/CamFlow-Android-Provenance-System/",
+      "url"      : "/2023/08/04/CamFlow-Android-Provenance-System.md/",
       "date"     : "2023-08-04 00:00:00 -0400"
     } ,
   
