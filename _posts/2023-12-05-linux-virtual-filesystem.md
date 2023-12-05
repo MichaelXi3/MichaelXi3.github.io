@@ -19,7 +19,7 @@ The Virtual File System (VFS) is an ***abstraction layer in the kernel*** of an 
 
 VFS enables the "**everything is a file**" abstraction in Unix-like systems.
 
-![截屏2023-06-07 下午1.43.51.png](Linux%20Virtual%20Filesystem%200bbda17ece674fa795a4488409afc134/%25E6%2588%25AA%25E5%25B1%258F2023-06-07_%25E4%25B8%258B%25E5%258D%25881.43.51.png)
+![1.png](https://s2.loli.net/2023/12/05/AOwGyghjW9I2f1i.png)
 
 ## Filesystem Interface
 
@@ -30,7 +30,7 @@ VFS enables the "**everything is a file**" abstraction in Unix-like systems.
 
 On one side of the system call is the generic VFS interface, providing the front end to the user-space; on the other side of the system call is the filesystem-specific backend, dealing with the implementation details.
 
-![截屏2023-06-07 下午1.53.06.png](Linux%20Virtual%20Filesystem%200bbda17ece674fa795a4488409afc134/%25E6%2588%25AA%25E5%25B1%258F2023-06-07_%25E4%25B8%258B%25E5%258D%25881.53.06.png)
+![2.png](https://s2.loli.net/2023/12/05/vzbdVhnDEjGilI5.png)
 
 ## **Unix Filesystems Concepts**
 
@@ -92,9 +92,9 @@ The superblock object is implemented by each filesystem and is used to store inf
 > `struct super_block` defined in `<linux/fs.h>`
 > 
 > 
-> ![截屏2023-06-08 下午2.01.10.png](Linux%20Virtual%20Filesystem%200bbda17ece674fa795a4488409afc134/%25E6%2588%25AA%25E5%25B1%258F2023-06-08_%25E4%25B8%258B%25E5%258D%25882.01.10.png)
+> ![3.png](https://s2.loli.net/2023/12/05/6i3slKceZapRwzC.png)
 > 
-> ![截屏2023-06-08 下午2.01.22.png](Linux%20Virtual%20Filesystem%200bbda17ece674fa795a4488409afc134/%25E6%2588%25AA%25E5%25B1%258F2023-06-08_%25E4%25B8%258B%25E5%258D%25882.01.22.png)
+> ![4.png](https://s2.loli.net/2023/12/05/Smd6tY8uxlfaNKE.png)
 > 
 
 ### **Superblock Operation**
@@ -102,9 +102,9 @@ The superblock object is implemented by each filesystem and is used to store inf
 The most important item in the superblock object is `s_op`, which is a **pointer to the superblock operations table**. Each item in this structure is a pointer to a function that operates on a superblock object.
 
 
-![截屏2023-06-08 下午2.06.02.png](Linux%20Virtual%20Filesystem%200bbda17ece674fa795a4488409afc134/%25E6%2588%25AA%25E5%25B1%258F2023-06-08_%25E4%25B8%258B%25E5%258D%25882.06.02.png)
+![5.png](https://s2.loli.net/2023/12/05/O3WbzMrJgYEN8VB.png)
 
-![截屏2023-06-08 下午2.06.13.png](Linux%20Virtual%20Filesystem%200bbda17ece674fa795a4488409afc134/%25E6%2588%25AA%25E5%25B1%258F2023-06-08_%25E4%25B8%258B%25E5%258D%25882.06.13.png)
+![6.png](https://s2.loli.net/2023/12/05/b9Z7tjuWeNADd6l.png)
 
 Due to the lack of object-oriented support in C, there is no way for the method to easily obtain its parent, so you have to pass it. An example of the same code between C and C++:
 
@@ -120,9 +120,9 @@ The inode object represents all the information needed by the kernel to manipula
 > `struct inode` and is defined in `<linux/fs.h>`
 > 
 > 
-> ![截屏2023-06-08 下午2.16.05.png](Linux%20Virtual%20Filesystem%200bbda17ece674fa795a4488409afc134/%25E6%2588%25AA%25E5%25B1%258F2023-06-08_%25E4%25B8%258B%25E5%258D%25882.16.05.png)
+> ![7.png](https://s2.loli.net/2023/12/05/T7omEOwFNdPuHYI.png)
 > 
-> ![截屏2023-06-08 下午2.16.29.png](Linux%20Virtual%20Filesystem%200bbda17ece674fa795a4488409afc134/%25E6%2588%25AA%25E5%25B1%258F2023-06-08_%25E4%25B8%258B%25E5%258D%25882.16.29.png)
+> ![8.png](https://s2.loli.net/2023/12/05/uMrmysOJbtqlWkQ.png)
 > 
 
 ### Inode Operation
@@ -137,9 +137,9 @@ The inode object represents all the information needed by the kernel to manipula
 > `inode_operations` defined in `<linux/fs.h>`
 > 
 > 
-> ![截屏2023-06-08 下午2.28.02.png](Linux%20Virtual%20Filesystem%200bbda17ece674fa795a4488409afc134/%25E6%2588%25AA%25E5%25B1%258F2023-06-08_%25E4%25B8%258B%25E5%258D%25882.28.02.png)
+> ![9.png](https://s2.loli.net/2023/12/05/gBn6hyZmqiuo8AC.png)
 > 
-> ![截屏2023-06-08 下午2.28.11.png](Linux%20Virtual%20Filesystem%200bbda17ece674fa795a4488409afc134/%25E6%2588%25AA%25E5%25B1%258F2023-06-08_%25E4%25B8%258B%25E5%258D%25882.28.11.png)
+> ![10.png](https://s2.loli.net/2023/12/05/ohjKucgJmObFXRL.png)
 > 
 
 ## The Dentry Object
@@ -156,7 +156,7 @@ To facilitate this, the VFS employs the concept of a directory entry (dentry). A
 > `struct dentry` defined in `<linux/dcache.h>`
 > 
 > 
-> ![截屏2023-06-08 下午3.01.42.png](Linux%20Virtual%20Filesystem%200bbda17ece674fa795a4488409afc134/%25E6%2588%25AA%25E5%25B1%258F2023-06-08_%25E4%25B8%258B%25E5%258D%25883.01.42.png)
+> ![11.png](https://s2.loli.net/2023/12/05/p1ot4m3yOGkvKRZ.png)
 > 
 - Unlike the previous two objects, the dentry object does not correspond to any sort of on-disk data structure. Dentry object is not physically stored on the disk.
 - TheVFS creates it on-the-fly from a string representation of a path name.
@@ -200,7 +200,7 @@ The dentry cache consists of **three parts**:
 > `dentry_operations` structure is defined in `<linux/dcache.h>`
 > 
 > 
-> ![截屏2023-06-08 下午4.32.02.png](Linux%20Virtual%20Filesystem%200bbda17ece674fa795a4488409afc134/%25E6%2588%25AA%25E5%25B1%258F2023-06-08_%25E4%25B8%258B%25E5%258D%25884.32.02.png)
+> ![12.png](https://s2.loli.net/2023/12/05/wMArtjxmZfUQ9cG.png)
 > 
 
 ## **The File Object**
@@ -213,30 +213,30 @@ The file object is used to represent a **file opened by a process**. The object 
 > `struct file` and is defined in `<linux/fs.h>`
 > 
 > 
-> ![截屏2023-06-08 下午4.39.58.png](Linux%20Virtual%20Filesystem%200bbda17ece674fa795a4488409afc134/%25E6%2588%25AA%25E5%25B1%258F2023-06-08_%25E4%25B8%258B%25E5%258D%25884.39.58.png)
+> ![13.png](https://s2.loli.net/2023/12/05/DCgWFcqI7GU3K8S.png)
 > 
-> ![截屏2023-06-08 下午4.40.06.png](Linux%20Virtual%20Filesystem%200bbda17ece674fa795a4488409afc134/%25E6%2588%25AA%25E5%25B1%258F2023-06-08_%25E4%25B8%258B%25E5%258D%25884.40.06.png)
+> ![14.png](https://s2.loli.net/2023/12/05/xcNSDEBqoH2YU7n.png)
 > 
 
 ### File Operations
 
 The operations associated with `struct file` are the familiar system calls that form the **basis of the standard Unix system calls**.
 
-![截屏2023-06-08 下午4.43.50.png](Linux%20Virtual%20Filesystem%200bbda17ece674fa795a4488409afc134/%25E6%2588%25AA%25E5%25B1%258F2023-06-08_%25E4%25B8%258B%25E5%258D%25884.43.50.png)
+![15.png](https://s2.loli.net/2023/12/05/CHBjezvpFbnGmow.png)
 
-![截屏2023-06-08 下午4.44.01.png](Linux%20Virtual%20Filesystem%200bbda17ece674fa795a4488409afc134/%25E6%2588%25AA%25E5%25B1%258F2023-06-08_%25E4%25B8%258B%25E5%258D%25884.44.01.png)
+![16.png](https://s2.loli.net/2023/12/05/3GhezS15siNI2FA.png)
 
 **Some Important Operations**:
 
-![截屏2023-06-08 下午4.47.03.png](Linux%20Virtual%20Filesystem%200bbda17ece674fa795a4488409afc134/%25E6%2588%25AA%25E5%25B1%258F2023-06-08_%25E4%25B8%258B%25E5%258D%25884.47.03.png)
+![17.png](https://s2.loli.net/2023/12/05/iU3X85vB4OHTalf.png)
 
-![截屏2023-06-08 下午4.50.04.png](Linux%20Virtual%20Filesystem%200bbda17ece674fa795a4488409afc134/%25E6%2588%25AA%25E5%25B1%258F2023-06-08_%25E4%25B8%258B%25E5%258D%25884.50.04.png)
+![18.png](https://s2.loli.net/2023/12/05/os7rJ8beGmkCRu6.png)
 
-![截屏2023-06-08 下午4.51.05.png](Linux%20Virtual%20Filesystem%200bbda17ece674fa795a4488409afc134/%25E6%2588%25AA%25E5%25B1%258F2023-06-08_%25E4%25B8%258B%25E5%258D%25884.51.05.png)
+![19.png](https://s2.loli.net/2023/12/05/rz3EK5PC6ngRTqM.png)
 
-![截屏2023-06-08 下午4.51.53.png](Linux%20Virtual%20Filesystem%200bbda17ece674fa795a4488409afc134/%25E6%2588%25AA%25E5%25B1%258F2023-06-08_%25E4%25B8%258B%25E5%258D%25884.51.53.png)
+![20.png](https://s2.loli.net/2023/12/05/yDMNZ2gzIp6CiQ3.png)
 
-![截屏2023-06-08 下午4.52.06.png](Linux%20Virtual%20Filesystem%200bbda17ece674fa795a4488409afc134/%25E6%2588%25AA%25E5%25B1%258F2023-06-08_%25E4%25B8%258B%25E5%258D%25884.52.06.png)
+![21.png](https://s2.loli.net/2023/12/05/CxP23sniyLSqJVR.png)
 
 # **Data Structures Associated with Filesystems**
 
@@ -249,7 +249,7 @@ Linux supports many different filesystems, so the kernel requires a special stru
 > `file_system_type` is defined in `<linux/fs.h>`
 > 
 > 
-> ![截屏2023-06-08 下午4.55.31.png](Linux%20Virtual%20Filesystem%200bbda17ece674fa795a4488409afc134/%25E6%2588%25AA%25E5%25B1%258F2023-06-08_%25E4%25B8%258B%25E5%258D%25884.55.31.png)
+> ![22.png](https://s2.loli.net/2023/12/05/fWKZsYi7BbX6vlT.png)
 > 
 - `get_sb()` function reads the superblock from the disk and populates the superblock object when the filesystem is loaded.
 
@@ -260,9 +260,9 @@ Things get more interesting when the file system is actually mounted. At this po
 > `vfsmount` structure is defined in `<linux/mount.h>`
 > 
 > 
-> ![截屏2023-06-08 下午5.00.04.png](Linux%20Virtual%20Filesystem%200bbda17ece674fa795a4488409afc134/%25E6%2588%25AA%25E5%25B1%258F2023-06-08_%25E4%25B8%258B%25E5%258D%25885.00.04.png)
+> ![23.png](https://s2.loli.net/2023/12/05/Soh5z9tOMU8vWIp.png)
 > 
-> ![截屏2023-06-08 下午5.00.13.png](Linux%20Virtual%20Filesystem%200bbda17ece674fa795a4488409afc134/%25E6%2588%25AA%25E5%25B1%258F2023-06-08_%25E4%25B8%258B%25E5%258D%25885.00.13.png)
+> ![24.png](https://s2.loli.net/2023/12/05/5JalLjsot9BRmiG.png)
 > 
 - It’s **complicated** to maintain the relation between the filesystem and all the other mount points. The various **linked lists** in `vfsmount` keep track of this information.
 - `mnt_flags` specifies the standard mount flags
@@ -270,7 +270,7 @@ Things get more interesting when the file system is actually mounted. At this po
     > These flags are useful on removable devices that the admin does not trust.
     > 
     > 
-    > ![截屏2023-06-08 下午5.03.31.png](Linux%20Virtual%20Filesystem%200bbda17ece674fa795a4488409afc134/%25E6%2588%25AA%25E5%25B1%258F2023-06-08_%25E4%25B8%258B%25E5%258D%25885.03.31.png)
+    > ![25.png](https://s2.loli.net/2023/12/05/eOYQSBkCymwgozn.png)
     > 
 
 # **Data Structures Associated with a Process**
@@ -279,18 +279,18 @@ Each process on the system maintains its own list of open files, root filesystem
 
 1. **files_struct** is used by the Linux kernel to keep track of all of the open files for a process.
    
-    ![截屏2023-06-08 下午5.06.25.png](Linux%20Virtual%20Filesystem%200bbda17ece674fa795a4488409afc134/%25E6%2588%25AA%25E5%25B1%258F2023-06-08_%25E4%25B8%258B%25E5%258D%25885.06.25.png)
+    ![26.png](https://s2.loli.net/2023/12/05/7GpZfnaoKLzEXOb.png)
     
     - The array `fd_array` points to the list of open file objects. `NR_OPEN_DEFAULT` is 64, but you can adjust this macro as needed.
 2. **fs_struct** contains filesystem information related to a process and is pointed at by the fs field in the process descriptor.
    
-    ![截屏2023-06-08 下午5.11.15.png](Linux%20Virtual%20Filesystem%200bbda17ece674fa795a4488409afc134/%25E6%2588%25AA%25E5%25B1%258F2023-06-08_%25E4%25B8%258B%25E5%258D%25885.11.15.png)
+    ![27.png](https://s2.loli.net/2023/12/05/P4OxQN5Bma9Hgzb.png)
     
 3. **namespace** enable each process to have a unique view of the mounted filesystems on the system—not just a unique root directory, but an entirely unique filesystem hierarchy.
    
-    ![截屏2023-06-08 下午5.13.40.png](Linux%20Virtual%20Filesystem%200bbda17ece674fa795a4488409afc134/%25E6%2588%25AA%25E5%25B1%258F2023-06-08_%25E4%25B8%258B%25E5%258D%25885.13.40.png)
+    ![28.png](https://s2.loli.net/2023/12/05/QGMNDxSI3uHagE5.png)
     
-    ![截屏2023-06-08 下午5.13.47.png](Linux%20Virtual%20Filesystem%200bbda17ece674fa795a4488409afc134/%25E6%2588%25AA%25E5%25B1%258F2023-06-08_%25E4%25B8%258B%25E5%258D%25885.13.47.png)
+    ![29.png](https://s2.loli.net/2023/12/05/lmH7xRu6ejdzg1A.png)
     
     - The `list` member specifies a doubly linked list of the mounted filesystems that make up the namespace.
 
