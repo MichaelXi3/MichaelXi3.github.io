@@ -2,7 +2,7 @@
 title: Sphere
 SEOTitle: Sphere | Xi
 header-img: img/post-unix-cut.jpg
-email: xiy20@wfu.edu
+email: michaelyukunxi@gmail.com
 description: ""
 keyword: ""
 url: "" # your host, for absolute URL
@@ -92,4 +92,5 @@ page-mathjax: false
 friends:
   [
     { title: "Michael Xi", href: "http://michaelxi.com/" },
+    { title: "木鸟杂记", href: "https://www.qtmuniao.com/" },
   ]
