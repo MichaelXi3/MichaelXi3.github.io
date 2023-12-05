@@ -4,7 +4,7 @@ title: "Dynamic Programming"
 subtitle: "The art of induction"
 date: 2023-08-02
 author: "Michael Xi"
-header-img: "img/post-bg-2015.jpg"
+header-img: "img/leetcode.jpg"
 tags: [Algorithm, Dynamic Programming]
 ---
 
