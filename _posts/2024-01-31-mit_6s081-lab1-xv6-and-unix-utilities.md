@@ -38,7 +38,7 @@ If the `make qemu` is executed successfully, you should be prompted with a shell
 - Get and validate user input
 - Using system call `sleep`
 
-```C
+```c
 #include "kernel/types.h"
 #include "kernel/stat.h"
 #include "user/user.h"
@@ -64,7 +64,7 @@ int main(int argc, char *argv[]) {
 - Using Inter-process Communication (IPC) `pipe` system call to build two one-way pipes
 - Close the read end and the write end of pipes carefully
 
-```C
+```c
 #include "kernel/types.h"
 #include "kernel/stat.h"
 #include "user/user.h"
@@ -116,7 +116,7 @@ int main(int argc, char *argv[]) {
 
 - Building a pipeline using pipes and forks
 
-```C
+```c
 #include "kernel/types.h"
 #include "kernel/stat.h"
 #include "user/user.h"
@@ -323,7 +323,7 @@ char* getFileName(char *path) {
         line 2
     ```
 
-```C
+```c
 #include "kernel/param.h"
 #include "kernel/types.h"
 #include "user/user.h"
