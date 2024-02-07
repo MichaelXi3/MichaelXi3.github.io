@@ -534,7 +534,9 @@ Deadlock is defined as a situation in which two or more processes (or threads) s
 
 ![Deadlock.png](https://s2.loli.net/2024/02/07/oKOa42zJS7Rbg8Z.png)
 
-There are four required **conditions of deadlock**:
+### Deadlock Conditions
+
+There are four conditions required for deadlock.
 
 1. **Mutual Exclusion**
 
@@ -552,7 +554,9 @@ There are four required **conditions of deadlock**:
 
    There must be a collection of processes (at least two) in which each process is waiting for a resource held by the next process, forming a chain of circular waits.
 
-To **Prevent** the deadlock, we need to break at least one of the four coniditons.
+### DeadLock Prevention
+
+To Prevent the deadlock, we need to break at least one of the four coniditons.
 
 1. **Breaks the mutex condition**
 
@@ -570,7 +574,9 @@ To **Prevent** the deadlock, we need to break at least one of the four coniditon
 
    Avoids circular waiting by requiring processes to apply for resources in ascending order of number through resource numbering.
 
-To **Avoid** the deadlock, we can use clever **scheduling**.
+### DeadLock Avoidance
+
+To Avoid the deadlock, we can use clever scheduling.
 
 Avoidance requires having a <u>global understanding</u> of the entire set of tasks that must run and locks that different threads might acquire during their execution. It then schedules these threads in a manner that ensures no deadlock can occur. However, the cost is limited concurrency and thus degraded performance.
 
@@ -582,7 +588,11 @@ A famous example of such an algorithm is **Dijkstra's Banker's Algorithm**. It i
 4. **Allocating resources**: if the system is in a safe state, resources are allocated; otherwise, the process must wait.
 5. **Completion and release**: processes complete and release their resources, which the system returns to the pool of available resources.
 
-To **Detect** the deadlock, we can use the **resource graph**.
+## DeadLock Detection
+
+To Detect the deadlock, we can use the **resource graph**.
+
+![resource_graph.png](https://s2.loli.net/2024/02/07/wAMhKFQvWNOUXED.png)
 
 Specifically, we can draw a Resource Graph to detect the presence of loops (a Resource Graph is a directed graph where nodes can be processes or resource types and edges represent requested or occupied resources). If the resource graph contains loops after graph simplification, then deadlock exists.
 
