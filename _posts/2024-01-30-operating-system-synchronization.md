@@ -588,7 +588,7 @@ A famous example of such an algorithm is **Dijkstra's Banker's Algorithm**. It i
 4. **Allocating resources**: if the system is in a safe state, resources are allocated; otherwise, the process must wait.
 5. **Completion and release**: processes complete and release their resources, which the system returns to the pool of available resources.
 
-## DeadLock Detection
+### DeadLock Detection
 
 To Detect the deadlock, we can use the **resource graph**.
 
