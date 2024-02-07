@@ -10,9 +10,9 @@ tags: [System, Operating System]
 
 # Why Synchronization?
 
-If I have a bank account and I just received two payments from my friends, my banking system sends two "add 100 dollars" instructions to update my bank account balance. These two additions are performed by two threads, both of which are attempting to update my bank account balance. Unfortunately, these two threads execute at the exactly same time (bad luck), resulting in simultaneous updates to my balance. In this case, the updates overlap and my balance only increases by 100 dollars. So sad!
+Let's say you have a bank account and you just received two payments from your friends, your banking system sends two `add 100-dollar` instructions to update your bank account balance. These two additions are performed by two threads, both of which are attempting to update my bank account balance. Unfortunately, these two threads execute at the exactly same time (bad luck), resulting in simultaneous updates to your balance. In this case, the updates overlap and your balance only increases by 100 dollars. So sad!
 
-This is the use case where we need synchronization for our banking system (in fact, nearly all systems). The goal of synchronization is to protect the critical resource, in this case, the balance amount, and ensure that the critical resource is modified properly. The code that updates the critical resource is called the critical section, and thus we apply synchronization techniques to the critical section.
+This is the use case where we need synchronization for our banking system (in fact, nearly all systems). The goal of synchronization is to protect the critical resource, in this case, the balance amount, and ensure that the critical resource is updated properly. The code that updates the critical resource is called the critical section, and thus we apply synchronization techniques to the critical section.
 
 Here are some more definitions to make things clear:
 
@@ -26,7 +26,7 @@ Here are some more definitions to make things clear:
 
 ## Software Mechanism
 
-Initially, brilliant computer scientists were thinking very hard about how to achieve synchronization using only software mechanisms. Dekker's Algorithm is the most famous one. The algorithm implementation is described below:
+Initially, brilliant computer scientists were thinking very hard about how to achieve synchronization using only software mechanisms. **Dekker's Algorithm** is the most famous one. The algorithm implementation is described below:
 
 ```c
 process p1() {
@@ -108,7 +108,7 @@ Given these disadvantages, computer science researchers started to leverage hard
 
 ## Low-Level Hardware Primitives
 
-Low-level hardware primitives for synchronization provide an important characteristic: **Atomicity** of operations. The hardware level atomicity means that the operations are either done or undone, which is the fundamental building block of high-level synchronization primitives such as locks and semaphores.
+Low-level hardware primitives for synchronization provide an important characteristic: **Atomicity** of operations. The hardware level atomicity means that the operations are either done or undone, which is the fundamental building block of high-level synchronization primitives such as lock and semaphore.
 
 There are primarily four types of hardware primitives: **TestAndSet (TAS)**, **Swap**, **CompareAndSwap (CAS)**, and **FetchAndAdd (FAA)**.
 
@@ -140,7 +140,39 @@ void swap(int *x, int *y) {
 
 Usage Scenario: Swap can be used to acquire locks. A thread can try to acquire a lock by swapping the lock variable with a local variable. If the result of the local variable indicates that the lock is available (e.g., 0), then the thread knows that it has successfully acquired the lock.
 
-![Swap_Lock.png](https://s2.loli.net/2024/02/05/s8AQTGytniLxVa3.png)
+```java
+boolean lock = false;  // Global variable
+
+process p1(boolean myKey) {
+  while (true) {
+    // Non-critical code
+    mykey = true;
+    do {
+      swap(&lock, &myKey);
+    } while (myKey == true);
+    
+    // Critical section
+    lock = false;
+    
+    // Non-critical code
+  }
+}
+
+process p2(boolean myKey) {
+  while (true) {
+    // Non-critical code
+    mykey = true;
+    do {
+      swap(&lock, &myKey);
+    } while (myKey == true);
+    
+    // Critical section
+    lock = false;
+    
+    // Non-critical code
+  }
+}
+```
 
 The disadvantage of Swap is also **busy waiting**, as all the waiting threads have to spin empty cycles.
 
@@ -260,7 +292,7 @@ There are several ways of **implementing the Mutex**, from primitive ideas to pr
 
    There is also **Priority Invasion** problem when using SpinLock. When a low-priority thread holds a lock while a high-priority thread waits for the lock, it causes the high-priority thread to fail to execute in time. A common solution is **Priority Inheritance**, which means that the low-priority thread holding the lock temporarily inherits the priority of the high-priority thread waiting for the lock, thus reducing the waiting time of the high-priority thread.
 
-   There are primarily two methods of **implementing SpinLock**: CAS and TAS.
+   There are primarily two methods of **implementing SpinLock**: **CAS** and **TAS**.
 
    - **CAS (Compare-And-Swap)**: This atomic operation checks the value at a memory location and only updates it if it matches a given expected value. This is useful for implementing lock-free algorithms, including spinlocks.
 
@@ -502,7 +534,7 @@ Deadlock is defined as a situation in which two or more processes (or threads) s
 
 ![Deadlock.png](https://s2.loli.net/2024/02/07/oKOa42zJS7Rbg8Z.png)
 
-There are four required conditions of deadlock:
+There are four required **conditions of deadlock**:
 
 1. **Mutual Exclusion**
 
@@ -542,18 +574,24 @@ To **Avoid** the deadlock, we can use clever **scheduling**.
 
 Avoidance requires having a <u>global understanding</u> of the entire set of tasks that must run and locks that different threads might acquire during their execution. It then schedules these threads in a manner that ensures no deadlock can occur. However, the cost is limited concurrency and thus degraded performance.
 
-A famous example of such algorithm is **Dijkstra's Banker's Algorithm**. It is called the "banker's" algorithm because it is similar to how banks decide whether or not to grant a loan: the bank's goal is to ensure that at any given time, even if all customers draw the maximum amount of loan they may need, their minimum cash needs will be met. The algorithm is able to dynamically manage and allocate resources while ensuring that the system does not enter a deadlock state due to misallocation of resources. Here is the steps of banker's algorithm:
+A famous example of such an algorithm is **Dijkstra's Banker's Algorithm**. It is called the "banker's" algorithm because it is similar to how banks decide whether or not to grant a loan: the bank's goal is to ensure that at any given time, even if all customers draw the maximum amount of loan they may need, their minimum cash needs will be met. The algorithm is able to dynamically manage and allocate resources while ensuring that the system does not enter a deadlock state due to misallocation of resources. Here are the steps of the banker's algorithm:
 
 1. **Initialize resources**: when the system is initialized, the total amount of each resource needs to be known.
 2. **Declaring maximum requirements**: each process declares the maximum amount of each resource it may need.
-3. **Resource requests and security checks**: When a process requests a set of resources, the system first performs a security check based on the banker's algorithm to determine whether the system can be kept in a secure state after allocating the requested resources. This check consists of verifying that there is a hypothetical sequence of resource allocations according to which all processes eventually complete successfully.
+3. **Resource requests and security checks**: When a process requests a set of resources, the system first performs a security check based on the banker's algorithm to determine whether the system can be kept in a secure state after allocating the requested resources. This check consists of verifying that there is a hypothetical sequence of resource allocations according to which all processes are eventually completed successfully.
 4. **Allocating resources**: if the system is in a safe state, resources are allocated; otherwise, the process must wait.
 5. **Completion and release**: processes complete and release their resources, which the system returns to the pool of available resources.
 
-To **Detect** the deadlock, we can use **resource graph**.
+To **Detect** the deadlock, we can use the **resource graph**.
 
 Specifically, we can draw a Resource Graph to detect the presence of loops (a Resource Graph is a directed graph where nodes can be processes or resource types and edges represent requested or occupied resources). If the resource graph contains loops after graph simplification, then deadlock exists.
 
 ## Livelock
 
 Two threads could both be repeatedly attempting a lock requisition sequence and repeatedly failing to acquire both locks. In this case, both systems are running through this code sequence over and over again (and thus it is not a deadlock), but progress is not being made, hence the name livelock.
+
+
+
+> “Simplicity is a great virtue but it requires hard work to achieve it and education to appreciate it. And to make matters worse: complexity sells better.”
+>
+> ― **Edsger Wybe Dijkstra**
