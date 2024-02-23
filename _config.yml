@@ -18,7 +18,7 @@ RSS: false
 github_username: MichaelXi3
 # twitter_username: 
 #facebook_username:  
-linkedin_username:  yukun-xi
+linkedin_username: yukun-xi
 
 # Build settings
 # from 2016, 'pygments' is unsupported on GitHub Pages. Use 'rouge' for highlighting instead.
@@ -59,7 +59,7 @@ kramdown:
       start_line: 1
 
 # Disqus settings
-disqus_username: michaelxi333
+disqus_username: #michaelxi333
 
 # Netease settings
 netease_comment: false
