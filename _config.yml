@@ -59,18 +59,15 @@ kramdown:
       start_line: 1
 
 # Disqus settings
-disqus_username: michaelxi333 
+disqus_username: michaelxi333
 
 # Netease settings
 netease_comment: false
 
-# Analytics settings
-# Baidu Analytics
-# ba_track_id: [your track id]
 
 # Google Analytics
 # ga_track_id: "UA-49627206-1" # Format: UA-xxxxxx-xx
-# ga_domain: huangxuan.me
+# ga_domain: 
 
 # Sidebar settings
 sidebar: true # whether or not using Sidebar.
