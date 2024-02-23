@@ -5,7 +5,7 @@ subtitle: "System Calls Implementation"
 date: 2024-02-12
 author: "Michael Xi"
 header-img: "img/disk.jpg"
-tags: [System, Operating System]
+tags: [System, Operating System, MIT 6.S081]
 ---
 
 # System Call Tracing ([moderate](https://pdos.csail.mit.edu/6.828/2021/labs/guidance.html))

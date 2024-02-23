@@ -5,7 +5,7 @@ subtitle: "xv6 Environment SetUp and Lab Util Implementation"
 date: 2024-01-31
 author: "Michael Xi"
 header-img: "img/disk.jpg"
-tags: [System, Operating System]
+tags: [System, Operating System, MIT 6.S081]
 ---
 
 # xv6 Environment Setup
