@@ -413,7 +413,7 @@ int sys_pgaccess(void) {
     // check for the PTE_A bit
     if ((*pte) & PTE_A) {
       bitmask |= (1L << i);
-      // ‼️ [1] clear the access bit to pte
+      // [🌟] clear the access bit to pte
       (*pte) &= (~PTE_A);
 		}
   } 
@@ -424,4 +424,4 @@ int sys_pgaccess(void) {
 }
 ```
 
-[1] Note that be sure to clear `PTE_A` after checking if it is set. Otherwise, it won't be possible to determine if the page was accessed since the last time `pgaccess()` was called (i.e., the bit will be set forever).
+[🌟] Note that be sure to clear `PTE_A` after checking if it is set. Otherwise, it won't be possible to determine if the page was accessed since the last time `pgaccess()` was called (i.e., the bit will be set forever).
