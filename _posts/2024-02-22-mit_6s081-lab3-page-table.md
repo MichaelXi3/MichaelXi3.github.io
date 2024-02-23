@@ -4,7 +4,7 @@ title: "[MIT_6.S081] Lab3: Page Table"
 subtitle: "Page Table Implementation"
 date: 2024-02-22
 author: "Michael Xi"
-header-img: "img/post-bg-2015.jpg"
+header-img: "img/disk.jpg"
 tags: [System, Operating System, MIT 6.S081]
 ---
 
