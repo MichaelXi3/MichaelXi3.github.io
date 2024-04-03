@@ -284,7 +284,7 @@ We can tackle this question in the following steps:
    }
    ```
 
-**Third, if the kernel tries to `copyout()` a COW page from kernel space to user space, we need to do the same COW handling just as the COW-page page fault did above.**
+**Third, if the kernel tries to use `copyout()` to transfer a Copy-On-Write (COW) page from kernel space to user space, we need to handle it the same way as a COW page fault, as mentioned above.**
 
 1. In `kernel/vm.c`, the implementation of `copyout()` is as follows:
 
