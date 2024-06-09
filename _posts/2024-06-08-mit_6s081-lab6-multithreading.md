@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "[MIT_6.S081] Lab6: Multithreading"
+title: "[MIT_6.S081] Lab: Multithreading"
 subtitle: "Multithreaded Programming Practices"
 date: 2024-06-08
 author: "Michael Xi"

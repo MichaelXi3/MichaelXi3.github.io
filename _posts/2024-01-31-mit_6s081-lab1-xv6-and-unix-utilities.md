@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "[MIT_6.S081] Lab1: xv6 and Unix utilities"
+title: "[MIT_6.S081] Lab: xv6 and Unix utilities"
 subtitle: "xv6 Environment SetUp and Lab Util Implementation"
 date: 2024-01-31
 author: "Michael Xi"

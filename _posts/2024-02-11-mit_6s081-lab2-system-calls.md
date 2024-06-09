@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "[MIT_6.S081] Lab2: System Calls"
+title: "[MIT_6.S081] Lab: System Calls"
 subtitle: "System Calls Implementation"
 date: 2024-02-12
 author: "Michael Xi"

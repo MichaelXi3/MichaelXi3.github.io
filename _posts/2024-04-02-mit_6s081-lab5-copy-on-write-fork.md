@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "[MIT_6.S081] Lab5: Copy on Write Fork"
+title: "[MIT_6.S081] Lab: Copy on Write Fork"
 subtitle: "COW Fork for xv6"
 date: 2024-04-02
 author: "Michael Xi"

@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "[MIT_6.S081] Lab3: Page Table"
+title: "[MIT_6.S081] Lab: Page Table"
 subtitle: "Page Table Implementation"
 date: 2024-02-22
 author: "Michael Xi"
